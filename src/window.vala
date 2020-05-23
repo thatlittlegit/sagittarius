@@ -100,6 +100,12 @@ namespace Sagittarius {
 
 		[GtkCallback]
 		private void navigate (Gtk.Button unused) {
+			if (current_history_pos + 1 != history.length()) {
+				for (int i = current_history_pos; i < history.length(); i++) {
+					history.remove(history.nth_data(i));
+				}
+			}
+
 			history.append(url_bar.get_text ());
 			current_history_pos++;
 			load_uri(history.nth_data(current_history_pos));
