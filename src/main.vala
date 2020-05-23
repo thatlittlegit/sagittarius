@@ -17,7 +17,7 @@
  */
 
 int main (string[] args) {
-	var app = new Gtk.Application("tk.thatlittlegit.sagittarius", ApplicationFlags.FLAGS_NONE);
+	var app = new Sagittarius.Application ();
 	app.activate.connect(() => {
 		var win = new Sagittarius.Window(app);
 		win.present ();

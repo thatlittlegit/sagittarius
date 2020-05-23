@@ -17,6 +17,31 @@
  */
 
 namespace Sagittarius {
+	public class Application : Gtk.Application {
+		private const ActionEntry[] actions = {
+			{ "quit", quit },
+			{ "about", show_about_dialog },
+		};
+
+		public Application () {
+			Object(application_id: "tk.thatlittlegit.sagittarius", flags : ApplicationFlags.FLAGS_NONE);
+			add_action_entries(actions, this);
+		}
+
+		private void show_about_dialog () {
+			var dialog = new Gtk.AboutDialog ();
+			dialog.modal = true;
+			dialog.authors = { "thatlittlegit" };
+			dialog.comments = _("A browser for Gemini");
+			dialog.copyright = "© 2020 thatlittlegit.";
+			dialog.license_type = Gtk.License.GPL_3_0_ONLY;
+			dialog.program_name = "Sagittarius";
+			dialog.website = "https://github.com/thatlittlegit/sagittarius";
+			dialog.run ();
+			dialog.destroy ();
+		}
+	}
+
 	[GtkTemplate(ui = "/tk/thatlittlegit/sagittarius/window.ui")]
 	public class Window : Gtk.ApplicationWindow {
 		[GtkChild]
@@ -29,19 +54,31 @@ namespace Sagittarius {
 		Gtk.Box history_menu_box;
 		[GtkChild]
 		Gtk.Overlay overlay;
+		[GtkChild]
+		Gtk.MenuButton menu_button;
 
 		Granite.Widgets.OverlayBar overlaybar;
 
 		List<string> history;
 		int current_history_pos = -1;
 
-		public Window (Gtk.Application app) {
+		public Window (Sagittarius.Application app) {
 			Object(application: app);
 
 			// TODO when Granite adds a Glade catalog, use that instead
-			overlaybar = new Granite.Widgets.OverlayBar (overlay);
+			overlaybar = new Granite.Widgets.OverlayBar(overlay);
 			overlaybar.show_all ();
 			overlaybar.label = _("Welcome to Sagittarius!");
+
+			var menu = new Menu ();
+			var menu1 = new Menu ();
+			menu.append_section(null, menu1);
+			menu1.append(_("_Settings"), "app.settings");
+			var menu2 = new Menu ();
+			menu.append_section(null, menu2);
+			menu2.append(_("_About"), "app.about");
+			menu2.append(_("_Quit"), "app.quit");
+			menu_button.set_menu_model(menu);
 		}
 
 		private void load_uri (string uri) {

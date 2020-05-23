@@ -3,6 +3,16 @@
   <id>tk.thatlittlegit.sagittarius.desktop</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0</project_license>
+  <developer_name>thatlittlegit</developer_name>
+  <name>Sagittarius</name>
   <description>
+    <p>
+      Sagittarius is a browser for the Gemini protocol. It currently displays
+      Gemini pages as plain-text and crashes a lot.
+    </p>
   </description>
+  <launchable type="desktop-id">tk.thatlittlegit.sagittarius.desktop</launchable>
+  <url type="homepage">https://github.com/thatlittlegit/sagittarius</url>
+  <url type="bugtracker">https://github.com/thatlittlegit/sagittarius/issues</url>
+  <url type="contact">mailto:personal+sagittarius@thatlittlegit.tk</url>
 </component>
