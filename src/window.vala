@@ -56,11 +56,23 @@ namespace Sagittarius {
 		Gtk.Overlay overlay;
 		[GtkChild]
 		Gtk.MenuButton menu_button;
+		[GtkChild]
+		Gtk.Button back_button;
+		[GtkChild]
+		Gtk.Button forward_button;
 
 		Granite.Widgets.OverlayBar overlaybar;
 
 		List<string> history;
-		int current_history_pos = -1;
+		int _current_history_pos = -1;
+		int current_history_pos {
+			get { return _current_history_pos; }
+			set {
+				_current_history_pos = value;
+				back_button.sensitive = value != -1;
+				forward_button.sensitive = value != history.length() - 1;
+			}
+		}
 
 		public Window (Sagittarius.Application app) {
 			Object(application: app);
