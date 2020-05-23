@@ -126,15 +126,25 @@ namespace Sagittarius {
 		private bool show_history_menu (Gtk.Widget relative_to, Gdk.EventButton button) {
 			if (button.button != 3) return false;
 
+			history_menu_box.forall(item => history_menu_box.remove(item));
+
 			if (current_history_pos == -1) {
 				var label = new Gtk.Label("no history yet :(");
 				label.show ();
 				history_menu_box.pack_end(label);
 			}
 
-			for (int i = 0; i <= current_history_pos; i++) {
+			for (int i = 0; i < history.length(); i++) {
 				var item = new Gtk.ModelButton ();
 				item.text = history.nth_data(i);
+				item.sensitive = i != current_history_pos;
+				item.set_data<int>("history_pos", i);
+
+				item.clicked.connect(() => {
+					current_history_pos = item.get_data<int>("history_pos");
+					load_uri(history.nth_data(current_history_pos));
+				});
+
 				item.show ();
 				history_menu_box.pack_end(item);
 			}
