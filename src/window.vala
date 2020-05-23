@@ -35,7 +35,7 @@ namespace Sagittarius {
 			dialog.comments = _("A browser for Gemini");
 			dialog.copyright = "© 2020 thatlittlegit.";
 			dialog.license_type = Gtk.License.GPL_3_0_ONLY;
-			dialog.program_name = "Sagittarius";
+			dialog.program_name = _("Sagittarius");
 			dialog.website = "https://github.com/thatlittlegit/sagittarius";
 			dialog.run ();
 			dialog.destroy ();
@@ -77,7 +77,7 @@ namespace Sagittarius {
 			var menu2 = new Menu ();
 			menu.append_section(null, menu2);
 			menu2.append(_("_About"), "app.about");
-			menu2.append(_("_Quit"), "app.quit");
+			menu2.append(_("Quit"), "app.quit");
 			menu_button.set_menu_model(menu);
 		}
 

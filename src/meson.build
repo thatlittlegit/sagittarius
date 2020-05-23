@@ -2,6 +2,7 @@ sagittarius_sources = [
   'gemini.vala',
   'main.vala',
   'window.vala',
+  'config.vapi',
 ]
 
 sagittarius_deps = [
@@ -19,6 +20,9 @@ sagittarius_sources += gnome.compile_resources('sagittarius-resources',
 
 executable('sagittarius', sagittarius_sources,
   vala_args: '--target-glib=2.50',  dependencies: sagittarius_deps,
-  c_args: '-DGETTEXT_PACKAGE="sagittarius"',
+  c_args: [
+    '-DGETTEXT_PACKAGE="sagittarius"',
+    '-DLOCALEDIR="@0@"'.format(localedir),
+  ],
   install: true,
 )

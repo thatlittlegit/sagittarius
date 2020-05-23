@@ -1,0 +1,68 @@
+# French translations for sagittarius package.
+# Copyright (C) 2020 thatlittlegit
+# This file is distributed under the same license as the sagittarius package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: sagittarius\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-23 14:23-0400\n"
+"PO-Revision-Date: 2020-05-23 13:46-0400\n"
+"Last-Translator: thatlittlegit <personal@thatlittlegit.tk>\n"
+"Language-Team: none\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: data/tk.thatlittlegit.sagittarius.desktop.in:3
+#: data/tk.thatlittlegit.sagittarius.appdata.xml.in:7 src/window.vala:38
+msgid "Sagittarius"
+msgstr "Sagittaire"
+
+#: data/tk.thatlittlegit.sagittarius.appdata.xml.in:6
+msgid "thatlittlegit"
+msgstr "thatlittlegit"
+
+#: data/tk.thatlittlegit.sagittarius.appdata.xml.in:9
+msgid ""
+"Sagittarius is a browser for the Gemini protocol. It currently displays "
+"Gemini pages as plain-text and crashes a lot."
+msgstr ""
+"Sagittaire est un navigateur pour le protocole Gemini. Maintenant, il montre "
+"des pages Gemini comme texte simple, et il plante beaucoup."
+
+#: src/window.ui:93
+msgid "URL…"
+msgstr "URL…"
+
+#: src/window.vala:35
+msgid "A browser for Gemini"
+msgstr "Un navigateur for le protocole Gemini"
+
+#: src/window.vala:71
+msgid "Welcome to Sagittarius!"
+msgstr "Bienvenue à Sagittaire!"
+
+#: src/window.vala:76
+msgid "_Settings"
+msgstr "_Paramètres"
+
+#: src/window.vala:79
+msgid "_About"
+msgstr "À _propos"
+
+#: src/window.vala:80
+msgid "Quit"
+msgstr "Sortir"
+
+#: src/window.vala:85
+#, c-format
+msgid "Loading %s…"
+msgstr "Suis en train de télécharger %s…"
+
+#: src/window.vala:93
+#, c-format
+msgid "Loaded page (MIME type %s)"
+msgstr "A l'téléchargé (type MIME %s)"

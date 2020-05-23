@@ -90,7 +90,7 @@
               <object class="GtkEntry" id="url_bar">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="placeholder_text" translatable="yes">URL...</property>
+                <property name="placeholder_text" translatable="yes">URL…</property>
                 <property name="input_purpose">url</property>
                 <signal name="activate" handler="navigate" swapped="no"/>
               </object>
@@ -180,7 +180,7 @@
                           </object>
                           <packing>
                             <property name="name">page0</property>
-                            <property name="title" translatable="yes">page0</property>
+                            <property name="title">page0</property>
                           </packing>
                         </child>
                       </object>
