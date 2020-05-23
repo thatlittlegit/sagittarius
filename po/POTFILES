@@ -1,0 +1,7 @@
+data/tk.thatlittlegit.sagittarius.desktop.in
+data/tk.thatlittlegit.sagittarius.appdata.xml.in
+data/tk.thatlittlegit.sagittarius.gschema.xml
+src/window.ui
+src/main.vala
+src/window.vala
+
