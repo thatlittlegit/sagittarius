@@ -35,6 +35,7 @@ namespace Sagittarius {
 			dialog.comments = _("A browser for Gemini");
 			dialog.copyright = "© 2020 thatlittlegit.";
 			dialog.license_type = Gtk.License.GPL_3_0_ONLY;
+			dialog.logo_icon_name = "tk.thatlittlegit.sagittarius.gnome";
 			dialog.program_name = _("Sagittarius");
 			dialog.website = "https://github.com/thatlittlegit/sagittarius";
 			dialog.run ();
@@ -76,6 +77,7 @@ namespace Sagittarius {
 
 		public Window (Sagittarius.Application app) {
 			Object(application: app);
+			icon_name = "tk.thatlittlegit.sagittarius.gnome";
 
 			// TODO when Granite adds a Glade catalog, use that instead
 			overlaybar = new Granite.Widgets.OverlayBar(overlay);
