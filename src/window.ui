@@ -133,37 +133,46 @@
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
         <child>
-          <object class="GtkScrolledWindow">
+          <object class="GtkOverlay" id="overlay">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="shadow_type">in</property>
+            <property name="can_focus">False</property>
             <child>
-              <object class="GtkViewport">
+              <object class="GtkScrolledWindow">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can_focus">True</property>
+                <property name="shadow_type">in</property>
                 <child>
-                  <object class="GtkStack">
+                  <object class="GtkViewport">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkTextView" id="text_view">
+                      <object class="GtkStack">
                         <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="editable">False</property>
-                        <property name="left_margin">8</property>
-                        <property name="right_margin">8</property>
-                        <property name="top_margin">8</property>
-                        <property name="bottom_margin">8</property>
-                        <property name="monospace">True</property>
+                        <property name="can_focus">False</property>
+                        <child>
+                          <object class="GtkTextView" id="text_view">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="editable">False</property>
+                            <property name="left_margin">8</property>
+                            <property name="right_margin">8</property>
+                            <property name="top_margin">8</property>
+                            <property name="bottom_margin">8</property>
+                            <property name="monospace">True</property>
+                          </object>
+                          <packing>
+                            <property name="name">page0</property>
+                            <property name="title" translatable="yes">page0</property>
+                          </packing>
+                        </child>
                       </object>
-                      <packing>
-                        <property name="name">page0</property>
-                        <property name="title" translatable="yes">page0</property>
-                      </packing>
                     </child>
                   </object>
                 </child>
               </object>
+              <packing>
+                <property name="index">-1</property>
+              </packing>
             </child>
           </object>
           <packing>

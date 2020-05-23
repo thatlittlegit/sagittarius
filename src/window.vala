@@ -22,16 +22,15 @@ namespace Sagittarius {
 		[GtkChild]
 		Gtk.TextView text_view;
 		[GtkChild]
-		Gtk.Box main_box;
-		[GtkChild]
 		Gtk.Entry url_bar;
 		[GtkChild]
 		Gtk.PopoverMenu history_menu;
 		[GtkChild]
 		Gtk.Box history_menu_box;
+		[GtkChild]
+		Gtk.Overlay overlay;
 
-		Gtk.Statusbar statusbar;
-		uint main_context;
+		Granite.Widgets.OverlayBar overlaybar;
 
 		List<string> history;
 		int current_history_pos = -1;
@@ -39,22 +38,23 @@ namespace Sagittarius {
 		public Window (Gtk.Application app) {
 			Object(application: app);
 
-			// XXX this can't be done in Glade?
-			statusbar = new Gtk.Statusbar ();
-			main_context = statusbar.get_context_id("Main browser activities");
-			main_box.add(statusbar);
-			statusbar.show ();
-
-			statusbar.push(main_context, _("Welcome to Sagittarius!"));
+			// TODO when Granite adds a Glade catalog, use that instead
+			overlaybar = new Granite.Widgets.OverlayBar (overlay);
+			overlaybar.show_all ();
+			overlaybar.label = _("Welcome to Sagittarius!");
 		}
 
 		private void load_uri (string uri) {
+			overlaybar.label = _("Loading %s…");
+			overlaybar.active = true;
+
 			get_gemini.begin(uri, (obj, res) => {
 				try {
 					var response = get_gemini.end(res);
 
 					text_view.buffer.set_text(response.text);
-					statusbar.push(main_context, "Loaded page (MIME type %s)".printf(response.meta));
+					overlaybar.label = _("Loaded page (MIME type %s)").printf(response.meta);
+					overlaybar.active = false;
 				} catch (Error err) {
 					error(err.message);
 				}
