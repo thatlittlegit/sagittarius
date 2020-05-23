@@ -25,9 +25,16 @@ namespace Sagittarius {
 		Gtk.Box main_box;
 		[GtkChild]
 		Gtk.Entry url_bar;
+		[GtkChild]
+		Gtk.PopoverMenu history_menu;
+		[GtkChild]
+		Gtk.Box history_menu_box;
 
 		Gtk.Statusbar statusbar;
 		uint main_context;
+
+		List<string> history;
+		int current_history_pos = -1;
 
 		public Window (Gtk.Application app) {
 			Object(application: app);
@@ -41,9 +48,8 @@ namespace Sagittarius {
 			statusbar.push(main_context, _("Welcome to Sagittarius!"));
 		}
 
-		[GtkCallback]
-		private void load_uri (Gtk.Button unused) {
-			get_gemini.begin(url_bar.get_text (), (obj, res) => {
+		private void load_uri (string uri) {
+			get_gemini.begin(uri, (obj, res) => {
 				try {
 					var response = get_gemini.end(res);
 
@@ -53,6 +59,52 @@ namespace Sagittarius {
 					error(err.message);
 				}
 			});
+		}
+
+		[GtkCallback]
+		private void navigate (Gtk.Button unused) {
+			history.append(url_bar.get_text ());
+			current_history_pos++;
+			load_uri(history.nth_data(current_history_pos));
+		}
+
+		[GtkCallback]
+		private void reload (Gtk.Button unused) {
+			load_uri(history.nth_data(current_history_pos));
+		}
+
+		[GtkCallback]
+		private void back (Gtk.Button unused) {
+			current_history_pos--;
+			load_uri(history.nth_data(current_history_pos));
+		}
+
+		[GtkCallback]
+		private void forward (Gtk.Button unused) {
+			current_history_pos++;
+			load_uri(history.nth_data(current_history_pos));
+		}
+
+		[GtkCallback]
+		private bool show_history_menu (Gtk.Widget relative_to, Gdk.EventButton button) {
+			if (button.button != 3) return false;
+
+			if (current_history_pos == -1) {
+				var label = new Gtk.Label("no history yet :(");
+				label.show ();
+				history_menu_box.pack_end(label);
+			}
+
+			for (int i = 0; i <= current_history_pos; i++) {
+				var item = new Gtk.ModelButton ();
+				item.text = history.nth_data(i);
+				item.show ();
+				history_menu_box.pack_end(item);
+			}
+
+			history_menu.relative_to = relative_to;
+			history_menu.popup ();
+			return true;
 		}
 	}
 }
