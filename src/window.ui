@@ -173,7 +173,6 @@
                         <property name="right_margin">8</property>
                         <property name="top_margin">8</property>
                         <property name="bottom_margin">8</property>
-                        <property name="monospace">True</property>
                       </object>
                       <packing>
                         <property name="name">page0</property>

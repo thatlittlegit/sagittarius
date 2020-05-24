@@ -85,6 +85,15 @@ namespace Sagittarius {
 			Object(application: app);
 			icon_name = "tk.thatlittlegit.sagittarius.gnome";
 
+			text_view.buffer.create_tag("pre", "family", "monospace");
+			text_view.buffer.create_tag("h1", "weight", 600, "size-points", 26.0, "size-set", true);
+			text_view.buffer.create_tag("h2", "weight", 500, "size-points", 22.0, "size-set", true);
+			text_view.buffer.create_tag("h3", "weight", 400, "size-points", 18.0, "size-set", true);
+			text_view.buffer.create_tag("ul", "tabs", new Pango.TabArray.with_positions(2, true,
+					Pango.TabAlign.LEFT, 8,
+					Pango.TabAlign.LEFT, 16
+				));
+
 			// TODO when Granite adds a Glade catalog, use that instead
 			overlaybar = new Granite.Widgets.OverlayBar(overlay);
 			overlaybar.show_all ();
@@ -130,7 +139,7 @@ namespace Sagittarius {
 				try {
 					var response = get_gemini.end(res);
 
-					text_view.buffer.set_text(response.text);
+					text_view = parse_markup(uri, response.text, text_view, this);
 					overlaybar.label = _("Loaded page (MIME type %s)").printf(response.meta);
 					overlaybar.active = false;
 					content_stack.visible_child = text_view;
@@ -166,7 +175,7 @@ namespace Sagittarius {
 			navigate(history.nth_data(current_history_pos));
 		}
 
-		private void navigate (string uri) {
+		public void navigate (string uri) {
 			if (current_history_pos + 1 != history.length ()) {
 				for (int i = current_history_pos; i < history.length (); i++) {
 					history.remove(history.nth_data(i));

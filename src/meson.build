@@ -3,6 +3,7 @@ sagittarius_sources = [
   'main.vala',
   'window.vala',
   'config.vapi',
+  'gemini-markup.vala',
 ]
 
 sagittarius_deps = [
