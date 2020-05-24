@@ -17,7 +17,7 @@
  *
  */
 
-public Gtk.TextView parse_markup (string markup, Gtk.TextView view, Sagittarius.Window window) {
+public Gtk.TextView parse_markup (string uri, string markup, Gtk.TextView view, Sagittarius.Window window) {
 	view.buffer.set_text("");
 	var preformatted = view.buffer.tag_table.lookup("pre");
 	var h1 = view.buffer.tag_table.lookup("h1");

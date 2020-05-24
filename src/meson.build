@@ -4,12 +4,15 @@ sagittarius_sources = [
   'window.vala',
   'config.vapi',
   'gemini-markup.vala',
+  'uri.c',
+  'uri.c.vala',
 ]
 
 sagittarius_deps = [
   dependency('gio-2.0', version: '>= 2.50'),
   dependency('gtk+-3.0', version: '>= 3.22'),
   dependency('granite', version: '>= 5.2'),
+  meson.get_compiler('c').find_library('uriparser'),
 ]
 
 gnome = import('gnome')

@@ -67,6 +67,9 @@ namespace Sagittarius {
 		Granite.Widgets.OverlayBar overlaybar;
 		Granite.Widgets.AlertView redirect_warning;
 		Granite.Widgets.AlertView not_found_warning;
+		Granite.Widgets.AlertView error_warning;
+
+		public string last_uri = "gemini://";
 
 		List<string> history;
 		int _current_history_pos = -1;
@@ -129,6 +132,14 @@ namespace Sagittarius {
 				);
 			not_found_warning.show_all ();
 			content_stack.add_named(not_found_warning, "notfound");
+
+			error_warning = new Granite.Widgets.AlertView(
+				_("Internal Error"),
+				_("An error has occurred inside the browser, and the page could not be displayed. You might be able to go back or refresh, but you might want to restart."),
+				"dialog-error"
+				);
+			error_warning.show_all ();
+			content_stack.add_named(error_warning, "error");
 		}
 
 		private void load_uri (string uri) {
@@ -164,13 +175,25 @@ namespace Sagittarius {
 					}
 				} catch (Error err) {
 					error(err.message);
+				} finally {
+					last_uri = uri;
 				}
 			});
 		}
 
 		[GtkCallback]
 		private void navigate_cb (Gtk.Button unused) {
-			history.append(url_bar.get_text ());
+			try {
+				if (url_bar.get_text ().has_prefix("//") || url_bar.get_text ().contains("://")) {
+					history.append(parse_uri(last_uri, url_bar.get_text ()));
+				} else {
+					history.append(parse_uri(last_uri, strdup("gemini://%s".printf(url_bar.get_text ()))));
+				}
+			} catch (UriError err) {
+				warning("UriError: %s".printf(err.message));
+				content_stack.visible_child = error_warning;
+			}
+
 			current_history_pos++;
 			navigate(history.nth_data(current_history_pos));
 		}

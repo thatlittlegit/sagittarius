@@ -45,6 +45,23 @@
             ]
         },
         {
+            "name" : "liburiparser",
+            "buildsystem" : "cmake-ninja",
+            "config-opts" : [
+                "-DCMAKE_BUILD_TYPE=Release",
+                "-DURIPARSER_BUILD_TESTS=OFF",
+                "-DURIPARSER_BUILD_TOOLS=OFF",
+                "-DURIPARSER_BUILD_DOCS=OFF",
+                "-DURIPARSER_BUILD_WCHAR_T=OFF"
+            ],
+            "sources" : [
+                {
+                    "type" : "git",
+                    "url" : "https://github.com/uriparser/uriparser.git"
+                }
+            ]
+        },
+        {
             "name" : "sagittarius",
             "builddir" : true,
             "buildsystem" : "meson",
