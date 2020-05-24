@@ -67,7 +67,9 @@ namespace Sagittarius {
 		List<string> history;
 		int _current_history_pos = -1;
 		int current_history_pos {
-			get { return _current_history_pos; }
+			get {
+				return _current_history_pos;
+			}
 			set {
 				_current_history_pos = value;
 				back_button.sensitive = value != -1;
@@ -154,7 +156,7 @@ namespace Sagittarius {
 				history_menu_box.pack_end(label);
 			}
 
-			for (int i = 0; i < history.length(); i++) {
+			for (int i = 0; i < history.length (); i++) {
 				var item = new Gtk.ModelButton ();
 				item.text = history.nth_data(i);
 				item.sensitive = i != current_history_pos;
