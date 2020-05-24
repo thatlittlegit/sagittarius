@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sagittarius\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-23 14:23-0400\n"
+"POT-Creation-Date: 2020-05-23 23:22-0400\n"
 "PO-Revision-Date: 2020-05-23 13:46-0400\n"
 "Last-Translator: thatlittlegit <personal@thatlittlegit.tk>\n"
 "Language-Team: none\n"
@@ -17,9 +17,13 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: data/tk.thatlittlegit.sagittarius.desktop.in:3
-#: data/tk.thatlittlegit.sagittarius.appdata.xml.in:7 src/window.vala:38
+#: data/tk.thatlittlegit.sagittarius.appdata.xml.in:7 src/window.vala:39
 msgid "Sagittarius"
 msgstr "Sagittaire"
+
+#: data/tk.thatlittlegit.sagittarius.desktop.in:9
+msgid "tk.thatlittlegit.sagittarius.gnome"
+msgstr ""
 
 #: data/tk.thatlittlegit.sagittarius.appdata.xml.in:6
 msgid "thatlittlegit"
@@ -33,7 +37,7 @@ msgstr ""
 "Sagittaire est un navigateur pour le protocole Gemini. Maintenant, il montre "
 "des pages Gemini comme texte simple, et il plante beaucoup."
 
-#: src/window.ui:93
+#: src/window.ui:95
 msgid "URL…"
 msgstr "URL…"
 
@@ -41,28 +45,61 @@ msgstr "URL…"
 msgid "A browser for Gemini"
 msgstr "Un navigateur for le protocole Gemini"
 
-#: src/window.vala:71
+#: src/window.vala:89
 msgid "Welcome to Sagittarius!"
 msgstr "Bienvenue à Sagittaire!"
 
-#: src/window.vala:76
+#: src/window.vala:94
 msgid "_Settings"
 msgstr "_Paramètres"
 
-#: src/window.vala:79
+#: src/window.vala:97
 msgid "_About"
 msgstr "À _propos"
 
-#: src/window.vala:80
+#: src/window.vala:98
 msgid "Quit"
 msgstr "Sortir"
 
-#: src/window.vala:85
+#: src/window.vala:102
+msgid "You are being redirected"
+msgstr "Le site est en train de vous réorienter"
+
+#: src/window.vala:110
+msgid "Proceed"
+msgstr "Aller"
+
+#: src/window.vala:115
+msgid "File not found"
+msgstr "Fichier non trouvé"
+
+#: src/window.vala:124
 #, c-format
 msgid "Loading %s…"
 msgstr "Suis en train de télécharger %s…"
 
-#: src/window.vala:93
+#: src/window.vala:132
 #, c-format
 msgid "Loaded page (MIME type %s)"
 msgstr "A l'téléchargé (type MIME %s)"
+
+#: src/window.vala:141
+#, c-format
+msgid ""
+"The website is trying to send you to <b>%s</b>. Would you like to go there?"
+msgstr ""
+"Le site du Gemini est en train de essayer vous envoyer á <b>%s</b>. Voulez-"
+"vous y aller?"
+
+#: src/window.vala:148
+#, c-format
+msgid ""
+"<i>We searched far and wide\n"
+"But it we could not find.\n"
+"It could not be found.</i>\n"
+"<b>%s</b>"
+msgstr ""
+"<i>Nous avons cherché.\n"
+"Mais il, il n'etait pas là.\n"
+"Ç'est introuvable.</i>\n"
+"<b>%s</b>"

@@ -19,12 +19,19 @@ public enum GeminiCode {
 	SUCCESS = 20,
 	TEMPORARY_REDIRECT = 30,
 	PERMANENT_REDIRECT = 31,
+	NOT_FOUND = 51,
 }
 
 public errordomain GeminiError {
 	UNKNOWN_RESPONSE_CODE,
 	INVALID_REQUEST,
 	NOT_UTF8,
+}
+
+public errordomain GeminiCase {
+	TEMPORARY_REDIRECT,
+	PERMANENT_REDIRECT,
+	NOT_FOUND,
 }
 
 public struct GeminiResponse {
@@ -94,12 +101,11 @@ public async Content get_gemini (string uri) throws Error {
 
 		return ret;
 	case TEMPORARY_REDIRECT:
-	case PERMANENT_REDIRECT: // TODO cache this
-		// TODO send an exception of some sort to the UI so it can confirm
-		//      with the user before yeeting them away
-		// XXX will stack-overflow in many cases
-		return yield get_gemini (ret.meta);
-
+		throw new GeminiCase.TEMPORARY_REDIRECT(ret.meta);
+	case PERMANENT_REDIRECT:
+		throw new GeminiCase.PERMANENT_REDIRECT(ret.meta);
+	case NOT_FOUND:
+		throw new GeminiCase.NOT_FOUND(ret.meta);
 	default:
 		throw new GeminiError.UNKNOWN_RESPONSE_CODE("unknown response code %d".printf(response.code));
 	}

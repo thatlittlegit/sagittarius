@@ -61,8 +61,12 @@ namespace Sagittarius {
 		Gtk.Button back_button;
 		[GtkChild]
 		Gtk.Button forward_button;
+		[GtkChild]
+		Gtk.Stack content_stack;
 
 		Granite.Widgets.OverlayBar overlaybar;
+		Granite.Widgets.AlertView redirect_warning;
+		Granite.Widgets.AlertView not_found_warning;
 
 		List<string> history;
 		int _current_history_pos = -1;
@@ -95,10 +99,31 @@ namespace Sagittarius {
 			menu2.append(_("_About"), "app.about");
 			menu2.append(_("Quit"), "app.quit");
 			menu_button.set_menu_model(menu);
+
+			redirect_warning = new Granite.Widgets.AlertView(
+				_("You are being redirected"),
+				"this is dummy text",
+				"dialog-warning"
+				);
+			redirect_warning.action_activated.connect(() => {
+				current_history_pos--;
+				navigate(redirect_warning.get_data<string>("uri"));
+			});
+			redirect_warning.show_action(_("Proceed"));
+			redirect_warning.show_all ();
+			content_stack.add_named(redirect_warning, "redirect");
+
+			not_found_warning = new Granite.Widgets.AlertView(
+				_("File not found"),
+				"this is dummy text",
+				"dialog-error"
+				);
+			not_found_warning.show_all ();
+			content_stack.add_named(not_found_warning, "notfound");
 		}
 
 		private void load_uri (string uri) {
-			overlaybar.label = _("Loading %s…");
+			overlaybar.label = _("Loading %s…".printf(uri));
 			overlaybar.active = true;
 
 			get_gemini.begin(uri, (obj, res) => {
@@ -108,6 +133,26 @@ namespace Sagittarius {
 					text_view.buffer.set_text(response.text);
 					overlaybar.label = _("Loaded page (MIME type %s)").printf(response.meta);
 					overlaybar.active = false;
+					content_stack.visible_child = text_view;
+				} catch (GeminiCase res) {
+					debug("GeminiCase handler (%d)".printf(res.code));
+					switch (res.code) {
+					case GeminiCase.PERMANENT_REDIRECT:
+					// TODO cache if the user accepts
+					case GeminiCase.TEMPORARY_REDIRECT:
+						redirect_warning.description =
+							_("The website is trying to send you to <b>%s</b>. Would you like to go there?")
+							 .printf(res.message);
+						redirect_warning.set_data<string>("uri", res.message);
+						content_stack.visible_child = redirect_warning;
+						break;
+					case GeminiCase.NOT_FOUND:
+						not_found_warning.description =
+							_("<i>We searched far and wide\nBut it we could not find.\nIt could not be found.</i>\n<b>%s</b>")
+							 .printf(res.message);
+						content_stack.visible_child = not_found_warning;
+						break;
+					}
 				} catch (Error err) {
 					error(err.message);
 				}
@@ -115,16 +160,20 @@ namespace Sagittarius {
 		}
 
 		[GtkCallback]
-		private void navigate (Gtk.Button unused) {
-			if (current_history_pos + 1 != history.length()) {
-				for (int i = current_history_pos; i < history.length(); i++) {
+		private void navigate_cb (Gtk.Button unused) {
+			history.append(url_bar.get_text ());
+			current_history_pos++;
+			navigate(history.nth_data(current_history_pos));
+		}
+
+		private void navigate (string uri) {
+			if (current_history_pos + 1 != history.length ()) {
+				for (int i = current_history_pos; i < history.length (); i++) {
 					history.remove(history.nth_data(i));
 				}
 			}
 
-			history.append(url_bar.get_text ());
-			current_history_pos++;
-			load_uri(history.nth_data(current_history_pos));
+			load_uri(uri);
 		}
 
 		[GtkCallback]
