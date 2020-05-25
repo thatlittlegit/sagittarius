@@ -81,6 +81,8 @@ namespace Sagittarius {
 		Gtk.Button forward_button;
 		[GtkChild]
 		Gtk.Stack content_stack;
+		[GtkChild]
+		Gtk.ScrolledWindow text_view_scroll;
 
 		Granite.Widgets.AlertView redirect_warning;
 		Granite.Widgets.AlertView not_found_warning;
@@ -164,12 +166,15 @@ namespace Sagittarius {
 			}
 
 			url_bar.set_text (uri);
+			text_view_scroll.vadjustment.value = 0;
+			text_view_scroll.hadjustment.value = 0;
+
 			get_gemini.begin(uri, (obj, res) => {
 				try {
 					var response = get_gemini.end(res);
 
 					text_view = parse_markup(uri, response.text, text_view, this);
-					content_stack.visible_child = text_view;
+					content_stack.visible_child = text_view_scroll;
 				} catch (GeminiCase res) {
 					debug("GeminiCase handler (%d)".printf(res.code));
 					switch (res.code) {
