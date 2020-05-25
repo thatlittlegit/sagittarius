@@ -135,6 +135,11 @@ namespace Sagittarius {
 		}
 
 		private void load_uri (string uri) {
+			if (uri_struct(uri).scheme != "gemini") {
+				AppInfo.launch_default_for_uri_async.begin(uri, null);
+				return;
+			}
+
 			get_gemini.begin(uri, (obj, res) => {
 				try {
 					var response = get_gemini.end(res);
