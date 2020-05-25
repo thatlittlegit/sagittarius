@@ -54,8 +54,6 @@ namespace Sagittarius {
 		[GtkChild]
 		Gtk.Box history_menu_box;
 		[GtkChild]
-		Gtk.Overlay overlay;
-		[GtkChild]
 		Gtk.MenuButton menu_button;
 		[GtkChild]
 		Gtk.Button back_button;
@@ -64,7 +62,6 @@ namespace Sagittarius {
 		[GtkChild]
 		Gtk.Stack content_stack;
 
-		Granite.Widgets.OverlayBar overlaybar;
 		Granite.Widgets.AlertView redirect_warning;
 		Granite.Widgets.AlertView not_found_warning;
 		Granite.Widgets.AlertView error_warning;
@@ -96,11 +93,6 @@ namespace Sagittarius {
 					Pango.TabAlign.LEFT, 8,
 					Pango.TabAlign.LEFT, 16
 				));
-
-			// TODO when Granite adds a Glade catalog, use that instead
-			overlaybar = new Granite.Widgets.OverlayBar(overlay);
-			overlaybar.show_all ();
-			overlaybar.label = _("Welcome to Sagittarius!");
 
 			var menu = new Menu ();
 			var menu1 = new Menu ();
@@ -143,16 +135,11 @@ namespace Sagittarius {
 		}
 
 		private void load_uri (string uri) {
-			overlaybar.label = _("Loading %s…".printf(uri));
-			overlaybar.active = true;
-
 			get_gemini.begin(uri, (obj, res) => {
 				try {
 					var response = get_gemini.end(res);
 
 					text_view = parse_markup(uri, response.text, text_view, this);
-					overlaybar.label = _("Loaded page (MIME type %s)").printf(response.meta);
-					overlaybar.active = false;
 					content_stack.visible_child = text_view;
 				} catch (GeminiCase res) {
 					debug("GeminiCase handler (%d)".printf(res.code));

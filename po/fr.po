@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sagittarius\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-24 16:31-0400\n"
+"POT-Creation-Date: 2020-05-24 23:06-0400\n"
 "PO-Revision-Date: 2020-05-23 13:46-0400\n"
 "Last-Translator: thatlittlegit <personal@thatlittlegit.tk>\n"
 "Language-Team: none\n"
@@ -45,39 +45,35 @@ msgstr "URL…"
 msgid "A browser for Gemini"
 msgstr "Un navigateur for le protocole Gemini"
 
-#: src/window.vala:101
-msgid "Welcome to Sagittarius!"
-msgstr "Bienvenue à Sagittaire!"
-
-#: src/window.vala:106
+#: src/window.vala:100
 msgid "_Settings"
 msgstr "_Paramètres"
 
-#: src/window.vala:109
+#: src/window.vala:103
 msgid "_About"
 msgstr "À _propos"
 
-#: src/window.vala:110
+#: src/window.vala:104
 msgid "Quit"
 msgstr "Sortir"
 
-#: src/window.vala:114
+#: src/window.vala:108
 msgid "You are being redirected"
 msgstr "Le site est en train de vous réorienter"
 
-#: src/window.vala:122
+#: src/window.vala:116
 msgid "Proceed"
 msgstr "Aller"
 
-#: src/window.vala:127
+#: src/window.vala:121
 msgid "File not found"
 msgstr "Fichier non trouvé"
 
-#: src/window.vala:135
+#: src/window.vala:129
 msgid "Internal Error"
 msgstr "Erreur interne"
 
-#: src/window.vala:136
+#: src/window.vala:130
 msgid ""
 "An error has occurred inside the browser, and the page could not be "
 "displayed. You might be able to go back or refresh, but you might want to "
@@ -87,17 +83,7 @@ msgstr ""
 "Peut-être vous pourriez retourner ou rafraîchir, mais vous devrais "
 "redémarrage."
 
-#: src/window.vala:144
-#, c-format
-msgid "Loading %s…"
-msgstr "Suis en train de télécharger %s…"
-
-#: src/window.vala:152
-#, c-format
-msgid "Loaded page (MIME type %s)"
-msgstr "A l'téléchargé (type MIME %s)"
-
-#: src/window.vala:162
+#: src/window.vala:151
 #, c-format
 msgid ""
 "The website is trying to send you to <b>%s</b>. Would you like to go there?"
@@ -105,7 +91,7 @@ msgstr ""
 "Le site du Gemini est en train de essayer vous envoyer á <b>%s</b>. Voulez-"
 "vous y aller?"
 
-#: src/window.vala:169
+#: src/window.vala:158
 #, c-format
 msgid ""
 "<i>We searched far and wide\n"
