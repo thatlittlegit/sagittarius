@@ -163,6 +163,7 @@ namespace Sagittarius {
 			} catch (UriError err) {
 			}
 
+			url_bar.set_text (uri);
 			get_gemini.begin(uri, (obj, res) => {
 				try {
 					var response = get_gemini.end(res);

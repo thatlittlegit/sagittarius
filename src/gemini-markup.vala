@@ -40,19 +40,21 @@ public Gtk.TextView parse_markup (string uri, string markup, Gtk.TextView view, 
 		}
 		view.buffer.get_end_iter(out iter);
 
-		if (preformatting) {
+		if (line.has_prefix("```")) {
+			preformatting = !preformatting;
+		} else if (preformatting) {
 			view.buffer.insert_with_tags(ref iter, line, -1, preformatted);
-		} else if (line.has_prefix("=> ")) {
-			var line_parts = line.split_set(" \t", 3);
+		} else if (line.has_prefix("=>")) {
+			var line_parts = line.split("=>", 2)[1].strip ().split_set(" \t", 2);
 			Gtk.LinkButton link;
 
 			try {
-				if (line_parts.length == 3) {
+				if (line_parts.length == 2) {
 					link = new Gtk.LinkButton.with_label(
-						parse_uri(uri, line_parts[1]),
-						line_parts[2]);
-				} else if (line_parts.length == 2) {
-					link = new Gtk.LinkButton(parse_uri(uri, line_parts[1]));
+						parse_uri(uri, line_parts[0]),
+						line_parts[1]);
+				} else if (line_parts.length == 1) {
+					link = new Gtk.LinkButton(parse_uri(uri, line_parts[0]));
 				} else {
 					view.buffer.insert(ref iter, line, -1);
 					continue;
@@ -75,8 +77,6 @@ public Gtk.TextView parse_markup (string uri, string markup, Gtk.TextView view, 
 
 			var anchor = view.buffer.create_child_anchor(iter);
 			view.add_child_at_anchor(link, anchor);
-		} else if (line.has_prefix("```")) {
-			preformatting = !preformatting;
 		} else if (line.has_prefix("# ")) {
 			view.buffer.insert_with_tags(ref iter, line.substring(2), -1, h1);
 		} else if (line.has_prefix("## ")) {
