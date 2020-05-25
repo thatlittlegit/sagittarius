@@ -99,7 +99,7 @@ namespace Sagittarius {
 			set {
 				_current_history_pos = value;
 				back_button.sensitive = value != -1;
-				forward_button.sensitive = value != history.length() - 1;
+				forward_button.sensitive = value != history.length () - 1;
 			}
 		}
 
