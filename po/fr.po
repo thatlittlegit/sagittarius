@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sagittarius\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-24 23:06-0400\n"
+"POT-Creation-Date: 2020-05-24 23:36-0400\n"
 "PO-Revision-Date: 2020-05-23 13:46-0400\n"
 "Last-Translator: thatlittlegit <personal@thatlittlegit.tk>\n"
 "Language-Team: none\n"
@@ -17,11 +17,19 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: data/tk.thatlittlegit.sagittarius.desktop.in:3
-#: data/tk.thatlittlegit.sagittarius.appdata.xml.in:7 src/window.vala:39
+#: data/tk.thatlittlegit.sagittarius.appdata.xml.in:7 src/window.vala:59
 msgid "Sagittarius"
 msgstr "Sagittaire"
 
-#: data/tk.thatlittlegit.sagittarius.desktop.in:9
+#: data/tk.thatlittlegit.sagittarius.desktop.in:4
+msgid "Gemini browser"
+msgstr "Navigateur Gemini"
+
+#: data/tk.thatlittlegit.sagittarius.desktop.in:5
+msgid "View sites via the Gemini protocol"
+msgstr "Voir des sites avec le protocole Gemini"
+
+#: data/tk.thatlittlegit.sagittarius.desktop.in:11
 msgid "tk.thatlittlegit.sagittarius.gnome"
 msgstr ""
 
@@ -41,39 +49,39 @@ msgstr ""
 msgid "URL…"
 msgstr "URL…"
 
-#: src/window.vala:35
+#: src/window.vala:55
 msgid "A browser for Gemini"
 msgstr "Un navigateur for le protocole Gemini"
 
-#: src/window.vala:100
+#: src/window.vala:120
 msgid "_Settings"
 msgstr "_Paramètres"
 
-#: src/window.vala:103
+#: src/window.vala:123
 msgid "_About"
 msgstr "À _propos"
 
-#: src/window.vala:104
+#: src/window.vala:124
 msgid "Quit"
 msgstr "Sortir"
 
-#: src/window.vala:108
+#: src/window.vala:128
 msgid "You are being redirected"
 msgstr "Le site est en train de vous réorienter"
 
-#: src/window.vala:116
+#: src/window.vala:136
 msgid "Proceed"
 msgstr "Aller"
 
-#: src/window.vala:121
+#: src/window.vala:141
 msgid "File not found"
 msgstr "Fichier non trouvé"
 
-#: src/window.vala:129
+#: src/window.vala:149
 msgid "Internal Error"
 msgstr "Erreur interne"
 
-#: src/window.vala:130
+#: src/window.vala:150
 msgid ""
 "An error has occurred inside the browser, and the page could not be "
 "displayed. You might be able to go back or refresh, but you might want to "
@@ -83,7 +91,7 @@ msgstr ""
 "Peut-être vous pourriez retourner ou rafraîchir, mais vous devrais "
 "redémarrage."
 
-#: src/window.vala:151
+#: src/window.vala:176
 #, c-format
 msgid ""
 "The website is trying to send you to <b>%s</b>. Would you like to go there?"
@@ -91,7 +99,7 @@ msgstr ""
 "Le site du Gemini est en train de essayer vous envoyer á <b>%s</b>. Voulez-"
 "vous y aller?"
 
-#: src/window.vala:158
+#: src/window.vala:183
 #, c-format
 msgid ""
 "<i>We searched far and wide\n"

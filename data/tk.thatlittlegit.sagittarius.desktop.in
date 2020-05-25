@@ -1,8 +1,11 @@
 [Desktop Entry]
 Name=Sagittarius
-Exec=sagittarius
+GenericName=Gemini browser
+Comment=View sites via the Gemini protocol
+Exec=sagittarius %u
 Terminal=false
 Type=Application
-Categories=GTK;
+Categories=GTK;Network;WebBrowser;
 StartupNotify=true
 Icon=tk.thatlittlegit.sagittarius.gnome
+MimeType=x-scheme-handler/gemini;

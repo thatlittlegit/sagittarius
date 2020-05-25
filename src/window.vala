@@ -18,14 +18,34 @@
 
 namespace Sagittarius {
 	public class Application : Gtk.Application {
+		private Window main_window;
 		private const ActionEntry[] actions = {
 			{ "quit", quit },
 			{ "about", show_about_dialog },
 		};
 
 		public Application () {
-			Object(application_id: "tk.thatlittlegit.sagittarius", flags : ApplicationFlags.FLAGS_NONE);
+			Object(application_id: "tk.thatlittlegit.sagittarius", flags : ApplicationFlags.HANDLES_OPEN);
 			add_action_entries(actions, this);
+			activate.connect(on_activate);
+			open.connect(open_file);
+		}
+
+		private void on_activate () {
+			if (main_window != null) {
+				return;
+			}
+
+			main_window = new Window(this);
+			main_window.present ();
+		}
+
+		private void open_file (File[] files, string hint) {
+			if (main_window == null) {
+				on_activate ();
+			}
+
+			main_window.navigate(files[0].get_uri ());
 		}
 
 		private void show_about_dialog () {
@@ -135,9 +155,12 @@ namespace Sagittarius {
 		}
 
 		private void load_uri (string uri) {
-			if (uri_struct(uri).scheme != "gemini") {
-				AppInfo.launch_default_for_uri_async.begin(uri, null);
-				return;
+			try {
+				if (uri_struct(uri).scheme != "gemini") {
+					AppInfo.launch_default_for_uri_async.begin(uri, null);
+					return;
+				}
+			} catch (UriError err) {
 			}
 
 			get_gemini.begin(uri, (obj, res) => {

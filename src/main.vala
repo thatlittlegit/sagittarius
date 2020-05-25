@@ -23,10 +23,5 @@ int main (string[] args) {
 	Intl.textdomain(GETTEXT_PACKAGE);
 
 	var app = new Sagittarius.Application ();
-	app.activate.connect(() => {
-		var win = new Sagittarius.Window(app);
-		win.present ();
-	});
-
 	return app.run(args);
 }
