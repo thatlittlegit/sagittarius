@@ -170,19 +170,7 @@ namespace Sagittarius {
 
 		[GtkCallback]
 		private void navigate_cb (Gtk.Button unused) {
-			try {
-				if (url_bar.get_text ().has_prefix("//") || url_bar.get_text ().contains("://")) {
-					history.append(parse_uri(last_uri, url_bar.get_text ()));
-				} else {
-					history.append(parse_uri(last_uri, strdup("gemini://%s".printf(url_bar.get_text ()))));
-				}
-			} catch (UriError err) {
-				warning("UriError: %s".printf(err.message));
-				content_stack.visible_child = error_warning;
-			}
-
-			current_history_pos++;
-			navigate(history.nth_data(current_history_pos));
+			navigate(url_bar.get_text ());
 		}
 
 		public void navigate (string uri) {
@@ -192,7 +180,19 @@ namespace Sagittarius {
 				}
 			}
 
-			load_uri(uri);
+			try {
+				if (uri.has_prefix("//") || uri.contains("://")) {
+					history.append(parse_uri(last_uri, uri));
+				} else {
+					history.append(parse_uri(last_uri, strdup("gemini://%s".printf(uri))));
+				}
+			} catch (UriError err) {
+				warning("UriError: %s".printf(err.message));
+				content_stack.visible_child = error_warning;
+			}
+
+			current_history_pos++;
+			load_uri(history.nth_data(current_history_pos));
 		}
 
 		[GtkCallback]
