@@ -13,6 +13,7 @@ sagittarius_deps = [
   dependency('gtk+-3.0', version: '>= 3.22'),
   dependency('granite', version: '>= 5.2'),
   meson.get_compiler('c').find_library('uriparser'),
+  dependency('gmime-3.0', version: '>= 3'),
 ]
 
 gnome = import('gnome')

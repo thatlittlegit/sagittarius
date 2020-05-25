@@ -25,7 +25,7 @@ public enum GeminiCode {
 public errordomain GeminiError {
 	UNKNOWN_RESPONSE_CODE,
 	INVALID_REQUEST,
-	NOT_UTF8,
+	INVALID_ENCODING,
 }
 
 public errordomain GeminiCase {
@@ -42,8 +42,9 @@ public struct GeminiResponse {
 }
 
 public struct Content {
-	string meta;
-	string text;
+	GMime.ContentType content_type;
+	string text; // if content_type is recognized text
+	uint8[] data; // if content_type is not recognized
 }
 
 async GeminiResponse send_request (string uri) throws Error, IOError {
@@ -91,21 +92,37 @@ public async Content get_gemini (string uri) throws Error {
 	var response = yield send_request (uri);
 
 	Content ret = {};
-	ret.meta = response.meta;
+	ret.content_type = GMime.ContentType.parse(new GMime.ParserOptions (), response.meta);
 
 	switch (response.code) {
 	case SUCCESS:
-		ret.text = (string) response.contents;
-		if (!ret.text.validate ())
-			throw new GeminiError.NOT_UTF8("not valid UTF-8");
+		if (ret.content_type.type == "text") {
+			ret.text = (string) response.contents;
+
+			if (!ret.text.validate ()) {
+				try {
+					var charset = ret.content_type.get_parameter("charset");
+					if (charset == null || charset == "utf-8") {
+						throw new GeminiError.INVALID_ENCODING("text claims to be UTF-8, but isnt?");
+					} else {
+						ret.text = convert(ret.text, -1, "utf-8", ret.content_type.get_parameter("charset"));
+					}
+				} catch (ConvertError err) {
+					warning("ConvertError while converting contents (%s)".printf(err.message));
+					throw new GeminiError.INVALID_ENCODING("not valid text, apparently");
+				}
+			}
+		} else {
+			ret.data = response.contents;
+		}
 
 		return ret;
 	case TEMPORARY_REDIRECT:
-		throw new GeminiCase.TEMPORARY_REDIRECT(ret.meta);
+		throw new GeminiCase.TEMPORARY_REDIRECT(response.meta);
 	case PERMANENT_REDIRECT:
-		throw new GeminiCase.PERMANENT_REDIRECT(ret.meta);
+		throw new GeminiCase.PERMANENT_REDIRECT(response.meta);
 	case NOT_FOUND:
-		throw new GeminiCase.NOT_FOUND(ret.meta);
+		throw new GeminiCase.NOT_FOUND(response.meta);
 	default:
 		throw new GeminiError.UNKNOWN_RESPONSE_CODE("unknown response code %d".printf(response.code));
 	}

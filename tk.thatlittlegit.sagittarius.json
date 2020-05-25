@@ -62,6 +62,17 @@
             ]
         },
         {
+            "name" : "gmime",
+            "builddir" : true,
+            "buildsystem" : "autotools",
+            "sources" : [
+                {
+                    "type" : "git",
+                    "url" : "https://gitlab.gnome.org/GNOME/gmime"
+                }
+            ]
+        },
+        {
             "name" : "sagittarius",
             "builddir" : true,
             "buildsystem" : "meson",
