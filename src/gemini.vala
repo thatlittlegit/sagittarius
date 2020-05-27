@@ -16,22 +16,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 public enum GeminiCode {
+	// INPUT = 10,
 	SUCCESS = 20,
+	// END_OF_SESSION = 21,
 	TEMPORARY_REDIRECT = 30,
 	PERMANENT_REDIRECT = 31,
+	TEMPORARY_ERROR = 40,
+	SERVER_UNAVAILABLE = 41,
+	CGI_ERROR = 42,
+	PROXY_ERROR = 43,
+	// SLOW_DOWN = 44,
+	PERMANENT_ERROR = 50,
 	NOT_FOUND = 51,
+	GONE = 52,
+	PROXY_REQUEST_REFUSED = 53,
+	BAD_REQUEST = 59,
+	// CLIENT_CERTIFICATE_REQUIRED = 60,
+	// TRANSIENT_CERTIFICATE_REQUIRED = 61,
+	// AUTHORIZED_CERTIFICATE_REQUIRED = 62,
+	// INVALID_CERTIFICATE = 63,
+	// CERTIFICATE_FROM_FUTURE = 64,
+	// THAT_CERT_IS_OLDER_THAN_I_AM = 65,
 }
 
 public errordomain GeminiError {
 	UNKNOWN_RESPONSE_CODE,
 	INVALID_REQUEST,
 	INVALID_ENCODING,
-}
-
-public errordomain GeminiCase {
-	TEMPORARY_REDIRECT,
-	PERMANENT_REDIRECT,
-	NOT_FOUND,
 }
 
 public struct GeminiResponse {
@@ -42,9 +53,10 @@ public struct GeminiResponse {
 }
 
 public struct Content {
+	GeminiCode code;
 	GMime.ContentType content_type;
-	string text; // if content_type is recognized text
-	uint8[] data; // if content_type is not recognized
+	string? text; // if content_type is recognized text
+	uint8[]? data; // if content_type is not recognized
 }
 
 async GeminiResponse send_request (string uri) throws Error, IOError {
@@ -93,9 +105,9 @@ public async Content get_gemini (string uri) throws Error {
 
 	Content ret = {};
 	ret.content_type = GMime.ContentType.parse(new GMime.ParserOptions (), response.meta);
+	ret.code = response.code;
 
-	switch (response.code) {
-	case SUCCESS:
+	if (response.code == GeminiCode.SUCCESS) {
 		if (ret.content_type.type == "text") {
 			ret.text = (string) response.contents;
 
@@ -115,15 +127,9 @@ public async Content get_gemini (string uri) throws Error {
 		} else {
 			ret.data = response.contents;
 		}
-
-		return ret;
-	case TEMPORARY_REDIRECT:
-		throw new GeminiCase.TEMPORARY_REDIRECT(response.meta);
-	case PERMANENT_REDIRECT:
-		throw new GeminiCase.PERMANENT_REDIRECT(response.meta);
-	case NOT_FOUND:
-		throw new GeminiCase.NOT_FOUND(response.meta);
-	default:
-		throw new GeminiError.UNKNOWN_RESPONSE_CODE("unknown response code %d".printf(response.code));
+	} else {
+		ret.text = response.meta;
 	}
+
+	return ret;
 }

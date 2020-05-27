@@ -84,15 +84,13 @@ namespace Sagittarius {
 		[GtkChild]
 		Gtk.ScrolledWindow text_view_scroll;
 
-		Granite.Widgets.AlertView redirect_warning;
-		Granite.Widgets.AlertView not_found_warning;
-		Granite.Widgets.AlertView error_warning;
+		ErrorMessage errorview;
 
 		public string last_uri = "gemini://";
 
 		List<string> history;
-		int _current_history_pos = -1;
-		int current_history_pos {
+		private int _current_history_pos = -1;
+		public int current_history_pos {
 			get {
 				return _current_history_pos;
 			}
@@ -126,34 +124,9 @@ namespace Sagittarius {
 			menu2.append(_("Quit"), "app.quit");
 			menu_button.set_menu_model(menu);
 
-			redirect_warning = new Granite.Widgets.AlertView(
-				_("You are being redirected"),
-				"this is dummy text",
-				"dialog-warning"
-				);
-			redirect_warning.action_activated.connect(() => {
-				current_history_pos--;
-				navigate(redirect_warning.get_data<string>("uri"));
-			});
-			redirect_warning.show_action(_("Proceed"));
-			redirect_warning.show_all ();
-			content_stack.add_named(redirect_warning, "redirect");
-
-			not_found_warning = new Granite.Widgets.AlertView(
-				_("File not found"),
-				"this is dummy text",
-				"dialog-error"
-				);
-			not_found_warning.show_all ();
-			content_stack.add_named(not_found_warning, "notfound");
-
-			error_warning = new Granite.Widgets.AlertView(
-				_("Internal Error"),
-				_("An error has occurred inside the browser, and the page could not be displayed. You might be able to go back or refresh, but you might want to restart."),
-				"dialog-error"
-				);
-			error_warning.show_all ();
-			content_stack.add_named(error_warning, "error");
+			errorview = new ErrorMessage ();
+			errorview.show_all ();
+			content_stack.add(errorview);
 		}
 
 		private void load_uri (string uri) {
@@ -173,27 +146,15 @@ namespace Sagittarius {
 				try {
 					var response = get_gemini.end(res);
 
-					text_view = parse_markup(uri, response.text, text_view, this);
-					content_stack.visible_child = text_view_scroll;
-				} catch (GeminiCase res) {
-					debug("GeminiCase handler (%d)".printf(res.code));
-					switch (res.code) {
-					case GeminiCase.PERMANENT_REDIRECT:
-					// TODO cache if the user accepts
-					case GeminiCase.TEMPORARY_REDIRECT:
-						redirect_warning.description =
-							_("The website is trying to send you to <b>%s</b>. Would you like to go there?")
-							 .printf(res.message);
-						redirect_warning.set_data<string>("uri", res.message);
-						content_stack.visible_child = redirect_warning;
-						break;
-					case GeminiCase.NOT_FOUND:
-						not_found_warning.description =
-							_("<i>We searched far and wide\nBut it we could not find.\nIt could not be found.</i>\n<b>%s</b>")
-							 .printf(res.message);
-						content_stack.visible_child = not_found_warning;
-						break;
+					if (response.code == GeminiCode.SUCCESS) {
+						text_view = parse_markup(uri, response.text, text_view, this);
+						content_stack.visible_child = text_view_scroll;
+						return;
 					}
+
+					// TODO cache permanent redirects if the user accepts
+					errorview.set_message_for_response(this, response);
+					content_stack.visible_child = errorview;
 				} catch (Error err) {
 					error(err.message);
 				} finally {
@@ -222,7 +183,8 @@ namespace Sagittarius {
 				}
 			} catch (UriError err) {
 				warning("UriError: %s".printf(err.message));
-				content_stack.visible_child = error_warning;
+				errorview.internal_error ();
+				content_stack.visible_child = errorview;
 			}
 
 			current_history_pos++;
@@ -235,7 +197,7 @@ namespace Sagittarius {
 		}
 
 		[GtkCallback]
-		private void back (Gtk.Button unused) {
+		public void back (Gtk.Button unused) {
 			current_history_pos--;
 			load_uri(history.nth_data(current_history_pos));
 		}

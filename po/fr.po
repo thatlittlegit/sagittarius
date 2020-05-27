@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sagittarius\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-24 23:36-0400\n"
+"POT-Creation-Date: 2020-05-29 16:46-0400\n"
 "PO-Revision-Date: 2020-05-23 13:46-0400\n"
 "Last-Translator: thatlittlegit <personal@thatlittlegit.tk>\n"
 "Language-Team: none\n"
@@ -65,23 +65,130 @@ msgstr "À _propos"
 msgid "Quit"
 msgstr "Sortir"
 
-#: src/window.vala:128
+#: src/error.vala:40
 msgid "You are being redirected"
 msgstr "Le site est en train de vous réorienter"
 
-#: src/window.vala:136
-msgid "Proceed"
-msgstr "Aller"
+#: src/error.vala:41
+#, c-format
+msgid "The website is trying to send you to %s. Would you like to go there?%s"
+msgstr ""
+"Le site du Gemini est en train de essayer vous envoyer á %s. Voulez-vous y "
+"aller?%s"
 
-#: src/window.vala:141
+#: src/error.vala:43
+msgid "Redirect"
+msgstr "Réorienter"
+
+#: src/error.vala:48
+msgid "Temporary failure"
+msgstr "Erreur temporaire"
+
+#: src/error.vala:49
+msgid "Something went wrong on the website. Try again later."
+msgstr ""
+"Quelque chose a fait un erreur sur la site. Esseyez encore à plus tard."
+
+#: src/error.vala:53
+msgid "Server unavailable"
+msgstr "Serveur est indisponsible"
+
+#: src/error.vala:54
+msgid ""
+"The server is unavailable due to overload, maintenance, or some other "
+"problem."
+msgstr ""
+"Le serveur est indisponsible parce que il est surchargé, il a la "
+"maintenance, ou quelque autre problem."
+
+#: src/error.vala:58
+msgid "Server script error"
+msgstr "Script du serveur a eu un erreur"
+
+#: src/error.vala:59
+msgid "The server encountered an error when processing the request."
+msgstr "Le serveur a vu un erreur quand il était répondre à votre requête."
+
+#: src/error.vala:63
+msgid "Proxy error"
+msgstr "Erreur avec le serveur proxy"
+
+#: src/error.vala:64
+msgid "The server wasn't able to proxy your request."
+msgstr "Le serveur ne pouvait pas relayer votre requête."
+
+#: src/error.vala:68
+msgid "Permanent error"
+msgstr "Erreur permanent"
+
+#: src/error.vala:69
+msgid "Something went wrong, and it will never work again. :("
+msgstr "Quelque chose a fait un erreur, et il sera le faire pour toujours. :("
+
+#: src/error.vala:73
 msgid "File not found"
 msgstr "Fichier non trouvé"
 
-#: src/window.vala:149
+#: src/error.vala:74
+msgid ""
+"We searched far and wide\n"
+"But it we could not find.\n"
+"It could not be found."
+msgstr ""
+"Nous avons cherché.\n"
+"Mais il, il n'etait pas là.\n"
+"Ç'est introuvable.\n"
+"<b>%s</b>"
+
+#: src/error.vala:78
+msgid "G O N E"
+msgstr "D I S P A R U"
+
+#: src/error.vala:79
+msgid ""
+"The file is gone.\n"
+"It will never be back.\n"
+"Was it ever there?\n"
+"Is life but a dream?"
+msgstr ""
+"Le fichier est disparu.\n"
+"Il ne retournera jamais.\n"
+"Était-il là déjà?\n"
+"Est la vie mais un rêve?"
+
+#: src/error.vala:83
+msgid "Proxy request refused"
+msgstr "Le serveur a refusé votre demande proxy"
+
+#: src/error.vala:84
+msgid ""
+"You asked the server to proxy a request for you, and it won't ever happen."
+msgstr "Vous l'a demandé relayer un demande, et il ne se passera pas."
+
+#: src/error.vala:88
+msgid "Bad request"
+msgstr "Requête mal"
+
+#: src/error.vala:89
+msgid "Something went wrong, and the request was invalid?"
+msgstr "Quelque chose a fait un erreur, et le requête était erroné?"
+
+#: src/error.vala:94
+#, c-format
+msgid ""
+"\n"
+"\n"
+"The site says: %s"
+msgstr ""
+"\n"
+"\n"
+"Le site a dit: %s"
+
+#: src/error.vala:100
 msgid "Internal Error"
 msgstr "Erreur interne"
 
-#: src/window.vala:150
+#: src/error.vala:101
 msgid ""
 "An error has occurred inside the browser, and the page could not be "
 "displayed. You might be able to go back or refresh, but you might want to "
@@ -90,24 +197,3 @@ msgstr ""
 "Le navigateur a rencontré une erreur, et il ne pourrait pas faire la page."
 "Peut-être vous pourriez retourner ou rafraîchir, mais vous devrais "
 "redémarrage."
-
-#: src/window.vala:176
-#, c-format
-msgid ""
-"The website is trying to send you to <b>%s</b>. Would you like to go there?"
-msgstr ""
-"Le site du Gemini est en train de essayer vous envoyer á <b>%s</b>. Voulez-"
-"vous y aller?"
-
-#: src/window.vala:183
-#, c-format
-msgid ""
-"<i>We searched far and wide\n"
-"But it we could not find.\n"
-"It could not be found.</i>\n"
-"<b>%s</b>"
-msgstr ""
-"<i>Nous avons cherché.\n"
-"Mais il, il n'etait pas là.\n"
-"Ç'est introuvable.</i>\n"
-"<b>%s</b>"

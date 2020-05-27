@@ -6,6 +6,7 @@ sagittarius_sources = [
   'gemini-markup.vala',
   'uri.c',
   'uri.c.vala',
+  'error.vala',
 ]
 
 sagittarius_deps = [
