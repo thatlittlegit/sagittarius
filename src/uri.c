@@ -137,3 +137,53 @@ gboolean parse_uri_to_struct_C (gchar * uri, SUri * ret, GError * * error) {
 	*ret = transformed;
 	return TRUE;
 }
+
+gboolean uri_with_query_C (gchar* orig, gchar* query, gchar** out, GError** error) {
+  UriUriA uri;
+  gint returned;
+  gboolean ret = TRUE;
+  const gchar* errorPos;
+
+  if ((returned = uriParseSingleUriA (&uri, orig, &errorPos))) {
+		GError * nerr = g_error_new(S_URI_ERROR, INVALID_NEW, "failed to parse URI: %d", returned);
+		g_propagate_error(error, nerr);
+    return FALSE;
+  }
+
+  char* copy = g_strdup(query);
+  uri.query.first = copy;
+  uri.query.afterLast = copy + strlen(copy);
+
+	gint chars_required;
+	if ((returned = uriToStringCharsRequiredA(&uri, &chars_required) != URI_SUCCESS)) {
+		GError * nerr = g_error_new(S_URI_ERROR, COULDNT_CALCULATE_SIZE, "failed to calculate size of new URI: %d", returned);
+		g_propagate_error(error, nerr);
+		goto cleanup;
+	}
+	chars_required++;
+
+	gchar * _out;
+	if ((_out = g_malloc0(chars_required)) == NULL) {
+		// We are out of memory, and are allocating more memory! This is smart
+		GError * nerr = g_error_new(S_URI_ERROR, MALLOC_FAIL, "failed to allocate memory for new URI");
+		g_propagate_error(error, nerr);
+    ret = FALSE;
+		goto cleanup;
+	}
+
+	gint chars_written;
+	if ((returned = uriToStringA(_out, &uri, chars_required, &chars_written) != URI_SUCCESS)) {
+		GError * nerr = g_error_new(S_URI_ERROR, TOSTRING_FAIL, "failed to write out new URI: %d", returned);
+		g_propagate_error(error, nerr);
+		g_free(_out);
+		ret = FALSE;
+		goto cleanup;
+	}
+  g_info("Putting a query string on, got %s", _out);
+
+  *out = _out;
+
+cleanup:
+  uriFreeUriMembersA (&uri);
+  return ret;
+}

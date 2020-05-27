@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 public enum GeminiCode {
-	// INPUT = 10,
+	INPUT = 10,
 	SUCCESS = 20,
 	// END_OF_SESSION = 21,
 	TEMPORARY_REDIRECT = 30,
@@ -53,6 +53,7 @@ public struct GeminiResponse {
 }
 
 public struct Content {
+	string original_uri;
 	GeminiCode code;
 	GMime.ContentType content_type;
 	string? text; // if content_type is recognized text
@@ -106,6 +107,7 @@ public async Content get_gemini (string uri) throws Error {
 	Content ret = {};
 	ret.content_type = GMime.ContentType.parse(new GMime.ParserOptions (), response.meta);
 	ret.code = response.code;
+	ret.original_uri = uri;
 
 	if (response.code == GeminiCode.SUCCESS) {
 		if (ret.content_type.type == "text") {

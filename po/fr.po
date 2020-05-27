@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sagittarius\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-29 16:46-0400\n"
+"POT-Creation-Date: 2020-05-29 15:59-0400\n"
 "PO-Revision-Date: 2020-05-23 13:46-0400\n"
 "Last-Translator: thatlittlegit <personal@thatlittlegit.tk>\n"
 "Language-Team: none\n"
@@ -65,35 +65,52 @@ msgstr "À _propos"
 msgid "Quit"
 msgstr "Sortir"
 
-#: src/error.vala:40
+#: src/error.vala:65
+msgid "Input wanted"
+msgstr "Votre donnée est voulu"
+
+#: src/error.vala:66
+#, c-format
+msgid ""
+"The site asks:\n"
+"%s"
+msgstr ""
+"Le site a demandé:\n"
+"%s"
+
+#: src/error.vala:68
+msgid "Go"
+msgstr "Aller"
+
+#: src/error.vala:81
 msgid "You are being redirected"
 msgstr "Le site est en train de vous réorienter"
 
-#: src/error.vala:41
+#: src/error.vala:82
 #, c-format
 msgid "The website is trying to send you to %s. Would you like to go there?%s"
 msgstr ""
 "Le site du Gemini est en train de essayer vous envoyer á %s. Voulez-vous y "
 "aller?%s"
 
-#: src/error.vala:43
+#: src/error.vala:84
 msgid "Redirect"
 msgstr "Réorienter"
 
-#: src/error.vala:48
+#: src/error.vala:89
 msgid "Temporary failure"
 msgstr "Erreur temporaire"
 
-#: src/error.vala:49
+#: src/error.vala:90
 msgid "Something went wrong on the website. Try again later."
 msgstr ""
 "Quelque chose a fait un erreur sur la site. Esseyez encore à plus tard."
 
-#: src/error.vala:53
+#: src/error.vala:94
 msgid "Server unavailable"
 msgstr "Serveur est indisponsible"
 
-#: src/error.vala:54
+#: src/error.vala:95
 msgid ""
 "The server is unavailable due to overload, maintenance, or some other "
 "problem."
@@ -101,35 +118,35 @@ msgstr ""
 "Le serveur est indisponsible parce que il est surchargé, il a la "
 "maintenance, ou quelque autre problem."
 
-#: src/error.vala:58
+#: src/error.vala:99
 msgid "Server script error"
 msgstr "Script du serveur a eu un erreur"
 
-#: src/error.vala:59
+#: src/error.vala:100
 msgid "The server encountered an error when processing the request."
 msgstr "Le serveur a vu un erreur quand il était répondre à votre requête."
 
-#: src/error.vala:63
+#: src/error.vala:104
 msgid "Proxy error"
 msgstr "Erreur avec le serveur proxy"
 
-#: src/error.vala:64
+#: src/error.vala:105
 msgid "The server wasn't able to proxy your request."
 msgstr "Le serveur ne pouvait pas relayer votre requête."
 
-#: src/error.vala:68
+#: src/error.vala:109
 msgid "Permanent error"
 msgstr "Erreur permanent"
 
-#: src/error.vala:69
+#: src/error.vala:110
 msgid "Something went wrong, and it will never work again. :("
 msgstr "Quelque chose a fait un erreur, et il sera le faire pour toujours. :("
 
-#: src/error.vala:73
+#: src/error.vala:114
 msgid "File not found"
 msgstr "Fichier non trouvé"
 
-#: src/error.vala:74
+#: src/error.vala:115
 msgid ""
 "We searched far and wide\n"
 "But it we could not find.\n"
@@ -140,11 +157,11 @@ msgstr ""
 "Ç'est introuvable.\n"
 "<b>%s</b>"
 
-#: src/error.vala:78
+#: src/error.vala:119
 msgid "G O N E"
 msgstr "D I S P A R U"
 
-#: src/error.vala:79
+#: src/error.vala:120
 msgid ""
 "The file is gone.\n"
 "It will never be back.\n"
@@ -156,24 +173,24 @@ msgstr ""
 "Était-il là déjà?\n"
 "Est la vie mais un rêve?"
 
-#: src/error.vala:83
+#: src/error.vala:124
 msgid "Proxy request refused"
 msgstr "Le serveur a refusé votre demande proxy"
 
-#: src/error.vala:84
+#: src/error.vala:125
 msgid ""
 "You asked the server to proxy a request for you, and it won't ever happen."
 msgstr "Vous l'a demandé relayer un demande, et il ne se passera pas."
 
-#: src/error.vala:88
+#: src/error.vala:129
 msgid "Bad request"
 msgstr "Requête mal"
 
-#: src/error.vala:89
+#: src/error.vala:130
 msgid "Something went wrong, and the request was invalid?"
 msgstr "Quelque chose a fait un erreur, et le requête était erroné?"
 
-#: src/error.vala:94
+#: src/error.vala:135
 #, c-format
 msgid ""
 "\n"
@@ -184,11 +201,11 @@ msgstr ""
 "\n"
 "Le site a dit: %s"
 
-#: src/error.vala:100
+#: src/error.vala:141
 msgid "Internal Error"
 msgstr "Erreur interne"
 
-#: src/error.vala:101
+#: src/error.vala:142
 msgid ""
 "An error has occurred inside the browser, and the page could not be "
 "displayed. You might be able to go back or refresh, but you might want to "
