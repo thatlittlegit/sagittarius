@@ -23,7 +23,7 @@ extern bool __parse_uri__ (string orig_uri, string new_uri, out string created) 
 [CCode(cname ="parse_uri_to_struct_C")]
 extern bool __parse_uri_struct__ (string uri, out Uri transformed) throws UriError;
 
-[CCode]
+[CCode(cname="SUriError")]
 public errordomain UriError {
 	INVALID_ORIG,
 	INVALID_NEW,

@@ -21,7 +21,7 @@
 #include <uriparser/Uri.h>
 
 #define S_URI_ERROR s_uri_error_quark ()
-G_DEFINE_QUARK(s - uri - error - quark, s_uri_error)
+G_DEFINE_QUARK(s-uri-error-quark, s_uri_error)
 
 #define UTR_LEN(tr) (tr.afterLast - tr.first)
 #define UTR(tr) (tr.first)
