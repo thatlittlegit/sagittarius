@@ -169,10 +169,8 @@ namespace Sagittarius {
 		}
 
 		public void navigate (string uri) {
-			if (current_history_pos + 1 != history.length ()) {
-				for (int i = current_history_pos; i < history.length (); i++) {
-					history.remove(history.nth_data(i));
-				}
+			while (current_history_pos + 1 < history.length ()) {
+				history.remove_link(history.last());
 			}
 
 			try {
@@ -185,9 +183,10 @@ namespace Sagittarius {
 				warning("UriError: %s".printf(err.message));
 				errorview.internal_error ();
 				content_stack.visible_child = errorview;
+			} finally {
+				current_history_pos++;
 			}
 
-			current_history_pos++;
 			load_uri(history.nth_data(current_history_pos));
 		}
 
