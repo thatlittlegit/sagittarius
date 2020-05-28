@@ -7,6 +7,7 @@ sagittarius_sources = [
   'uri.c',
   'uri.c.vala',
   'error.vala',
+  'application.vala',
 ]
 
 sagittarius_deps = [

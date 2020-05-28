@@ -5,4 +5,5 @@ src/window.ui
 src/main.vala
 src/window.vala
 src/error.vala
+src/application.vala
 
