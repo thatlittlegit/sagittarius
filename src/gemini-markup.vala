@@ -17,7 +17,7 @@
  *
  */
 
-public Gtk.TextView parse_markup (string uri, string markup, Gtk.TextView view, Sagittarius.Window window) {
+public Gtk.TextView parse_markup (string uri, string markup, Gtk.TextView view, NavigateFunc navigate) {
 	view.buffer.set_text("");
 	var preformatted = view.buffer.tag_table.lookup("pre");
 	var h1 = view.buffer.tag_table.lookup("h1");
@@ -68,7 +68,7 @@ public Gtk.TextView parse_markup (string uri, string markup, Gtk.TextView view, 
 
 			link.activate_link.connect(() => {
 				if (link.get_data<string>("scheme") == "gemini") {
-					window.navigate(link.uri);
+					navigate(uri, link.uri);
 					return true;
 				}
 				return false;

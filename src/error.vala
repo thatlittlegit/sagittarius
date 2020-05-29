@@ -37,7 +37,7 @@ namespace Sagittarius {
 			grid.attach(text_entry, 2, 3, 2, 1);
 		}
 
-		public void set_message_for_response (Window window, Content response) {
+		public void set_message_for_response (NavigateFunc navigate, Content response) {
 			hide_action ();
 			text_entry.hide();
 
@@ -51,7 +51,7 @@ namespace Sagittarius {
 				action_activated.connect(() => {
 					try {
 						var uri = uri_with_query(response.original_uri, text_entry.text);
-						window.navigate(uri);
+						navigate(uri, "");
 					} catch (UriError err) {
 						internal_error();
 					}
@@ -64,7 +64,7 @@ namespace Sagittarius {
 				description = _("The website is trying to send you to %s. Would you like to go there?%s")
 							   .printf(response.text, response.code == GeminiCode.PERMANENT_REDIRECT ? "\n<i>The browser will remember your decision.</i>" : "");
 				show_action(_("Redirect"));
-				action_activated.connect(() => { window.navigate(response.text); });
+				action_activated.connect(() => { navigate(response.text, ""); });
 				return;
 			case GeminiCode.TEMPORARY_ERROR:
 				icon_name = WARNING_ICON;

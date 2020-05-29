@@ -148,31 +148,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkStack" id="content_stack">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <child>
-          <object class="GtkScrolledWindow" id="text_view_scroll">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="shadow_type">in</property>
-            <child>
-              <object class="GtkTextView" id="text_view">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="editable">False</property>
-                <property name="left_margin">8</property>
-                <property name="right_margin">8</property>
-                <property name="top_margin">8</property>
-                <property name="bottom_margin">8</property>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="name">text_view</property>
-          </packing>
-        </child>
-      </object>
+      <placeholder/>
     </child>
   </template>
   <object class="GtkPopoverMenu" id="history_menu">

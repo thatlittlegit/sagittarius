@@ -20,8 +20,6 @@ namespace Sagittarius {
 	[GtkTemplate(ui = "/tk/thatlittlegit/sagittarius/window.ui")]
 	public class Window : Gtk.ApplicationWindow {
 		[GtkChild]
-		Gtk.TextView text_view;
-		[GtkChild]
 		Gtk.Entry url_bar;
 		[GtkChild]
 		Gtk.PopoverMenu history_menu;
@@ -33,40 +31,17 @@ namespace Sagittarius {
 		Gtk.Button back_button;
 		[GtkChild]
 		Gtk.Button forward_button;
-		[GtkChild]
-		Gtk.Stack content_stack;
-		[GtkChild]
-		Gtk.ScrolledWindow text_view_scroll;
 
-		ErrorMessage errorview;
-
-		public string last_uri = "gemini://";
-
-		List<string> history;
-		private int _current_history_pos = -1;
-		public int current_history_pos {
+		Granite.Widgets.DynamicNotebook notebook;
+		Tab current {
 			get {
-				return _current_history_pos;
-			}
-			set {
-				_current_history_pos = value;
-				back_button.sensitive = value != -1;
-				forward_button.sensitive = value != history.length () - 1;
+				return notebook.current.page as Tab;
 			}
 		}
 
 		public Window (Sagittarius.Application app) {
 			Object(application: app);
 			icon_name = "tk.thatlittlegit.sagittarius.gnome";
-
-			text_view.buffer.create_tag("pre", "family", "monospace");
-			text_view.buffer.create_tag("h1", "weight", 600, "size-points", 26.0, "size-set", true);
-			text_view.buffer.create_tag("h2", "weight", 500, "size-points", 22.0, "size-set", true);
-			text_view.buffer.create_tag("h3", "weight", 400, "size-points", 18.0, "size-set", true);
-			text_view.buffer.create_tag("ul", "tabs", new Pango.TabArray.with_positions(2, true,
-					Pango.TabAlign.LEFT, 8,
-					Pango.TabAlign.LEFT, 16
-				));
 
 			var menu = new Menu ();
 			var menu1 = new Menu ();
@@ -78,12 +53,21 @@ namespace Sagittarius {
 			menu2.append(_("Quit"), "app.quit");
 			menu_button.set_menu_model(menu);
 
-			errorview = new ErrorMessage ();
-			errorview.show_all ();
-			content_stack.add(errorview);
+			notebook = new Granite.Widgets.DynamicNotebook();
+			notebook.add_button_visible = true;
+			notebook.tab_bar_behavior = Granite.Widgets.DynamicNotebook.TabBarBehavior.ALWAYS;
+			notebook.new_tab_requested.connect(() => {
+				create_tab();
+			});
+			notebook.tab_switched.connect((old, newfound) => {
+				on_navigate_cb(newfound.page as Tab);
+			});
+			notebook.new_tab_requested();
+			add(notebook);
+			notebook.show();
 		}
 
-		private void load_uri (string uri) {
+		public void navigate (string uri) {
 			try {
 				if (uri_struct(uri).scheme != "gemini") {
 					AppInfo.launch_default_for_uri_async.begin(uri, null);
@@ -93,72 +77,47 @@ namespace Sagittarius {
 			}
 
 			url_bar.set_text (uri);
-			text_view_scroll.vadjustment.value = 0;
-			text_view_scroll.hadjustment.value = 0;
+			current.navigate(null, uri);
+		}
 
-			get_gemini.begin(uri, (obj, res) => {
-				try {
-					var response = get_gemini.end(res);
+		public Tab create_tab () {
+			var tab = new Tab();
+			var gtab = new Granite.Widgets.Tab("Tab", null, tab);
+			notebook.insert_tab(gtab, notebook.n_tabs - 1);
+			notebook.current = gtab;
+			tab.on_navigate.connect(on_navigate_cb);
+			return tab;
+		}
 
-					if (response.code == GeminiCode.SUCCESS) {
-						text_view = parse_markup(uri, response.text, text_view, this);
-						content_stack.visible_child = text_view_scroll;
-						return;
-					}
-
-					// TODO cache permanent redirects if the user accepts
-					errorview.set_message_for_response(this, response);
-					content_stack.visible_child = errorview;
-				} catch (Error err) {
-					error(err.message);
-				} finally {
-					last_uri = uri;
-				}
-			});
+		private void on_navigate_cb (Tab tab) {
+			forward_button.sensitive = tab.can_go_forward;
+			back_button.sensitive = tab.can_go_back;
+			url_bar.set_text(tab.uri ?? "");
 		}
 
 		[GtkCallback]
 		private void navigate_cb (Gtk.Button unused) {
-			navigate(url_bar.get_text ());
-		}
-
-		public void navigate (string uri) {
-			while (current_history_pos + 1 < history.length ()) {
-				history.remove_link(history.last());
+			string uri = url_bar.get_text();
+			if (uri.has_prefix("//") || uri.contains("://")) {
+				current.navigate(null, uri);
+			} else {
+				current.navigate(null, strdup("gemini://%s".printf(uri)));
 			}
-
-			try {
-				if (uri.has_prefix("//") || uri.contains("://")) {
-					history.append(parse_uri(last_uri, uri));
-				} else {
-					history.append(parse_uri(last_uri, strdup("gemini://%s".printf(uri))));
-				}
-			} catch (UriError err) {
-				warning("UriError: %s".printf(err.message));
-				errorview.internal_error ();
-				content_stack.visible_child = errorview;
-			} finally {
-				current_history_pos++;
-			}
-
-			load_uri(history.nth_data(current_history_pos));
 		}
 
 		[GtkCallback]
 		private void reload (Gtk.Button unused) {
-			load_uri(history.nth_data(current_history_pos));
+			current.reload();
 		}
 
 		[GtkCallback]
 		public void back (Gtk.Button unused) {
-			current_history_pos--;
-			load_uri(history.nth_data(current_history_pos));
+			current.back();
 		}
 
 		[GtkCallback]
 		private void forward (Gtk.Button unused) {
-			current_history_pos++;
-			load_uri(history.nth_data(current_history_pos));
+			current.forward();
 		}
 
 		[GtkCallback]
@@ -167,21 +126,18 @@ namespace Sagittarius {
 
 			history_menu_box.forall(item => history_menu_box.remove(item));
 
-			if (current_history_pos == -1) {
-				var label = new Gtk.Label("no history yet :(");
-				label.show ();
-				history_menu_box.pack_end(label);
+			if (!current.can_go_back && !current.can_go_forward) {
+				return false;
 			}
 
-			for (int i = 0; i < history.length (); i++) {
+			for (int i = 0; i < current.history_uris.length (); i++) {
 				var item = new Gtk.ModelButton ();
-				item.text = history.nth_data(i);
-				item.sensitive = i != current_history_pos;
+				item.text = current.history_uris.nth_data(i);
+				item.sensitive = i != current.current_history_pos;
 				item.set_data<int>("history_pos", i);
 
 				item.clicked.connect(() => {
-					current_history_pos = item.get_data<int>("history_pos");
-					load_uri(history.nth_data(current_history_pos));
+					current.go_to_history_pos(item.get_data<int>("history_pos"));
 				});
 
 				item.show ();

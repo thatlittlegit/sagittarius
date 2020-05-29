@@ -8,6 +8,8 @@ sagittarius_sources = [
   'uri.c.vala',
   'error.vala',
   'application.vala',
+  'tab.vala',
+  'history.vala',
 ]
 
 sagittarius_deps = [
