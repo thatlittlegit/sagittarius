@@ -25,7 +25,7 @@ public enum GeminiCode {
 	SERVER_UNAVAILABLE = 41,
 	CGI_ERROR = 42,
 	PROXY_ERROR = 43,
-	// SLOW_DOWN = 44,
+	SLOW_DOWN = 44,
 	PERMANENT_ERROR = 50,
 	NOT_FOUND = 51,
 	GONE = 52,

@@ -28,11 +28,13 @@ namespace Sagittarius {
 		private const string PASSWORD_ICON = "input-keyboard";
 
 		private Gtk.Entry text_entry = new Gtk.Entry ();
+		private Gtk.Button action_button;
 
 		public ErrorMessage () {
 			Object(title: "title", description: "description", icon_name: QUESTION_ICON);
 
 			var grid = get_children ().nth_data(0) as Gtk.Grid;
+			action_button = (grid.get_child_at(2, 3) as Gtk.Revealer).get_child () as Gtk.Button;
 			grid.insert_row(3);
 			grid.attach(text_entry, 2, 3, 2, 1);
 		}
@@ -40,6 +42,7 @@ namespace Sagittarius {
 		public void set_message_for_response (NavigateFunc navigate, Content response) {
 			hide_action ();
 			text_entry.hide ();
+			action_button.sensitive = true;
 
 			switch (response.code) {
 			case GeminiCode.INPUT:
@@ -85,6 +88,25 @@ namespace Sagittarius {
 				icon_name = NETWORK_ERROR_ICON;
 				title = _("Proxy error");
 				description = _("The server wasn't able to proxy your request.");
+				break;
+			case GeminiCode.SLOW_DOWN:
+				icon_name = "alarm"; // XXX
+				title = _("Slow down!");
+				description = _("You're sending requests too fast.");
+				action_button.sensitive = false;
+				show_action(_("Go"));
+				action_activated.connect(() => { navigate(null, response.original_uri); });
+
+				// XXX I'm sure there's a better way to do this...
+				uint64 time = get_monotonic_time () + 5000000;
+				Idle.add(() => {
+					if (time > get_monotonic_time ()) {
+						return true;
+					}
+
+					action_button.sensitive = true;
+					return false;
+				});
 				break;
 			case GeminiCode.PERMANENT_ERROR:
 				icon_name = ERROR_ICON;
