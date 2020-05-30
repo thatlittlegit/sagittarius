@@ -46,8 +46,9 @@ namespace Sagittarius {
 				create_window ();
 			}
 
-			// TODO when tabs are supported, load up *all* files
-			main_window.navigate(files[0].get_uri ());
+			foreach (var file in files) {
+				main_window.create_tab(file.get_uri ());
+			}
 		}
 
 		private void show_about_dialog () {

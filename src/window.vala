@@ -80,12 +80,16 @@ namespace Sagittarius {
 			current.navigate(null, uri);
 		}
 
-		public Tab create_tab () {
+		public Tab create_tab (string ? uri = null) {
 			var tab = new Tab ();
 			var gtab = new Granite.Widgets.Tab("Tab", null, tab);
 			notebook.insert_tab(gtab, notebook.n_tabs - 1);
 			notebook.current = gtab;
 			tab.on_navigate.connect(on_navigate_cb);
+
+			if (uri != null) {
+				tab.navigate(null, uri);
+			}
 			return tab;
 		}
 
