@@ -39,22 +39,31 @@ public errordomain UriError {
 public struct Uri {
 	string scheme;
 	string host;
+	string query;
+}
+
+string quick_fix_uri (string uri) {
+	if (uri.has_prefix("about:") && !uri.has_prefix("about://")) {
+		return uri.replace("about:", "about://");
+	}
+
+	return uri;
 }
 
 public string parse_uri (string orig, string relative) throws UriError {
 	string output = "";
-	__parse_uri__(orig, relative, out output);
+	__parse_uri__(orig, quick_fix_uri(relative), out output);
 	return output;
 }
 
 public Uri uri_struct (string uri) throws UriError {
 	Uri ret;
-	__parse_uri_struct__(uri, out ret);
+	__parse_uri_struct__(quick_fix_uri(uri), out ret);
 	return ret;
 }
 
 public string uri_with_query (string orig, string query) throws UriError {
 	string output = "";
-	__uri_with_query__(orig, query, out output);
+	__uri_with_query__(quick_fix_uri(orig), query, out output);
 	return output;
 }

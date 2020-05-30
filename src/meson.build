@@ -10,6 +10,7 @@ sagittarius_sources = [
   'application.vala',
   'tab.vala',
   'history.vala',
+  'about-protocol.vala',
 ]
 
 sagittarius_deps = [

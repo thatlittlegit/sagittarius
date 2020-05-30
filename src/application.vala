@@ -51,7 +51,7 @@ namespace Sagittarius {
 			}
 		}
 
-		private void show_about_dialog () {
+		public static void show_about_dialog () {
 			var dialog = new Gtk.AboutDialog ();
 			dialog.modal = true;
 			dialog.authors = { "thatlittlegit" };

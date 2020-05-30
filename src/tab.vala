@@ -101,8 +101,8 @@ namespace Sagittarius {
 
 		public void navigate (string ? old_uri, string new_uri) {
 			try {
-				if (old_uri == null && uri_struct(new_uri).scheme != "gemini") {
-					AppInfo.launch_default_for_uri_async.begin(uri, null);
+				if (old_uri == null && uri_struct(new_uri).scheme != "gemini" && uri_struct(new_uri).scheme != "about") {
+					AppInfo.launch_default_for_uri_async.begin(new_uri, null);
 					return;
 				}
 
@@ -118,15 +118,28 @@ namespace Sagittarius {
 		private void fetch_and_view (string full_uri) {
 			uri = full_uri;
 
-			get_gemini.begin(uri, (_, ctx) => {
-				try {
-					view(uri, get_gemini.end(ctx));
-				} catch (Error err) {
-					internal_error ();
-				} finally {
-					on_navigate(this);
-				}
+			fetch.begin(uri, (_, ctx) => {
+				fetch.end(ctx);
 			});
+		}
+
+		private async void fetch (string uri) {
+			try {
+				Content resp;
+				string scheme = uri_struct(uri).scheme;
+				if (scheme == "gemini") {
+					resp = yield get_gemini (uri);
+				} else if (scheme == "about") {
+					resp = yield about_protocol (uri);
+				} else {
+					throw new Error(0, 0, "invalid scheme");
+				}
+				view(uri, resp);
+			} catch (Error err) {
+				internal_error ();
+			} finally {
+				on_navigate(this);
+			}
 		}
 
 		private void view (string uri, Content document) {

@@ -67,7 +67,7 @@ public Gtk.TextView parse_markup (string uri, string markup, Gtk.TextView view, 
 			}
 
 			link.activate_link.connect(() => {
-				if (link.get_data<string>("scheme") == "gemini") {
+				if (link.get_data<string>("scheme") == "gemini" || link.get_data<string>("scheme") == "about") {
 					navigate(uri, link.uri);
 					return true;
 				}
