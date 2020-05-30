@@ -1,11 +1,11 @@
 sagittarius_sources = [
-  'gemini.vala',
+  'gemini-protocol.vala',
   'main.vala',
   'window.vala',
   'config.vapi',
   'gemini-markup.vala',
   'uri.c',
-  'uri.c.vala',
+  'uri.vala',
   'error.vala',
   'application.vala',
   'tab.vala',
