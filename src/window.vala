@@ -67,19 +67,6 @@ namespace Sagittarius {
 			notebook.show ();
 		}
 
-		public void navigate (string uri) {
-			try {
-				if (uri_struct(uri).scheme != "gemini") {
-					AppInfo.launch_default_for_uri_async.begin(uri, null);
-					return;
-				}
-			} catch (UriError err) {
-			}
-
-			url_bar.set_text(uri);
-			current.navigate(null, uri);
-		}
-
 		public Tab create_tab (string ? uri = null) {
 			var tab = new Tab ();
 			var gtab = new Granite.Widgets.Tab("Tab", null, tab);

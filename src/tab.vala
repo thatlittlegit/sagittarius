@@ -101,6 +101,11 @@ namespace Sagittarius {
 
 		public void navigate (string ? old_uri, string new_uri) {
 			try {
+				if (old_uri == null && uri_struct(new_uri).scheme != "gemini") {
+					AppInfo.launch_default_for_uri_async.begin(uri, null);
+					return;
+				}
+
 				var uri = parse_uri(old_uri ?? "gemini://unknown_host.test", new_uri);
 				history.navigate(uri);
 				fetch_and_view(uri);
