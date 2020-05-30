@@ -41,6 +41,7 @@ enum SUriError {
 
 typedef struct {
 	gchar * scheme;
+	gchar * host;
 } SUri;
 
 gchar * uri_to_string (UriUriA *uri, int* written, GError** error) {
@@ -152,6 +153,7 @@ gboolean parse_uri_to_struct_C (gchar * uri, SUri * ret, GError * * error) {
 
 	SUri transformed;
 	transformed.scheme = g_strndup(UTRP(new_uri.scheme));
+	transformed.host = g_strndup(UTRP(new_uri.hostText));
 
 	*ret = transformed;
 	return TRUE;

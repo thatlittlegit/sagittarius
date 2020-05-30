@@ -97,11 +97,16 @@ namespace Sagittarius {
 
 		[GtkCallback]
 		private void navigate_cb (Gtk.Button unused) {
-			string uri = url_bar.get_text ();
-			if (uri.has_prefix("//") || uri.contains("://")) {
-				current.navigate(null, uri);
-			} else {
-				current.navigate(null, strdup("gemini://%s".printf(uri)));
+			try {
+				string uri = url_bar.get_text ();
+				var parsed = uri_struct(uri);
+				if (parsed.host != null) {
+					current.navigate(null, uri);
+				} else {
+					current.navigate(null, strdup("gemini://%s".printf(uri)));
+				}
+			} catch (UriError err) {
+				current.internal_error ();
 			}
 		}
 

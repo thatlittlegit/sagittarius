@@ -38,6 +38,7 @@ public errordomain UriError {
 
 public struct Uri {
 	string scheme;
+	string host;
 }
 
 public string parse_uri (string orig, string relative) throws UriError {
