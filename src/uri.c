@@ -43,6 +43,40 @@ typedef struct {
 	gchar * scheme;
 } SUri;
 
+gchar * uri_to_string (UriUriA *uri, int* written, GError** error) {
+	gint returned;
+
+	gint chars_required;
+	if ((returned = uriToStringCharsRequiredA(uri, &chars_required) != URI_SUCCESS)) {
+		GError * nerr = g_error_new(S_URI_ERROR, COULDNT_CALCULATE_SIZE, "failed to calculate size of URI string: %d", returned);
+		g_propagate_error(error, nerr);
+		return NULL;
+	}
+	chars_required++;
+
+	gchar * _out;
+	if ((_out = g_malloc0(chars_required)) == NULL) {
+		// We are out of memory, and are allocating more memory! This is smart
+		GError * nerr = g_error_new(S_URI_ERROR, MALLOC_FAIL, "failed to allocate memory for URI string: %d", returned);
+		g_propagate_error(error, nerr);
+	  return NULL;
+	}
+
+	gint chars_written;
+	if ((returned = uriToStringA(_out, uri, chars_required, &chars_written) != URI_SUCCESS)) {
+		GError * nerr = g_error_new(S_URI_ERROR, TOSTRING_FAIL, "failed to write out URI: %d", returned);
+		g_propagate_error(error, nerr);
+		g_free(_out);
+	  return NULL;
+	}
+
+	if (written != NULL) {
+	  *written = chars_written;
+	}
+
+	return _out;
+}
+
 gboolean parse_uri_C (gchar * orig, gchar * new_, gchar * * output, GError * * error) {
 	const char * errorPos;
 	gboolean ret = FALSE;
@@ -85,30 +119,13 @@ gboolean parse_uri_C (gchar * orig, gchar * new_, gchar * * output, GError * * e
 		goto cleanup3; // nothing new has been allocated
 	}
 
-	gint chars_required;
-	if ((returned = uriToStringCharsRequiredA(&new_relative, &chars_required) != URI_SUCCESS)) {
-		GError * nerr = g_error_new(S_URI_ERROR, COULDNT_CALCULATE_SIZE, "failed to calculate size of new URI: %d", returned);
-		g_propagate_error(error, nerr);
-		goto cleanup3; // nothing new has been allocated
-	}
-	chars_required++;
-
-	gchar * _out;
-	if ((_out = g_malloc0(chars_required)) == NULL) {
-		// We are out of memory, and are allocating more memory! This is smart
-		GError * nerr = g_error_new(S_URI_ERROR, MALLOC_FAIL, "failed to allocate memory for new URI");
-		g_propagate_error(error, nerr);
-		goto cleanup3; // nothing new has been allocated
+	GError* err;
+	char* _out;
+	if ((_out = uri_to_string (&new_relative, NULL, &err)) == NULL) {
+	  g_propagate_error (error, err);
+	  goto cleanup3;
 	}
 
-	gint chars_written;
-	if ((returned = uriToStringA(_out, &new_relative, chars_required, &chars_written) != URI_SUCCESS)) {
-		GError * nerr = g_error_new(S_URI_ERROR, TOSTRING_FAIL, "failed to write out new URI: %d", returned);
-		g_propagate_error(error, nerr);
-		g_free(_out);
-		ret = FALSE;
-		goto cleanup3;
-	}
 	g_info("parsed a URL to %s", _out);
 
 	*output = _out;
@@ -156,30 +173,11 @@ gboolean uri_with_query_C (gchar* orig, gchar* query, gchar** out, GError** erro
 	uri.query.first = copy;
 	uri.query.afterLast = copy + strlen(copy);
 
-	gint chars_required;
-	if ((returned = uriToStringCharsRequiredA(&uri, &chars_required) != URI_SUCCESS)) {
-		GError * nerr = g_error_new(S_URI_ERROR, COULDNT_CALCULATE_SIZE, "failed to calculate size of new URI: %d", returned);
-		g_propagate_error(error, nerr);
-		goto cleanup;
-	}
-	chars_required++;
-
-	gchar * _out;
-	if ((_out = g_malloc0(chars_required)) == NULL) {
-		// We are out of memory, and are allocating more memory! This is smart
-		GError * nerr = g_error_new(S_URI_ERROR, MALLOC_FAIL, "failed to allocate memory for new URI");
-		g_propagate_error(error, nerr);
-	  ret = FALSE;
-		goto cleanup;
-	}
-
-	gint chars_written;
-	if ((returned = uriToStringA(_out, &uri, chars_required, &chars_written) != URI_SUCCESS)) {
-		GError * nerr = g_error_new(S_URI_ERROR, TOSTRING_FAIL, "failed to write out new URI: %d", returned);
-		g_propagate_error(error, nerr);
-		g_free(_out);
-		ret = FALSE;
-		goto cleanup;
+	GError* err;
+	gchar* _out;
+	if ((_out = uri_to_string(&uri, NULL, &err)) == NULL) {
+	  g_propagate_error (error, err);
+	  goto cleanup;
 	}
 	g_info("Putting a query string on, got %s", _out);
 
