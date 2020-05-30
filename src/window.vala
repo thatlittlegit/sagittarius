@@ -53,18 +53,18 @@ namespace Sagittarius {
 			menu2.append(_("Quit"), "app.quit");
 			menu_button.set_menu_model(menu);
 
-			notebook = new Granite.Widgets.DynamicNotebook();
+			notebook = new Granite.Widgets.DynamicNotebook ();
 			notebook.add_button_visible = true;
 			notebook.tab_bar_behavior = Granite.Widgets.DynamicNotebook.TabBarBehavior.ALWAYS;
 			notebook.new_tab_requested.connect(() => {
-				create_tab();
+				create_tab ();
 			});
 			notebook.tab_switched.connect((old, newfound) => {
 				on_navigate_cb(newfound.page as Tab);
 			});
-			notebook.new_tab_requested();
+			notebook.new_tab_requested ();
 			add(notebook);
-			notebook.show();
+			notebook.show ();
 		}
 
 		public void navigate (string uri) {
@@ -76,12 +76,12 @@ namespace Sagittarius {
 			} catch (UriError err) {
 			}
 
-			url_bar.set_text (uri);
+			url_bar.set_text(uri);
 			current.navigate(null, uri);
 		}
 
 		public Tab create_tab () {
-			var tab = new Tab();
+			var tab = new Tab ();
 			var gtab = new Granite.Widgets.Tab("Tab", null, tab);
 			notebook.insert_tab(gtab, notebook.n_tabs - 1);
 			notebook.current = gtab;
@@ -97,7 +97,7 @@ namespace Sagittarius {
 
 		[GtkCallback]
 		private void navigate_cb (Gtk.Button unused) {
-			string uri = url_bar.get_text();
+			string uri = url_bar.get_text ();
 			if (uri.has_prefix("//") || uri.contains("://")) {
 				current.navigate(null, uri);
 			} else {
@@ -107,17 +107,17 @@ namespace Sagittarius {
 
 		[GtkCallback]
 		private void reload (Gtk.Button unused) {
-			current.reload();
+			current.reload ();
 		}
 
 		[GtkCallback]
 		public void back (Gtk.Button unused) {
-			current.back();
+			current.back ();
 		}
 
 		[GtkCallback]
 		private void forward (Gtk.Button unused) {
-			current.forward();
+			current.forward ();
 		}
 
 		[GtkCallback]

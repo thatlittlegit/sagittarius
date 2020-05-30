@@ -27,33 +27,33 @@ namespace Sagittarius {
 		private const string NETWORK_WARNING_ICON = "network-offline";
 		private const string PASSWORD_ICON = "input-keyboard";
 
-		private Gtk.Entry text_entry = new Gtk.Entry();
+		private Gtk.Entry text_entry = new Gtk.Entry ();
 
 		public ErrorMessage () {
 			Object(title: "title", description: "description", icon_name: QUESTION_ICON);
 
-			var grid = get_children().nth_data(0) as Gtk.Grid;
+			var grid = get_children ().nth_data(0) as Gtk.Grid;
 			grid.insert_row(3);
 			grid.attach(text_entry, 2, 3, 2, 1);
 		}
 
 		public void set_message_for_response (NavigateFunc navigate, Content response) {
 			hide_action ();
-			text_entry.hide();
+			text_entry.hide ();
 
 			switch (response.code) {
 			case GeminiCode.INPUT:
 				icon_name = PASSWORD_ICON;
 				title = _("Input wanted");
 				description = _("The site asks:\n%s").printf(response.text);
-				text_entry.show();
+				text_entry.show ();
 				show_action(_("Go"));
 				action_activated.connect(() => {
 					try {
 						var uri = uri_with_query(response.original_uri, text_entry.text);
 						navigate(uri, "");
 					} catch (UriError err) {
-						internal_error();
+						internal_error ();
 					}
 				});
 				return;

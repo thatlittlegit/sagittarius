@@ -24,9 +24,9 @@ extern bool __parse_uri__ (string orig_uri, string new_uri, out string created) 
 extern bool __parse_uri_struct__ (string uri, out Uri transformed) throws UriError;
 
 [CCode(cname ="uri_with_query_C")]
-extern bool __uri_with_query__(string orig, string query, out string done) throws UriError;
+extern bool __uri_with_query__ (string orig, string query, out string done) throws UriError;
 
-[CCode(cname="SUriError")]
+[CCode(cname ="SUriError")]
 public errordomain UriError {
 	INVALID_ORIG,
 	INVALID_NEW,

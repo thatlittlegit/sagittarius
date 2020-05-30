@@ -56,8 +56,8 @@ public struct Content {
 	string original_uri;
 	GeminiCode code;
 	GMime.ContentType content_type;
-	string? text; // if content_type is recognized text
-	uint8[]? data; // if content_type is not recognized
+	string ? text; // if content_type is recognized text
+	uint8[] ? data; // if content_type is not recognized
 }
 
 async GeminiResponse send_request (string uri) throws Error, IOError {

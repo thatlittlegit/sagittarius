@@ -33,7 +33,7 @@ namespace Sagittarius {
 				return current;
 			}
 			set {
-				if (value < queue.length()) {
+				if (value < queue.length ()) {
 					current = value;
 				}
 			}
@@ -47,33 +47,33 @@ namespace Sagittarius {
 
 		public bool can_go_forward {
 			get {
-				return current + 1 < queue.length();
+				return current + 1 < queue.length ();
 			}
 		}
 
-		public void back() {
+		public void back () {
 			current--;
 		}
 
-		public void forward() {
-			if (current + 1 < queue.length()) {
+		public void forward () {
+			if (current + 1 < queue.length ()) {
 				current++;
 			}
 		}
 
-		public string top() {
+		public string top () {
 			return queue.nth_data(current);
 		}
 
-		public void navigate(string full_uri) {
+		public void navigate (string full_uri) {
 			remove_all_after(current);
 			current++;
 			queue.append(full_uri);
 		}
 
-		private void remove_all_after(int current) {
+		private void remove_all_after (int current) {
 			while (current + 1 < queue.length ()) {
-				queue.remove_link(queue.last());
+				queue.remove_link(queue.last ());
 			}
 		}
 	}

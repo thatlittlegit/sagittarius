@@ -17,7 +17,7 @@
  *
  */
 
-public delegate void NavigateFunc(string? old, string newfound);
+public delegate void NavigateFunc (string ? old, string newfound);
 
 namespace Sagittarius {
 	public class Tab : Gtk.Stack {
@@ -53,21 +53,21 @@ namespace Sagittarius {
 		private Gtk.ScrolledWindow scrolled_text_view;
 		private Gtk.TextView text_view;
 
-		public Tab() {
-			history = new History();
+		public Tab () {
+			history = new History ();
 
-			errorview = new ErrorMessage();
-			errorview.show();
+			errorview = new ErrorMessage ();
+			errorview.show ();
 			add(errorview);
 
 			scrolled_text_view = new Gtk.ScrolledWindow(null, null);
-			text_view = new Gtk.TextView();
+			text_view = new Gtk.TextView ();
 			text_view.margin = 16;
 			text_view.editable = false;
 			scrolled_text_view.add(text_view);
-			text_view.show();
+			text_view.show ();
 			add(scrolled_text_view);
-			scrolled_text_view.show();
+			scrolled_text_view.show ();
 			visible_child = scrolled_text_view;
 
 			text_view.buffer.create_tag("pre", "family", "monospace");
@@ -75,56 +75,56 @@ namespace Sagittarius {
 			text_view.buffer.create_tag("h2", "weight", 500, "size-points", 22.0, "size-set", true);
 			text_view.buffer.create_tag("h3", "weight", 400, "size-points", 18.0, "size-set", true);
 			text_view.buffer.create_tag("ul", "tabs", new Pango.TabArray.with_positions(2, true,
-					Pango.TabAlign.LEFT, 8,
-					Pango.TabAlign.LEFT, 16
-				));
+																						Pango.TabAlign.LEFT, 8,
+																						Pango.TabAlign.LEFT, 16
+																						));
 		}
 
-		public void go_to_history_pos(int pos) {
+		public void go_to_history_pos (int pos) {
 			history.pos = pos;
-			fetch_and_view(history.top());
+			fetch_and_view(history.top ());
 		}
 
-		public void back() {
-			history.back();
-			fetch_and_view(history.top());
+		public void back () {
+			history.back ();
+			fetch_and_view(history.top ());
 		}
 
-		public void forward() {
-			history.forward();
-			fetch_and_view(history.top());
+		public void forward () {
+			history.forward ();
+			fetch_and_view(history.top ());
 		}
 
-		public void reload() {
-			fetch_and_view(history.top());
+		public void reload () {
+			fetch_and_view(history.top ());
 		}
 
-		public void navigate(string? old_uri, string new_uri) {
+		public void navigate (string ? old_uri, string new_uri) {
 			try {
 				var uri = parse_uri(old_uri ?? "gemini://unknown_host.test", new_uri);
 				history.navigate(uri);
 				fetch_and_view(uri);
 			} catch (UriError err) {
 				warning("UriError: %s", err.message);
-				internal_error();
+				internal_error ();
 			}
 		}
 
-		private void fetch_and_view(string full_uri) {
+		private void fetch_and_view (string full_uri) {
 			uri = full_uri;
 
 			get_gemini.begin(uri, (_, ctx) => {
 				try {
 					view(uri, get_gemini.end(ctx));
 				} catch (Error err) {
-					internal_error();
+					internal_error ();
 				} finally {
 					on_navigate(this);
 				}
 			});
 		}
 
-		private void view(string uri, Content document) {
+		private void view (string uri, Content document) {
 			if (document.code == SUCCESS) {
 				text_view = parse_markup(uri, document.text, text_view, navigate);
 				visible_child = scrolled_text_view;
@@ -135,11 +135,11 @@ namespace Sagittarius {
 			visible_child = errorview;
 		}
 
-		public void internal_error() {
-			errorview.internal_error();
+		public void internal_error () {
+			errorview.internal_error ();
 			visible_child = errorview;
 		}
 
-		public signal void on_navigate(Tab tab);
+		public signal void on_navigate (Tab tab);
 	}
 }

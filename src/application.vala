@@ -32,7 +32,7 @@ namespace Sagittarius {
 			open.connect(open_file);
 		}
 
-		private void create_window() {
+		private void create_window () {
 			if (main_window != null) {
 				return;
 			}

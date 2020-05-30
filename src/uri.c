@@ -21,7 +21,9 @@
 #include <uriparser/Uri.h>
 
 #define S_URI_ERROR s_uri_error_quark ()
+/* *INDENT-OFF* */
 G_DEFINE_QUARK(s-uri-error-quark, s_uri_error)
+/* *INDENT-ON * */
 
 #define UTR_LEN(tr) (tr.afterLast - tr.first)
 #define UTR(tr) (tr.first)
@@ -139,20 +141,20 @@ gboolean parse_uri_to_struct_C (gchar * uri, SUri * ret, GError * * error) {
 }
 
 gboolean uri_with_query_C (gchar* orig, gchar* query, gchar** out, GError** error) {
-  UriUriA uri;
-  gint returned;
-  gboolean ret = TRUE;
-  const gchar* errorPos;
+	UriUriA uri;
+	gint returned;
+	gboolean ret = TRUE;
+	const gchar* errorPos;
 
-  if ((returned = uriParseSingleUriA (&uri, orig, &errorPos))) {
+	if ((returned = uriParseSingleUriA (&uri, orig, &errorPos))) {
 		GError * nerr = g_error_new(S_URI_ERROR, INVALID_NEW, "failed to parse URI: %d", returned);
 		g_propagate_error(error, nerr);
-    return FALSE;
-  }
+	  return FALSE;
+	}
 
-  char* copy = g_strdup(query);
-  uri.query.first = copy;
-  uri.query.afterLast = copy + strlen(copy);
+	char* copy = g_strdup(query);
+	uri.query.first = copy;
+	uri.query.afterLast = copy + strlen(copy);
 
 	gint chars_required;
 	if ((returned = uriToStringCharsRequiredA(&uri, &chars_required) != URI_SUCCESS)) {
@@ -167,7 +169,7 @@ gboolean uri_with_query_C (gchar* orig, gchar* query, gchar** out, GError** erro
 		// We are out of memory, and are allocating more memory! This is smart
 		GError * nerr = g_error_new(S_URI_ERROR, MALLOC_FAIL, "failed to allocate memory for new URI");
 		g_propagate_error(error, nerr);
-    ret = FALSE;
+	  ret = FALSE;
 		goto cleanup;
 	}
 
@@ -179,11 +181,11 @@ gboolean uri_with_query_C (gchar* orig, gchar* query, gchar** out, GError** erro
 		ret = FALSE;
 		goto cleanup;
 	}
-  g_info("Putting a query string on, got %s", _out);
+	g_info("Putting a query string on, got %s", _out);
 
-  *out = _out;
+	*out = _out;
 
 cleanup:
-  uriFreeUriMembersA (&uri);
-  return ret;
+	uriFreeUriMembersA (&uri);
+	return ret;
 }
