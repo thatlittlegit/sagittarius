@@ -19,7 +19,6 @@
 
 namespace Sagittarius {
 	public class Application : Gtk.Application {
-		private Window main_window;
 		private const ActionEntry[] actions = {
 			{ "quit", quit },
 			{ "about", show_about_dialog },
@@ -28,26 +27,16 @@ namespace Sagittarius {
 		public Application () {
 			Object(application_id: "tk.thatlittlegit.sagittarius", flags : ApplicationFlags.HANDLES_OPEN);
 			add_action_entries(actions, this);
-			activate.connect(create_window);
+
+			activate.connect(() => {
+				new Window(this).present ();
+			});
 			open.connect(open_file);
 		}
 
-		private void create_window () {
-			if (main_window != null) {
-				return;
-			}
-
-			main_window = new Window(this);
-			main_window.present ();
-		}
-
 		private void open_file (File[] files, string hint) {
-			if (main_window == null) {
-				create_window ();
-			}
-
 			foreach (var file in files) {
-				main_window.create_tab(file.get_uri ());
+				(active_window as Window).create_tab(file.get_uri ());
 			}
 		}
 
