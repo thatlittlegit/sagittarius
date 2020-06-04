@@ -28,6 +28,7 @@ G_DEFINE_QUARK(s-uri-error-quark, s_uri_error)
 #define UTR_LEN(tr) (tr.afterLast - tr.first)
 #define UTR(tr) (tr.first)
 #define UTRP(tr) UTR(tr), UTR_LEN(tr)
+#define UTRF(mb) (UriTextRangeA){mb,mb?mb+strlen(mb):mb}
 
 enum SUriError {
 	INVALID_ORIG,
@@ -41,11 +42,15 @@ enum SUriError {
 
 typedef struct {
 	gchar * scheme;
+	gchar * userinfo;
 	gchar * host;
+	guint16 port;
+	GList * path;
 	gchar * query;
+	gchar * fragment;
 } SUri;
 
-gchar * uri_to_string (UriUriA *uri, int* written, GError** error) {
+static gchar * uri_to_string (UriUriA *uri, int* written, GError** error) {
 	gint returned;
 
 	gint chars_required;
@@ -77,6 +82,42 @@ gchar * uri_to_string (UriUriA *uri, int* written, GError** error) {
 	}
 
 	return _out;
+}
+
+static gboolean suri_to_uriuri (SUri *uri, UriUriA * output, GError * * err) {
+	output->scheme = UTRF(uri->scheme);
+	output->userInfo = UTRF(uri->userinfo);
+	output->hostText = UTRF(uri->host);
+	output->query = UTRF(uri->query);
+	output->fragment = UTRF(uri->fragment);
+	output->hostData = (UriHostDataA){ NULL };
+	output->reserved = NULL;
+
+	if (uri->port != 0) {
+		gchar * portstr = g_strdup_printf("%d", uri->port);
+		output->portText = UTRF(portstr);
+	} else {
+		output->portText = (UriTextRangeA){ NULL, NULL };
+	}
+
+	if  (uri->path != NULL) {
+	gint length = g_list_length(uri->path);
+	// FIXME mallocs currently can abort across all the C
+	UriPathSegmentA* segments = g_malloc0(sizeof(UriPathSegmentA) * length);
+	GList * gcurrent = uri->path;
+	for(int i = 0; i < length; i++) {
+		segments[i].text = UTRF(gcurrent->data);
+		segments[i].next = &segments[i + 1];
+		gcurrent = gcurrent->next;
+	}
+	segments[length - 1].next = NULL;
+	output->pathHead = &segments[0];
+	output->pathTail = &segments[length];
+	} else {
+		output->pathHead = output->pathTail = NULL;
+	}
+
+	return TRUE;
 }
 
 gboolean parse_uri_C (gchar * orig, gchar * new_, gchar * * output, GError * * error) {
@@ -154,9 +195,37 @@ gboolean parse_uri_to_struct_C (gchar * uri, SUri * ret, GError * * error) {
 
 	SUri transformed;
 	transformed.scheme = g_strndup(UTRP(new_uri.scheme));
+	transformed.userinfo = g_strndup(UTRP(new_uri.userInfo));
 	transformed.host = g_strndup(UTRP(new_uri.hostText));
 	transformed.query = g_strndup(UTRP(new_uri.query));
+	transformed.fragment = g_strndup(UTRP(new_uri.fragment));
 
+	if (new_uri.portText.first != NULL) {
+		gchar * portstr = g_strndup(UTRP(new_uri.portText));
+		transformed.port = (guint16)(g_ascii_strtoull(portstr, NULL, 10));
+		g_free(portstr);
+	} else {
+		transformed.port = 0; /* gemini default */
+	}
+
+	GList * path_parts = NULL;
+	UriPathSegmentA* current = new_uri.pathHead;
+
+	if (current != NULL) {
+		for (;;) {
+			path_parts = g_list_prepend(path_parts, g_strndup(UTRP(current->text)));
+
+			if (current == new_uri.pathTail || current->next == NULL) {
+				break;
+			} else {
+				current = current->next;
+			}
+		}
+		path_parts = g_list_reverse(path_parts);
+	}
+	transformed.path = path_parts;
+
+	uriFreeUriMembersA(&new_uri);
 	*ret = transformed;
 	return TRUE;
 }
@@ -190,4 +259,21 @@ gboolean uri_with_query_C (gchar* orig, gchar* query, gchar** out, GError** erro
 cleanup:
 	uriFreeUriMembersA (&uri);
 	return ret;
+}
+
+gboolean uri_to_string_C (SUri* uri, gchar** str, GError * * error) {
+	UriUriA new_uri;
+	GError* err;
+	if (suri_to_uriuri (uri, &new_uri, &err) == FALSE) {
+		g_propagate_error (error, err);
+		return FALSE;
+	}
+
+	if ((*str = uri_to_string (&new_uri, NULL, &err)) == NULL) {
+		g_propagate_error (error, err);
+		uriFreeUriMembersA (&new_uri);
+		return FALSE;
+	}
+
+	return TRUE;
 }

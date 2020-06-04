@@ -26,6 +26,9 @@ extern bool __parse_uri_struct__ (string uri, out Uri transformed) throws UriErr
 [CCode(cname ="uri_with_query_C")]
 extern bool __uri_with_query__ (string orig, string query, out string done) throws UriError;
 
+[CCode(cname ="uri_to_string_C")]
+extern bool __uri_to_string__ (Uri orig, out string done) throws UriError;
+
 [CCode(cname ="SUriError")]
 public errordomain UriError {
 	INVALID_ORIG,
@@ -36,10 +39,15 @@ public errordomain UriError {
 	TOSTRING_FAIL,
 }
 
+[CCode]
 public struct Uri {
 	string scheme;
+	string userinfo;
 	string host;
+	uint16 port;
+	unowned List<string> ? path;
 	string query;
+	string fragment;
 }
 
 string quick_fix_uri (string uri) {
@@ -66,4 +74,15 @@ public string uri_with_query (string orig, string query) throws UriError {
 	string output = "";
 	__uri_with_query__(quick_fix_uri(orig), query, out output);
 	return output;
+}
+
+public string uri_to_string (Uri uristruct) {
+	try {
+		string output = "";
+		__uri_to_string__(uristruct, out output);
+		return output;
+	} catch (UriError err) {
+		critical("uri_to_string failed?!? this is supposed to be impossible");
+		return "";
+	}
 }
