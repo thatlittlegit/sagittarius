@@ -93,13 +93,7 @@ namespace Sagittarius {
 				show_action(_("Go"));
 				action_activated.connect(() => { navigate(null, uri_to_string(response.original_uri)); });
 
-				// XXX I'm sure there's a better way to do this...
-				uint64 time = get_monotonic_time () + 5000000;
-				Idle.add(() => {
-					if (time > get_monotonic_time ()) {
-						return true;
-					}
-
+				Timeout.add(5000, () => {
 					action_button.sensitive = true;
 					return false;
 				});
