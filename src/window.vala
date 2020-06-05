@@ -68,7 +68,7 @@ namespace Sagittarius {
 		}
 
 		public Tab create_tab (string ? uri = null) {
-			var tab = new Tab ();
+			var tab = new Tab(this);
 			var gtab = new Granite.Widgets.Tab("Tab", null, tab);
 			notebook.insert_tab(gtab, notebook.n_tabs - 1);
 			notebook.current = gtab;
@@ -78,6 +78,10 @@ namespace Sagittarius {
 				tab.navigate(null, uri);
 			}
 			return tab;
+		}
+
+		public void select_address_bar () {
+			url_bar.has_focus = true;
 		}
 
 		private void on_navigate_cb (Tab tab) {

@@ -53,7 +53,10 @@ namespace Sagittarius {
 		private Gtk.ScrolledWindow scrolled_text_view;
 		private Gtk.TextView text_view;
 
-		public Tab () {
+		private Window window;
+
+		public Tab (Window _window) {
+			window = _window;
 			history = new History ();
 
 			errorview = new ErrorMessage ();
@@ -68,7 +71,19 @@ namespace Sagittarius {
 			text_view.show ();
 			add(scrolled_text_view);
 			scrolled_text_view.show ();
-			visible_child = scrolled_text_view;
+
+			var welcome = new Granite.Widgets.Welcome(_("Sagittarius"), _("Welcome to Sagittarius!"));
+			welcome.append("input-keyboard", _("Enter a URI"), _("Type a URL in the address bar to navigate."));
+			welcome.show ();
+			welcome.activated.connect((index) => {
+				switch (index) {
+				case 0:
+					window.select_address_bar ();
+					break;
+				}
+			});
+			add(welcome);
+			visible_child = welcome;
 
 			text_view.buffer.create_tag("pre", "family", "monospace");
 			text_view.buffer.create_tag("h1", "weight", 600, "size-points", 26.0, "size-set", true);
