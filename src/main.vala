@@ -21,6 +21,7 @@ int main (string[] args) {
 	Intl.bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
 	Intl.bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
 	Intl.textdomain(GETTEXT_PACKAGE);
+	Log.set_fatal_mask("sagittarius", LogLevelFlags.LEVEL_CRITICAL);
 
 	var app = new Sagittarius.Application ();
 	return app.run(args);

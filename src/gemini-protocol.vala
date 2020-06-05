@@ -52,24 +52,18 @@ public struct GeminiResponse {
 	uint8 contents[65535];
 }
 
-public struct Content {
-	string original_uri;
-	GeminiCode code;
-	GMime.ContentType content_type;
-	string ? text; // if content_type is recognized text
-	uint8[] ? data; // if content_type is not recognized
-}
 
-async GeminiResponse send_request (string uri) throws Error, IOError {
+async GeminiResponse send_request (Uri uri) throws Error, IOError {
 	var client = new SocketClient ();
 	client.set_tls(true);
 	client.set_tls_validation_flags(0);
 
-	var conn = yield client.connect_to_uri_async (uri, 1965);
+	var struri = uri_to_string(uri);
+	var conn = yield client.connect_to_uri_async (struri, 1965);
 
 	conn.socket.set_blocking(true);
 	size_t size;
-	yield conn.output_stream.write_all_async ("%s\r\n".printf(uri).data, 0, null, out size);
+	yield conn.output_stream.write_all_async ("%s\r\n".printf(struri).data, 0, null, out size);
 
 	info("sent request [%ld bytes]".printf((ssize_t) size));
 
@@ -101,10 +95,10 @@ async GeminiResponse send_request (string uri) throws Error, IOError {
 	return response;
 }
 
-public async Content get_gemini (string uri) throws Error {
+public async Sagittarius.Content get_gemini (Uri uri) throws Error {
 	var response = yield send_request (uri);
 
-	Content ret = {};
+	Sagittarius.Content ret = {};
 	ret.content_type = GMime.ContentType.parse(new GMime.ParserOptions (), response.meta);
 	ret.code = response.code;
 	ret.original_uri = uri;

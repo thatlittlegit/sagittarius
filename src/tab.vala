@@ -101,11 +101,6 @@ namespace Sagittarius {
 
 		public void navigate (string ? old_uri, string new_uri) {
 			try {
-				if (old_uri == null && uri_struct(new_uri).scheme != "gemini" && uri_struct(new_uri).scheme != "about") {
-					AppInfo.launch_default_for_uri_async.begin(new_uri, null);
-					return;
-				}
-
 				var uri = parse_uri(old_uri ?? "gemini://unknown_host.test", new_uri);
 				history.navigate(uri);
 				fetch_and_view(uri);
@@ -115,26 +110,25 @@ namespace Sagittarius {
 			}
 		}
 
-		private void fetch_and_view (string full_uri) {
-			uri = full_uri;
+		private void fetch_and_view (string uri) {
+			try {
+				fetch_and_view_uri(uri_struct(uri));
+			} catch (UriError err) {
+				critical("unexpected UriError");
+			}
+		}
 
-			fetch.begin(uri, (_, ctx) => {
+		private void fetch_and_view_uri (Uri full_uri) {
+			uri = uri_to_string(full_uri);
+
+			fetch.begin(full_uri, (_, ctx) => {
 				fetch.end(ctx);
 			});
 		}
 
-		private async void fetch (string uri) {
+		private async void fetch (Uri uri) {
 			try {
-				Content resp;
-				string scheme = uri_struct(uri).scheme;
-				if (scheme == "gemini") {
-					resp = yield get_gemini (uri);
-				} else if (scheme == "about") {
-					resp = yield about_protocol (uri);
-				} else {
-					throw new Error(0, 0, "invalid scheme");
-				}
-				view(uri, resp);
+				view(uri, yield fetch_uri(uri));
 			} catch (Error err) {
 				internal_error ();
 			} finally {
@@ -142,9 +136,9 @@ namespace Sagittarius {
 			}
 		}
 
-		private void view (string uri, Content document) {
+		private void view (Uri uri, Content document) {
 			if (document.code == SUCCESS) {
-				text_view = parse_markup(uri, document.text, text_view, navigate);
+				text_view = parse_markup(uri_to_string(uri), document.text, text_view, navigate);
 				visible_child = scrolled_text_view;
 				return;
 			}

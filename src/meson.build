@@ -11,6 +11,7 @@ sagittarius_sources = [
   'tab.vala',
   'history.vala',
   'about-protocol.vala',
+  'uri-loader.vala',
 ]
 
 sagittarius_deps = [

@@ -52,12 +52,8 @@ namespace Sagittarius {
 				text_entry.show ();
 				show_action(_("Go"));
 				action_activated.connect(() => {
-					try {
-						var uri = uri_with_query(response.original_uri, text_entry.text);
-						navigate(uri, "");
-					} catch (UriError err) {
-						internal_error ();
-					}
+					response.original_uri.query = text_entry.text;
+					navigate(uri_to_string(response.original_uri), "");
 				});
 				return;
 			case GeminiCode.PERMANENT_REDIRECT:
@@ -95,7 +91,7 @@ namespace Sagittarius {
 				description = _("You're sending requests too fast.");
 				action_button.sensitive = false;
 				show_action(_("Go"));
-				action_activated.connect(() => { navigate(null, response.original_uri); });
+				action_activated.connect(() => { navigate(null, uri_to_string(response.original_uri)); });
 
 				// XXX I'm sure there's a better way to do this...
 				uint64 time = get_monotonic_time () + 5000000;

@@ -17,16 +17,15 @@
  *
  */
 
-public async Content about_protocol (string uri) throws UriError {
-	var parsed = uri_struct(uri);
-	Content response = { uri, (GeminiCode) 20, new GMime.ContentType("text", "gemini") };
+public async Sagittarius.Content about_protocol (Uri uri) {
+	Sagittarius.Content response = { uri, (GeminiCode) 20, new GMime.ContentType("text", "gemini") };
 
-	switch (parsed.host) {
+	switch (uri.host) {
 	case "blank":
 		response.text = "";
 		break;
 	case "":
-		if (parsed.query == "dlg") {
+		if (uri.query == "dlg") {
 			Idle.add(() => {
 				Sagittarius.Application.show_about_dialog ();
 				return false;
