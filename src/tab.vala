@@ -51,7 +51,7 @@ namespace Sagittarius {
 
 		private ErrorMessage errorview;
 		private Gtk.ScrolledWindow scrolled_text_view;
-		private Gtk.TextView text_view;
+		private Gtk.Box content_box;
 
 		private Window window;
 
@@ -64,13 +64,10 @@ namespace Sagittarius {
 			add(errorview);
 
 			scrolled_text_view = new Gtk.ScrolledWindow(null, null);
-			text_view = new Gtk.TextView ();
-			text_view.margin = 16;
-			text_view.editable = false;
-			scrolled_text_view.add(text_view);
-			text_view.show ();
+			content_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+			scrolled_text_view.add(content_box);
 			add(scrolled_text_view);
-			scrolled_text_view.show ();
+			scrolled_text_view.show_all ();
 
 			var welcome = new Granite.Widgets.Welcome(_("Sagittarius"), _("Welcome to Sagittarius!"));
 			welcome.append("input-keyboard", _("Enter a URI"), _("Type a URL in the address bar to navigate."));
@@ -84,15 +81,6 @@ namespace Sagittarius {
 			});
 			add(welcome);
 			visible_child = welcome;
-
-			text_view.buffer.create_tag("pre", "family", "monospace");
-			text_view.buffer.create_tag("h1", "weight", 600, "size-points", 26.0, "size-set", true);
-			text_view.buffer.create_tag("h2", "weight", 500, "size-points", 22.0, "size-set", true);
-			text_view.buffer.create_tag("h3", "weight", 400, "size-points", 18.0, "size-set", true);
-			text_view.buffer.create_tag("ul", "tabs", new Pango.TabArray.with_positions(2, true,
-																						Pango.TabAlign.LEFT, 8,
-																						Pango.TabAlign.LEFT, 16
-																						));
 		}
 
 		public void go_to_history_pos (int pos) {
@@ -153,7 +141,10 @@ namespace Sagittarius {
 
 		private void view (Uri uri, Content document) {
 			if (document.code == SUCCESS) {
-				text_view = parse_markup(uri_to_string(uri), document.text, text_view, navigate);
+				var markup = parse_markup(uri, document.text);
+				var new_textview = display_markup(markup, navigate);
+				content_box.remove(content_box.get_children ().nth_data(0));
+				content_box.add(new_textview);
 				visible_child = scrolled_text_view;
 				return;
 			}

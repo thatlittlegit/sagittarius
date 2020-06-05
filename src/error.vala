@@ -63,7 +63,7 @@ namespace Sagittarius {
 				description = _("The website is trying to send you to %s. Would you like to go there?%s")
 							   .printf(response.text, response.code == GeminiCode.PERMANENT_REDIRECT ? "\n<i>The browser will remember your decision.</i>" : "");
 				show_action(_("Redirect"));
-				action_activated.connect(() => { navigate(response.text, ""); });
+				action_activated.connect(() => { navigate(uri_to_string(response.original_uri), response.text); });
 				return;
 			case GeminiCode.TEMPORARY_ERROR:
 				icon_name = WARNING_ICON;

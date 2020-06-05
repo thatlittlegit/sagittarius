@@ -17,78 +17,143 @@
  *
  */
 
-public Gtk.TextView parse_markup (string uri, string markup, Gtk.TextView view, NavigateFunc navigate) {
-	view.buffer.set_text("");
-	var preformatted = view.buffer.tag_table.lookup("pre");
-	var h1 = view.buffer.tag_table.lookup("h1");
-	var h2 = view.buffer.tag_table.lookup("h2");
-	var h3 = view.buffer.tag_table.lookup("h3");
-	var ul = view.buffer.tag_table.lookup("ul");
-
-	var lines = markup.split("\n");
-
-	bool preformatting = false;
-	bool first = true;
-	foreach (var _line in lines) {
-		var line = _line.strip ();
-		Gtk.TextIter iter;
-		if (!first) {
-			view.buffer.get_end_iter(out iter);
-			view.buffer.insert(ref iter, "\n", -1);
-		} else {
-			first = false;
-		}
-		view.buffer.get_end_iter(out iter);
-
-		if (line.has_prefix("```")) {
-			preformatting = !preformatting;
-		} else if (preformatting) {
-			view.buffer.insert_with_tags(ref iter, line, -1, preformatted);
-		} else if (line.has_prefix("=>")) {
-			var line_parts = line.split("=>", 2)[1].strip ().split_set(" \t", 2);
-			Gtk.LinkButton link;
-
-			try {
-				if (line_parts.length == 2) {
-					link = new Gtk.LinkButton.with_label(
-						parse_uri(uri, line_parts[0]),
-						line_parts[1]);
-				} else if (line_parts.length == 1) {
-					link = new Gtk.LinkButton(parse_uri(uri, line_parts[0]));
-				} else {
-					view.buffer.insert(ref iter, line, -1);
-					continue;
-				}
-
-				link.set_data<string>("scheme", uri_struct(link.uri).scheme);
-			} catch (UriError err) {
-				view.buffer.insert(ref iter, line, -1);
-				continue;
-			}
-
-			link.activate_link.connect(() => {
-				if (link.get_data<string>("scheme") == "gemini" || link.get_data<string>("scheme") == "about") {
-					navigate(uri, link.uri);
-					return true;
-				}
-				return false;
-			});
-			link.show ();
-
-			var anchor = view.buffer.create_child_anchor(iter);
-			view.add_child_at_anchor(link, anchor);
-		} else if (line.has_prefix("# ")) {
-			view.buffer.insert_with_tags(ref iter, line.substring(2), -1, h1);
-		} else if (line.has_prefix("## ")) {
-			view.buffer.insert_with_tags(ref iter, line.substring(3), -1, h2);
-		} else if (line.has_prefix("###")) {
-			view.buffer.insert_with_tags(ref iter, line.substring(4), -1, h3);
-		} else if (line.has_prefix("*")) {
-			view.buffer.insert_with_tags(ref iter, "\t\u2022\t%s".printf(line.substring(1).strip ()), -1, ul);
-		} else {
-			view.buffer.insert(ref iter, line, -1);
-		}
+namespace Sagittarius {
+	public enum TagType {
+		TEXT,
+		H1,
+		H2,
+		H3,
+		PREFORMATTED,
+		LIST_ITEM,
+		LINK,
+		BROKEN_LINK,
 	}
 
-	return view;
+	public struct Tag {
+		TagType type;
+		string contents;
+		string ? auxillary;
+	}
+
+	public class Document {
+		public string ? title;
+		public List<Tag ? > tags;
+	}
+
+	Gtk.TextView make_new_textview () {
+		var text_view = new Gtk.TextView ();
+		var tabstops = new Pango.TabArray.with_positions(2, true, Pango.TabAlign.LEFT, 8, Pango.TabAlign.LEFT, 16);
+		text_view.buffer.create_tag("pre", "family", "monospace");
+		text_view.buffer.create_tag("h1", "weight", 600, "size-points", 26.0, "size-set", true);
+		text_view.buffer.create_tag("h2", "weight", 500, "size-points", 22.0, "size-set", true);
+		text_view.buffer.create_tag("h3", "weight", 400, "size-points", 18.0, "size-set", true);
+		text_view.buffer.create_tag("ul", "tabs", tabstops);
+		text_view.margin = 16;
+		text_view.editable = false;
+		text_view.show ();
+		return text_view;
+	}
+
+	Gtk.TextIter get_iter (Gtk.TextBuffer buf) {
+		Gtk.TextIter iter;
+		buf.get_end_iter(out iter);
+		return iter;
+	}
+
+	public Gtk.TextView display_markup (Document markup, NavigateFunc nav) {
+		var view = make_new_textview ();
+		var preformatted = view.buffer.tag_table.lookup("pre");
+		var h1 = view.buffer.tag_table.lookup("h1");
+		var h2 = view.buffer.tag_table.lookup("h2");
+		var h3 = view.buffer.tag_table.lookup("h3");
+		var ul = view.buffer.tag_table.lookup("ul");
+
+		bool first = true;
+		foreach (var tag in markup.tags) {
+			var iter = get_iter(view.buffer);
+
+			if (!first) {
+				view.buffer.insert(ref iter, "\n", -1);
+				iter = get_iter(view.buffer);
+			} else {
+				first = false;
+			}
+
+			switch (tag.type) {
+			case TagType.TEXT:
+				view.buffer.insert(ref iter, tag.contents, -1);
+				break;
+			case TagType.PREFORMATTED:
+				view.buffer.insert_with_tags(ref iter, tag.contents, -1, preformatted);
+				break;
+			case TagType.H1:
+				view.buffer.insert_with_tags(ref iter, tag.contents, -1, h1);
+				break;
+			case TagType.H2:
+				view.buffer.insert_with_tags(ref iter, tag.contents, -1, h2);
+				break;
+			case TagType.H3:
+				view.buffer.insert_with_tags(ref iter, tag.contents, -1, h3);
+				break;
+			case TagType.LIST_ITEM:
+				view.buffer.insert_with_tags(ref iter, "\t\u2022\t%s".printf(tag.contents), -1, ul);
+				break;
+			case TagType.LINK:
+			case TagType.BROKEN_LINK:
+				var btn = new Gtk.LinkButton.with_label(tag.contents, tag.auxillary);
+				btn.clicked.connect((button) => { nav(null, (button as Gtk.LinkButton).uri); });
+
+				if (tag.type == TagType.BROKEN_LINK) {
+					btn.sensitive = false;
+				}
+
+				view.add_child_at_anchor(btn, view.buffer.create_child_anchor(iter));
+				btn.show ();
+				break;
+			}
+		}
+
+		return view;
+	}
+
+	public Document parse_markup (Uri original_uri, string markup) {
+		Document output = new Document ();
+		var lines = markup.split("\n");
+
+		bool preformatting = false;
+		foreach (var _line in lines) {
+			var line = _line.strip ();
+
+			if (line.has_prefix("```")) {
+				preformatting = !preformatting;
+			} else if (preformatting) {
+				output.tags.prepend({ TagType.PREFORMATTED, line, null });
+			} else if (line.has_prefix("=>")) {
+				var line_parts = line.split("=>", 2)[1].strip ().split_set(" \t", 2);
+
+				try {
+					var destination = parse_uri(uri_to_string(original_uri), line_parts[0]);
+					output.tags.prepend({ TagType.LINK, destination, line_parts[1] });
+				} catch (UriError err) {
+					output.tags.prepend({ TagType.BROKEN_LINK, "", line_parts[1] });
+				}
+			} else if (line.has_prefix("# ")) {
+				if (output.title == null) {
+					output.title = line.substring(2);
+				}
+				output.tags.prepend({ TagType.H1, line.substring(2), null });
+			} else if (line.has_prefix("## ")) {
+				output.tags.prepend({ TagType.H2, line.substring(3), null });
+			} else if (line.has_prefix("###")) {
+				output.tags.prepend({ TagType.H3, line.substring(4), null });
+			} else if (line.has_prefix("*")) {
+				output.tags.prepend({ TagType.LIST_ITEM, line.substring(1).strip (), null });
+			} else {
+				output.tags.prepend({ TagType.TEXT, line, null });
+			}
+		}
+		output.tags.reverse ();
+
+		return output;
+	}
 }
