@@ -35,7 +35,7 @@ namespace Sagittarius {
 		Granite.Widgets.DynamicNotebook notebook;
 		Tab current {
 			get {
-				return notebook.current.page as Tab;
+				return notebook.current as Tab;
 			}
 		}
 
@@ -60,7 +60,7 @@ namespace Sagittarius {
 				create_tab ();
 			});
 			notebook.tab_switched.connect((old, newfound) => {
-				on_navigate_cb(newfound.page as Tab);
+				on_navigate_cb(newfound as Tab);
 			});
 			notebook.new_tab_requested ();
 			add(notebook);
@@ -69,9 +69,8 @@ namespace Sagittarius {
 
 		public Tab create_tab (string ? uri = null) {
 			var tab = new Tab(this);
-			var gtab = new Granite.Widgets.Tab("Tab", null, tab);
-			notebook.insert_tab(gtab, notebook.n_tabs - 1);
-			notebook.current = gtab;
+			notebook.insert_tab(tab, notebook.n_tabs);
+			notebook.current = tab;
 			tab.on_navigate.connect(on_navigate_cb);
 
 			if (uri != null) {
@@ -88,6 +87,7 @@ namespace Sagittarius {
 			forward_button.sensitive = tab.can_go_forward;
 			back_button.sensitive = tab.can_go_back;
 			url_bar.set_text(tab.uri ?? "");
+			title = "%s - %s".printf(tab.label, _("Sagittarius"));
 		}
 
 		[GtkCallback]

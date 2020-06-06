@@ -20,7 +20,7 @@
 public delegate void NavigateFunc (string ? old, string newfound);
 
 namespace Sagittarius {
-	public class Tab : Gtk.Stack {
+	public class Tab : Granite.Widgets.Tab {
 		public int current_history_pos {
 			get {
 				return history.pos;
@@ -52,6 +52,7 @@ namespace Sagittarius {
 		private ErrorMessage errorview;
 		private Gtk.ScrolledWindow scrolled_text_view;
 		private Gtk.Box content_box;
+		private Gtk.Stack stack;
 
 		private Window window;
 
@@ -59,14 +60,17 @@ namespace Sagittarius {
 			window = _window;
 			history = new History ();
 
+			stack = new Gtk.Stack ();
+			page = stack;
+
 			errorview = new ErrorMessage ();
 			errorview.show ();
-			add(errorview);
+			stack.add(errorview);
 
 			scrolled_text_view = new Gtk.ScrolledWindow(null, null);
 			content_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
 			scrolled_text_view.add(content_box);
-			add(scrolled_text_view);
+			stack.add(scrolled_text_view);
 			scrolled_text_view.show_all ();
 
 			var welcome = new Granite.Widgets.Welcome(_("Sagittarius"), _("Welcome to Sagittarius!"));
@@ -79,8 +83,12 @@ namespace Sagittarius {
 					break;
 				}
 			});
-			add(welcome);
-			visible_child = welcome;
+			stack.add(welcome);
+			stack.visible_child = welcome;
+
+			label = _("New Tab");
+
+			stack.show_all ();
 		}
 
 		public void go_to_history_pos (int pos) {
@@ -103,6 +111,7 @@ namespace Sagittarius {
 		}
 
 		public void navigate (string ? old_uri, string new_uri) {
+			working = true;
 			try {
 				var uri = parse_uri(old_uri ?? "gemini://unknown_host.test", new_uri);
 				history.navigate(uri);
@@ -145,17 +154,22 @@ namespace Sagittarius {
 				var new_textview = display_markup(markup, navigate);
 				content_box.remove(content_box.get_children ().nth_data(0));
 				content_box.add(new_textview);
-				visible_child = scrolled_text_view;
+				stack.visible_child = scrolled_text_view;
+
+				label = markup.title ?? uri_to_string(uri);
+				working = false;
 				return;
 			}
 
 			errorview.set_message_for_response(navigate, document);
-			visible_child = errorview;
+			working = false;
+			stack.visible_child = errorview;
 		}
 
 		public void internal_error () {
+			working = false;
 			errorview.internal_error ();
-			visible_child = errorview;
+			stack.visible_child = errorview;
 		}
 
 		public signal void on_navigate (Tab tab);
