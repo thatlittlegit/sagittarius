@@ -101,7 +101,10 @@ namespace Sagittarius {
 			case TagType.LINK:
 			case TagType.BROKEN_LINK:
 				var btn = new Gtk.LinkButton.with_label(tag.contents, tag.auxillary);
-				btn.clicked.connect((button) => { nav(null, (button as Gtk.LinkButton).uri); });
+				btn.activate_link.connect((button) => {
+					nav(null, button.uri);
+					return true;
+				});
 
 				if (tag.type == TagType.BROKEN_LINK) {
 					btn.sensitive = false;
