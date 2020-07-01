@@ -68,7 +68,7 @@ namespace Sagittarius {
 						var destination = response.original_uri.apply_reference(response.text);
 						navigate(destination);
 					} catch (Error err) {
-						internal_error ();
+						internal_error(err.message);
 					}
 				});
 				return;
@@ -137,10 +137,10 @@ namespace Sagittarius {
 			}
 		}
 
-		public void internal_error () {
+		public void internal_error (string message) {
 			icon_name = ERROR_ICON;
 			title = _("Internal Error");
-			description = _("An error has occurred inside the browser, and the page could not be displayed. You might be able to go back or refresh, but you might want to restart.");
+			description = _("An error has occurred inside the browser, and the page could not be displayed. You might be able to go back or refresh, but you might want to restart.\n\nThe error is: %s").printf(message);
 		}
 	}
 }

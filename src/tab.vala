@@ -126,7 +126,7 @@ namespace Sagittarius {
 
 				view(uri, document);
 			} catch (Error err) {
-				internal_error ();
+				internal_error(err.message);
 			} finally {
 				on_navigate(this);
 			}
@@ -153,9 +153,9 @@ namespace Sagittarius {
 			stack.visible_child = errorview;
 		}
 
-		public void internal_error () {
+		public void internal_error (string ? message = null) {
 			working = false;
-			errorview.internal_error ();
+			errorview.internal_error(message ?? "unknown error");
 			stack.visible_child = errorview;
 		}
 
