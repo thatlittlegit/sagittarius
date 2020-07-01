@@ -43,13 +43,13 @@ public errordomain GeminiError {
 	UNKNOWN_RESPONSE_CODE,
 	INVALID_REQUEST,
 	INVALID_ENCODING,
+	INVALID_RESPONSE,
 }
 
 public struct GeminiResponse {
 	GeminiCode code;
 	string meta;
-	ssize_t len;
-	uint8 contents[65535];
+	Bytes contents;
 }
 
 
@@ -68,29 +68,63 @@ async GeminiResponse send_request (Upg.Uri uri) throws Error, IOError {
 	info("sent request [%ld bytes]".printf((ssize_t) size));
 
 	GeminiResponse response = {};
-	var stream = new DataInputStream(conn.input_stream);
 
-	string response_header = yield stream.read_line_utf8_async ();
-
-	info("response header is '%s'".printf(response_header));
-	response_header.scanf("%d", &response.code);
-	response.meta = response_header.substring(3, response_header.length - 3).strip ();
-
-
-	// XXX OH GOD THIS IS HORRIBLE
-	// this code is here because this read_async call didn't seem to work for
-	// me:
-	//     response.len = yield conn.input_stream.read_async(response.contents);
-	// this is INCREDIBLY inefficient, if you know anything about GIO consider
-	// helping please
-	for (response.len = 0; response.len < 65535; response.len++) {
+	var bytearray = new ByteArray ();
+	while (true) {
+		Bytes chunk;
 		try {
-			response.contents[response.len] = stream.read_byte ();
-		} catch (Error err) {
+			chunk = yield conn.input_stream.read_bytes_async (65535);
+		} catch (TlsError err) {
+			if (err.code != 6) {
+				throw err;
+			}
+			chunk = new Bytes({});
+		}
+
+		if (chunk.length == 0) {
 			break;
 		}
+
+		bytearray.append(Bytes.unref_to_data(chunk));
 	}
-	info("recieved %ld bytes".printf(response.len));
+	;
+	yield conn.close_async ();
+
+	if (bytearray.len < 2) {
+		throw new GeminiError.INVALID_RESPONSE("Invalid response (too small)");
+	}
+
+	response.code = ((bytearray.data[0] - 0x30) * 10)
+					+ (bytearray.data[1] - 0x30);
+	bytearray.remove_range(0, 2);
+
+	int i;
+	StringBuilder meta = new StringBuilder.sized(bytearray.len.clamp(0, 1024));
+	for (i = 0; i < bytearray.len && i < 1024; i++) {
+		char current = (char) bytearray.data[i];
+
+		if (current == '\r') {
+			i++;
+			break;
+		}
+
+		if (current == '\n') {
+			// invalid, but we'll let it slide 'cause it's a lot better
+			break;
+		}
+
+		if (current.isspace ()) {
+			continue;
+		}
+
+		meta.append_c(current);
+	}
+	response.meta = meta.str;
+	bytearray.remove_range(0, i);
+	message("%s", response.meta);
+
+	response.contents = ByteArray.free_to_bytes(bytearray);
+	info("recieved %ld bytes of content".printf(response.contents.length));
 
 	return response;
 }
@@ -103,11 +137,13 @@ public async Sagittarius.Content get_gemini (Upg.Uri uri) throws Error {
 	ret.code = response.code;
 	ret.original_uri = uri;
 
+	uint8[] data = Bytes.unref_to_data(response.contents);
+
 	if (response.code == GeminiCode.SUCCESS) {
 		if (ret.content_type.type == "text") {
-			ret.text = (string) response.contents;
+			ret.text = (string) data;
 
-			if (!ret.text.validate ()) {
+			if (!ret.text.validate(data.length)) {
 				try {
 					var charset = ret.content_type.get_parameter("charset");
 					if (charset == null || charset == "utf-8") {
@@ -121,7 +157,7 @@ public async Sagittarius.Content get_gemini (Upg.Uri uri) throws Error {
 				}
 			}
 		} else {
-			ret.data = response.contents;
+			ret.data = data;
 		}
 	} else {
 		ret.text = response.meta;
