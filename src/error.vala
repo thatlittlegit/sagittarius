@@ -52,8 +52,8 @@ namespace Sagittarius {
 				text_entry.show ();
 				show_action(_("Go"));
 				action_activated.connect(() => {
-					response.original_uri.query = text_entry.text;
-					navigate(uri_to_string(response.original_uri), "");
+					response.original_uri.query_str = text_entry.text;
+					navigate(response.original_uri);
 				});
 				return;
 			case GeminiCode.PERMANENT_REDIRECT:
@@ -63,7 +63,14 @@ namespace Sagittarius {
 				description = _("The website is trying to send you to %s. Would you like to go there?%s")
 							   .printf(response.text, response.code == GeminiCode.PERMANENT_REDIRECT ? "\n<i>The browser will remember your decision.</i>" : "");
 				show_action(_("Redirect"));
-				action_activated.connect(() => { navigate(uri_to_string(response.original_uri), response.text); });
+				action_activated.connect(() => {
+					try {
+						var destination = response.original_uri.apply_reference(response.text);
+						navigate(destination);
+					} catch (Error err) {
+						internal_error ();
+					}
+				});
 				return;
 			case GeminiCode.TEMPORARY_ERROR:
 				icon_name = WARNING_ICON;
@@ -91,7 +98,7 @@ namespace Sagittarius {
 				description = _("You're sending requests too fast.");
 				action_button.sensitive = false;
 				show_action(_("Go"));
-				action_activated.connect(() => { navigate(null, uri_to_string(response.original_uri)); });
+				action_activated.connect(() => { navigate(response.original_uri); });
 
 				Timeout.add(5000, () => {
 					action_button.sensitive = true;

@@ -74,7 +74,11 @@ namespace Sagittarius {
 			tab.on_navigate.connect(on_navigate_cb);
 
 			if (uri != null) {
-				tab.navigate(null, uri);
+				try {
+					tab.navigate(new Upg.Uri(uri));
+				} catch (Error err) {
+					tab.internal_error ();
+				}
 			}
 			return tab;
 		}
@@ -93,14 +97,15 @@ namespace Sagittarius {
 		[GtkCallback]
 		private void navigate_cb (Gtk.Button unused) {
 			try {
-				string uri = url_bar.get_text ();
-				var parsed = uri_struct(uri);
+				var uri = url_bar.get_text ();
+
+				var parsed = new Upg.Uri(uri);
 				if (parsed.host != null) {
-					current.navigate(null, uri);
+					current.navigate(parsed);
 				} else {
-					current.navigate(null, strdup("gemini://%s".printf(uri)));
+					current.navigate(new Upg.Uri("gemini://%s".printf(uri)));
 				}
-			} catch (UriError err) {
+			} catch (Error err) {
 				current.internal_error ();
 			}
 		}
@@ -132,7 +137,7 @@ namespace Sagittarius {
 
 			for (int i = 0; i < current.history_uris.length (); i++) {
 				var item = new Gtk.ModelButton ();
-				item.text = current.history_uris.nth_data(i);
+				item.text = current.history_uris.nth_data(i).to_string ();
 				item.sensitive = i != current.current_history_pos;
 				item.set_data<int>("history_pos", i);
 

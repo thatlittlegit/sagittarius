@@ -32,6 +32,7 @@ namespace Sagittarius {
 	public struct Tag {
 		TagType type;
 		string contents;
+		Upg.Uri ? target;
 		string ? auxillary;
 	}
 
@@ -102,7 +103,7 @@ namespace Sagittarius {
 			case TagType.BROKEN_LINK:
 				var btn = new Gtk.LinkButton.with_label(tag.contents, tag.auxillary);
 				btn.activate_link.connect((button) => {
-					nav(null, button.uri);
+					nav(tag.target);
 					return true;
 				});
 
@@ -119,7 +120,7 @@ namespace Sagittarius {
 		return view;
 	}
 
-	public Document parse_markup (Uri original_uri, string markup) {
+	public Document parse_markup (Upg.Uri original_uri, string markup) {
 		Document output = new Document ();
 		var lines = markup.split("\n");
 
@@ -135,24 +136,24 @@ namespace Sagittarius {
 				var line_parts = line.split("=>", 2)[1].strip ().split_set(" \t", 2);
 
 				try {
-					var destination = parse_uri(uri_to_string(original_uri), line_parts[0]);
-					output.tags.prepend({ TagType.LINK, destination, line_parts[1] });
-				} catch (UriError err) {
-					output.tags.prepend({ TagType.BROKEN_LINK, "", line_parts[1] });
+					var destination = original_uri.apply_reference(line_parts[0]);
+					output.tags.prepend({ TagType.LINK, "", destination, line_parts[1] });
+				} catch (Error err) {
+					output.tags.prepend({ TagType.BROKEN_LINK, "", null, line_parts[1] });
 				}
 			} else if (line.has_prefix("# ")) {
 				if (output.title == null) {
 					output.title = line.substring(2);
 				}
-				output.tags.prepend({ TagType.H1, line.substring(2), null });
+				output.tags.prepend({ TagType.H1, line.substring(2) });
 			} else if (line.has_prefix("## ")) {
-				output.tags.prepend({ TagType.H2, line.substring(3), null });
+				output.tags.prepend({ TagType.H2, line.substring(3) });
 			} else if (line.has_prefix("###")) {
-				output.tags.prepend({ TagType.H3, line.substring(4), null });
+				output.tags.prepend({ TagType.H3, line.substring(4) });
 			} else if (line.has_prefix("*")) {
-				output.tags.prepend({ TagType.LIST_ITEM, line.substring(1).strip (), null });
+				output.tags.prepend({ TagType.LIST_ITEM, line.substring(1).strip () });
 			} else {
-				output.tags.prepend({ TagType.TEXT, line, null });
+				output.tags.prepend({ TagType.TEXT, line });
 			}
 		}
 		output.tags.reverse ();

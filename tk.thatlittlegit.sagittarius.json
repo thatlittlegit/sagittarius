@@ -58,6 +58,16 @@
             ]
         },
         {
+            "name" : "liburiparser-gobject",
+            "buildsystem" : "meson",
+            "sources" : [
+                {
+                    "type" : "git",
+                    "url" : "https://github.com/thatlittlegit/liburiparser-gobject.git"
+                }
+            ]
+        },
+        {
             "name" : "gmime",
             "builddir" : true,
             "buildsystem" : "autotools",

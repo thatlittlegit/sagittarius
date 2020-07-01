@@ -17,15 +17,19 @@
  *
  */
 
-public async Sagittarius.Content about_protocol (Uri uri) {
+public async Sagittarius.Content about_protocol (Upg.Uri uri) {
 	Sagittarius.Content response = { uri, (GeminiCode) 20, new GMime.ContentType("text", "gemini") };
+
+	if (uri.host == null) {
+		uri.host = uri.path_str;
+	}
 
 	switch (uri.host) {
 	case "blank":
 		response.text = "";
 		break;
 	case "":
-		if (uri.query == "dlg") {
+		if (uri.query_str == "dlg") {
 			Idle.add(() => {
 				Sagittarius.Application.show_about_dialog ();
 				return false;

@@ -19,7 +19,7 @@
 
 namespace Sagittarius {
 	public struct Content {
-		Uri original_uri;
+		Upg.Uri original_uri;
 		GeminiCode code;
 		GMime.ContentType content_type;
 		string ? text; // if content_type is recognized text
@@ -28,8 +28,8 @@ namespace Sagittarius {
 
 	const string[] supported = { "gemini", "about" };
 
-	async Content open_with_glib (Uri uri) {
-		AppInfo.launch_default_for_uri_async.begin(uri_to_string(uri), null);
+	async Content open_with_glib (Upg.Uri uri) {
+		AppInfo.launch_default_for_uri_async.begin(uri.to_string (), null);
 		return {
 				   uri,
 				   (GeminiCode) 20,
@@ -39,7 +39,7 @@ namespace Sagittarius {
 		};
 	}
 
-	public async Content fetch_uri (Uri uri) throws Error {
+	public async Content fetch_uri (Upg.Uri uri) throws Error {
 		switch (uri.scheme) {
 		case "gemini":
 			return yield get_gemini (uri);

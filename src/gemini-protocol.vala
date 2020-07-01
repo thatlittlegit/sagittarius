@@ -53,12 +53,12 @@ public struct GeminiResponse {
 }
 
 
-async GeminiResponse send_request (Uri uri) throws Error, IOError {
+async GeminiResponse send_request (Upg.Uri uri) throws Error, IOError {
 	var client = new SocketClient ();
 	client.set_tls(true);
 	client.set_tls_validation_flags(0);
 
-	var struri = uri_to_string(uri);
+	var struri = uri.to_string ();
 	var conn = yield client.connect_to_uri_async (struri, 1965);
 
 	conn.socket.set_blocking(true);
@@ -95,7 +95,7 @@ async GeminiResponse send_request (Uri uri) throws Error, IOError {
 	return response;
 }
 
-public async Sagittarius.Content get_gemini (Uri uri) throws Error {
+public async Sagittarius.Content get_gemini (Upg.Uri uri) throws Error {
 	var response = yield send_request (uri);
 
 	Sagittarius.Content ret = {};

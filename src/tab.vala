@@ -17,7 +17,7 @@
  *
  */
 
-public delegate void NavigateFunc (string ? old, string newfound);
+public delegate void NavigateFunc (Upg.Uri uri);
 
 namespace Sagittarius {
 	public class Tab : Granite.Widgets.Tab {
@@ -27,7 +27,7 @@ namespace Sagittarius {
 			}
 		}
 
-		public List<string> history_uris {
+		public List<Upg.Uri> history_uris {
 			get {
 				return history.history;
 			}
@@ -110,37 +110,24 @@ namespace Sagittarius {
 			fetch_and_view(history.top ());
 		}
 
-		public void navigate (string ? old_uri, string new_uri) {
+		public void navigate (Upg.Uri uri) {
 			working = true;
-			try {
-				var uri = parse_uri(old_uri ?? "gemini://unknown_host.test", new_uri);
-				history.navigate(uri);
-				fetch_and_view(uri);
-			} catch (UriError err) {
-				warning("UriError: %s", err.message);
-				internal_error ();
-			}
+			this.uri = uri.to_string ();
+			history.navigate(uri);
+			fetch_and_view(uri);
 		}
 
-		private void fetch_and_view (string uri) {
-			try {
-				fetch_and_view_uri(uri_struct(uri));
-			} catch (UriError err) {
-				critical("unexpected UriError");
-			}
-		}
-
-		private void fetch_and_view_uri (Uri full_uri) {
-			uri = uri_to_string(full_uri);
-
-			fetch.begin(full_uri, (_, ctx) => {
-				fetch.end(ctx);
+		private void fetch_and_view (Upg.Uri full_uri) {
+			fetch_and_view_async.begin(full_uri, (_, ctx) => {
+				fetch_and_view_async.end(ctx);
 			});
 		}
 
-		private async void fetch (Uri uri) {
+		private async void fetch_and_view_async (Upg.Uri uri) {
 			try {
-				view(uri, yield fetch_uri(uri));
+				var document = yield fetch_uri (uri);
+
+				view(uri, document);
 			} catch (Error err) {
 				internal_error ();
 			} finally {
@@ -148,7 +135,7 @@ namespace Sagittarius {
 			}
 		}
 
-		private void view (Uri uri, Content document) {
+		private void view (Upg.Uri uri, Content document) {
 			if (document.code == SUCCESS) {
 				var markup = parse_markup(uri, document.text);
 				var new_textview = display_markup(markup, navigate);
@@ -156,7 +143,7 @@ namespace Sagittarius {
 				content_box.add(new_textview);
 				stack.visible_child = scrolled_text_view;
 
-				label = markup.title ?? uri_to_string(uri);
+				label = markup.title ?? uri.to_string ();
 				working = false;
 				return;
 			}

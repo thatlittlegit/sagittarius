@@ -19,10 +19,10 @@
 
 namespace Sagittarius {
 	public class History {
-		private List<string> queue;
+		private List<Upg.Uri> queue;
 		private int current = -1;
 
-		public List<string> history {
+		public List<Upg.Uri> history {
 			get {
 				return queue;
 			}
@@ -61,11 +61,11 @@ namespace Sagittarius {
 			}
 		}
 
-		public string top () {
+		public Upg.Uri top () {
 			return queue.nth_data(current);
 		}
 
-		public void navigate (string full_uri) {
+		public void navigate (Upg.Uri full_uri) {
 			remove_all_after(current);
 			current++;
 			queue.append(full_uri);
