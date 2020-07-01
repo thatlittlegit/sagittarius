@@ -1,18 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop">
-  <id>tk.thatlittlegit.sagittarius.desktop</id>
+  <id>tk.thatlittlegit.sagittarius</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0</project_license>
+  <translation type="gettext">sagittarius</translation>
+  <launchable type="desktop-id">tk.thatlittlegit.sagittarius.desktop</launchable>
   <developer_name>thatlittlegit</developer_name>
   <name>Sagittarius</name>
+  <summary>A browser for the Gemini protocol</summary>
   <description>
     <p>
       Sagittarius is a browser for the Gemini protocol. It currently displays
       Gemini pages as plain-text and crashes a lot.
     </p>
   </description>
-  <launchable type="desktop-id">tk.thatlittlegit.sagittarius.desktop</launchable>
+  <categories>
+    <category>Network</category>
+  </categories>
   <url type="homepage">https://github.com/thatlittlegit/sagittarius</url>
   <url type="bugtracker">https://github.com/thatlittlegit/sagittarius/issues</url>
-  <url type="contact">mailto:personal+sagittarius@thatlittlegit.tk</url>
+  <content-rating type="oars-1.1"/>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/thatlittlegit/sagittarius/master/data/screenshot-1.png</image>
+      <caption>The Gemini project page displayed in Sagittarius</caption>
+    </screenshot>
+  </screenshots>
+  <update_contact>personalsagittarius@thatlittlegit.tk</update_contact>
 </component>
