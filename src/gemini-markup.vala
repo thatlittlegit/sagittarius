@@ -49,7 +49,7 @@ namespace Sagittarius {
 		text_view.buffer.create_tag("h2", "weight", 500, "size-points", 22.0, "size-set", true);
 		text_view.buffer.create_tag("h3", "weight", 400, "size-points", 18.0, "size-set", true);
 		text_view.buffer.create_tag("ul", "tabs", tabstops);
-		text_view.margin = 16;
+		text_view.top_margin = text_view.bottom_margin = text_view.right_margin = text_view.left_margin = 16;
 		text_view.editable = false;
 		text_view.show ();
 		return text_view;
