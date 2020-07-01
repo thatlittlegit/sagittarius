@@ -31,6 +31,10 @@ namespace Sagittarius {
 		Gtk.Button back_button;
 		[GtkChild]
 		Gtk.Button forward_button;
+		[GtkChild]
+		Gtk.Button new_tab_button;
+		[GtkChild]
+		Gtk.Revealer new_tab_revealer;
 
 		Granite.Widgets.DynamicNotebook notebook;
 		Tab current {
@@ -55,10 +59,19 @@ namespace Sagittarius {
 
 			notebook = new Granite.Widgets.DynamicNotebook ();
 			notebook.add_button_visible = true;
-			notebook.tab_bar_behavior = Granite.Widgets.DynamicNotebook.TabBarBehavior.ALWAYS;
-			notebook.new_tab_requested.connect(() => {
+			notebook.tab_bar_behavior = Granite.Widgets.DynamicNotebook.TabBarBehavior.SINGLE;
+			notebook.new_tab_requested.connect(() => create_tab ());
+
+			new_tab_button.clicked.connect(() => {
 				create_tab ();
+				new_tab_revealer.set_reveal_child(false);
 			});
+
+			notebook.close_tab_requested.connect(() => {
+				new_tab_revealer.set_reveal_child(notebook.n_tabs >= 2);
+				return true;
+			});
+
 			notebook.tab_switched.connect((old, newfound) => {
 				on_navigate_cb(newfound as Tab);
 			});
