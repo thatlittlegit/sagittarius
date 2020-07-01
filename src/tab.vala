@@ -51,7 +51,6 @@ namespace Sagittarius {
 
 		private ErrorMessage errorview;
 		private Gtk.ScrolledWindow scrolled_text_view;
-		private Gtk.Box content_box;
 		private Gtk.Stack stack;
 
 		private Window window;
@@ -68,8 +67,6 @@ namespace Sagittarius {
 			stack.add(errorview);
 
 			scrolled_text_view = new Gtk.ScrolledWindow(null, null);
-			content_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
-			scrolled_text_view.add(content_box);
 			stack.add(scrolled_text_view);
 			scrolled_text_view.show_all ();
 
@@ -138,9 +135,12 @@ namespace Sagittarius {
 		private void view (Upg.Uri uri, Content document) {
 			if (document.code == SUCCESS) {
 				var markup = parse_markup(uri, document.text);
-				var new_textview = display_markup(markup, navigate);
-				content_box.remove(content_box.get_children ().nth_data(0));
-				content_box.add(new_textview);
+
+				if (scrolled_text_view.get_child () != null) {
+					scrolled_text_view.remove(scrolled_text_view.get_child ());
+				}
+				scrolled_text_view.add(display_markup(markup, navigate));
+
 				stack.visible_child = scrolled_text_view;
 
 				label = markup.title ?? uri.to_string ();
