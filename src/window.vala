@@ -100,7 +100,7 @@ namespace Sagittarius {
 				var uri = url_bar.get_text ();
 
 				var parsed = new Upg.Uri(uri);
-				if (parsed.host != null) {
+				if (parsed.scheme != null || parsed.host != null) {
 					current.navigate(parsed);
 				} else {
 					current.navigate(new Upg.Uri("gemini://%s".printf(uri)));
