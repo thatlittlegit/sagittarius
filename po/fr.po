@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sagittarius\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-01 00:39-0400\n"
+"POT-Creation-Date: 2020-07-01 23:50-0400\n"
 "PO-Revision-Date: 2020-05-23 13:46-0400\n"
 "Last-Translator: thatlittlegit <personal@thatlittlegit.tk>\n"
 "Language-Team: none\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: data/tk.thatlittlegit.sagittarius.desktop.in:3
-#: data/tk.thatlittlegit.sagittarius.appdata.xml.in:9 src/window.vala:94
+#: data/tk.thatlittlegit.sagittarius.appdata.xml.in:9 src/window.vala:105
 #: src/application.vala:51
 msgid "Sagittarius"
 msgstr "Sagittaire"
@@ -54,19 +54,24 @@ msgstr ""
 msgid "The Gemini project page displayed in Sagittarius"
 msgstr "Sagittaire vous montre le page pour le projet Gemini"
 
-#: src/window.ui:95
+#: data/tk.thatlittlegit.sagittarius.appdata.xml.in:30
+msgid "Gemini Universal Search as one of multiple tabs"
+msgstr ""
+"Le moteur de Recherche Universel Gemini, qui est un de un tas des onglets"
+
+#: src/window.ui:26
 msgid "URL…"
 msgstr "URL…"
 
-#: src/window.vala:49
+#: src/window.vala:53
 msgid "_Settings"
 msgstr "_Paramètres"
 
-#: src/window.vala:52
+#: src/window.vala:56
 msgid "_About"
 msgstr "À _propos"
 
-#: src/window.vala:53
+#: src/window.vala:57
 msgid "Quit"
 msgstr "Sortir"
 
@@ -220,14 +225,19 @@ msgid "Internal Error"
 msgstr "Erreur interne"
 
 #: src/error.vala:143
+#, c-format
 msgid ""
 "An error has occurred inside the browser, and the page could not be "
 "displayed. You might be able to go back or refresh, but you might want to "
-"restart."
+"restart.\n"
+"\n"
+"The error is: %s"
 msgstr ""
 "Le navigateur a rencontré une erreur, et il ne pourrait pas faire la page."
 "Peut-être vous pourriez retourner ou rafraîchir, mais vous devrais "
-"redémarrage."
+"redémarrage.\n"
+"\n"
+"L'erreur est: %s"
 
 #: src/application.vala:47
 msgid "A browser for Gemini"
