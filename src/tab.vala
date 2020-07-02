@@ -20,7 +20,53 @@
 public delegate void NavigateFunc (Upg.Uri uri);
 
 namespace Sagittarius {
-	public class Tab : Granite.Widgets.Tab {
+	public class TabLabel : Gtk.Box {
+		private Gtk.Label label;
+		private Gtk.Spinner spinner;
+		private Gtk.Button close_button;
+
+		public bool spinning {
+			get {
+				return spinner.active;
+			}
+			set {
+				spinner.active = value;
+			}
+		}
+
+		public string text {
+			get {
+				return label.get_text ();
+			}
+			set {
+				label.set_text(value);
+			}
+		}
+
+		construct {
+			label = new Gtk.Label("");
+			spinner = new Gtk.Spinner ();
+			close_button = new Gtk.Button.from_icon_name("window-close-symbolic");
+
+			label.ellipsize = Pango.EllipsizeMode.END;
+			label.set_width_chars(10);
+
+			close_button.get_style_context ().add_class("flat");
+			close_button.clicked.connect(() => close ());
+
+			set_orientation(Gtk.Orientation.HORIZONTAL);
+			pack_start(spinner, false, false, 4);
+			pack_end(close_button, false, false, 4);
+			pack_end(label, false, false, 4);
+		}
+
+		public TabLabel () {
+		}
+
+		public signal void close ();
+	}
+
+	public class Tab : Gtk.Stack {
 		public int current_history_pos {
 			get {
 				return history.pos;
@@ -46,12 +92,12 @@ namespace Sagittarius {
 		}
 
 		public string uri { get; private set; }
+		public TabLabel label { get; construct set; }
 
 		private History history;
 
 		private ErrorMessage errorview;
 		private Gtk.ScrolledWindow scrolled_text_view;
-		private Gtk.Stack stack;
 
 		private Window window;
 
@@ -59,15 +105,12 @@ namespace Sagittarius {
 			window = _window;
 			history = new History ();
 
-			stack = new Gtk.Stack ();
-			page = stack;
-
 			errorview = new ErrorMessage ();
 			errorview.show ();
-			stack.add(errorview);
+			add(errorview);
 
 			scrolled_text_view = new Gtk.ScrolledWindow(null, null);
-			stack.add(scrolled_text_view);
+			add(scrolled_text_view);
 			scrolled_text_view.show_all ();
 
 			var welcome = new Granite.Widgets.Welcome(_("Sagittarius"), _("Welcome to Sagittarius!"));
@@ -80,12 +123,15 @@ namespace Sagittarius {
 					break;
 				}
 			});
-			stack.add(welcome);
-			stack.visible_child = welcome;
+			add(welcome);
+			visible_child = welcome;
 
-			label = _("New Tab");
+			label = new TabLabel ();
+			label.text = _("New Tab");
+			label.close.connect(() => close(this));
+			label.show_all ();
 
-			stack.show_all ();
+			show_all ();
 		}
 
 		public void go_to_history_pos (int pos) {
@@ -108,7 +154,7 @@ namespace Sagittarius {
 		}
 
 		public void navigate (Upg.Uri uri) {
-			working = true;
+			label.spinning = true;
 			this.uri = uri.to_string ();
 			history.navigate(uri);
 			fetch_and_view(uri);
@@ -141,24 +187,25 @@ namespace Sagittarius {
 				}
 				scrolled_text_view.add(display_markup(markup, navigate));
 
-				stack.visible_child = scrolled_text_view;
+				visible_child = scrolled_text_view;
 
-				label = markup.title ?? uri.to_string ();
-				working = false;
+				label.text = markup.title ?? uri.to_string ();
+				label.spinning = false;
 				return;
 			}
 
 			errorview.set_message_for_response(navigate, document);
-			working = false;
-			stack.visible_child = errorview;
+			label.spinning = false;
+			visible_child = errorview;
 		}
 
 		public void internal_error (string ? message = null) {
-			working = false;
+			label.spinning = false;
 			errorview.internal_error(message ?? "unknown error");
-			stack.visible_child = errorview;
+			visible_child = errorview;
 		}
 
 		public signal void on_navigate (Tab tab);
+		public signal void close (Tab tab);
 	}
 }

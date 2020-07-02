@@ -31,21 +31,21 @@ namespace Sagittarius {
 		Gtk.Button back_button;
 		[GtkChild]
 		Gtk.Button forward_button;
-		[GtkChild]
-		Gtk.Button new_tab_button;
-		[GtkChild]
-		Gtk.Revealer new_tab_revealer;
 
-		Granite.Widgets.DynamicNotebook notebook;
+		Gtk.Notebook notebook;
 		Tab current {
 			get {
-				return notebook.current as Tab;
+				return notebook.get_nth_page(notebook.page) as Tab;
 			}
 		}
 
 		public Window (Sagittarius.Application app) {
 			Object(application: app);
 			icon_name = "tk.thatlittlegit.sagittarius.gnome";
+
+			var newTabAction = new SimpleAction("new-tab", null);
+			newTabAction.activate.connect(() => this.create_tab ());
+			add_action(newTabAction);
 
 			var menu = new Menu ();
 			var menu1 = new Menu ();
@@ -57,40 +57,36 @@ namespace Sagittarius {
 			menu2.append(_("Quit"), "app.quit");
 			menu_button.set_menu_model(menu);
 
-			notebook = new Granite.Widgets.DynamicNotebook ();
-			notebook.add_button_visible = true;
-			notebook.tab_bar_behavior = Granite.Widgets.DynamicNotebook.TabBarBehavior.SINGLE;
-			notebook.new_tab_requested.connect(() => create_tab ());
-
-			new_tab_button.clicked.connect(() => {
-				create_tab ();
-				new_tab_revealer.set_reveal_child(false);
-			});
-
-			notebook.close_tab_requested.connect(() => {
-				new_tab_revealer.set_reveal_child(notebook.n_tabs >= 2);
-				return true;
-			});
-
-			notebook.tab_switched.connect((old, newfound) => {
+			notebook = new Gtk.Notebook ();
+			notebook.switch_page.connect((newfound) => {
 				on_navigate_cb(newfound as Tab);
 			});
-			notebook.new_tab_requested ();
+			notebook.page_removed.connect(rethink_tab_visibility);
+			notebook.page_added.connect(rethink_tab_visibility);
+			notebook.show_tabs = false;
+			notebook.scrollable = true;
+			create_tab ();
 			add(notebook);
 			notebook.show ();
 		}
 
+		private void rethink_tab_visibility () {
+			notebook.show_tabs = notebook.get_children ().length () > 1;
+		}
+
 		public Tab create_tab (string ? uri = null) {
 			var tab = new Tab(this);
-			notebook.insert_tab(tab, notebook.n_tabs);
-			notebook.current = tab;
+			notebook.set_current_page(notebook.append_page(tab, tab.label));
 			tab.on_navigate.connect(on_navigate_cb);
+			tab.close.connect((page) => notebook.remove_page(notebook.page_num(page)));
+
+			notebook.set_tab_reorderable(tab, true);
 
 			if (uri != null) {
 				try {
-					tab.navigate(new Upg.Uri(uri));
+					current.navigate(new Upg.Uri(uri));
 				} catch (Error err) {
-					tab.internal_error ();
+					current.internal_error ();
 				}
 			}
 			return tab;
@@ -104,7 +100,10 @@ namespace Sagittarius {
 			forward_button.sensitive = tab.can_go_forward;
 			back_button.sensitive = tab.can_go_back;
 			url_bar.set_text(tab.uri ?? "");
-			title = "%s - %s".printf(tab.label, _("Sagittarius"));
+
+			if (tab == current) {
+				title = "%s - %s".printf(tab.label.text, _("Sagittarius"));
+			}
 		}
 
 		[GtkCallback]
