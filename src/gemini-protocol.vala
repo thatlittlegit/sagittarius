@@ -113,13 +113,9 @@ async GeminiResponse send_request (Upg.Uri uri) throws Error, IOError {
 			break;
 		}
 
-		if (current.isspace ()) {
-			continue;
-		}
-
 		meta.append_c(current);
 	}
-	response.meta = meta.str;
+	response.meta = meta.str.strip ();
 	bytearray.remove_range(0, i);
 	message("%s", response.meta);
 
