@@ -21,10 +21,14 @@ public async Sagittarius.Content about_protocol (Upg.Uri uri) {
 	Sagittarius.Content response = { uri, (GeminiCode) 20, new GMime.ContentType("text", "gemini") };
 
 	if (uri.host == null) {
-		uri.host = uri.path_str.next_char ();
+		if (uri.path != null) {
+			uri.host = uri.path_str.next_char ();
 
-		if (uri.path.length () > 0) {
-			uri.path = uri.path.nth(1);
+			if (uri.path.length () > 0) {
+				uri.path = uri.path.nth(1);
+			}
+		} else {
+			uri.host = "";
 		}
 	}
 
