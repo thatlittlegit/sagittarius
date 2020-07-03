@@ -18,7 +18,8 @@
  */
 
 namespace Sagittarius {
-	public class ErrorMessage : Granite.Widgets.AlertView {
+	[GtkTemplate(ui = "/tk/thatlittlegit/sagittarius/error.ui")]
+	public class ErrorMessage : Gtk.Grid {
 		private const string WARNING_ICON = "dialog-warning";
 		private const string QUESTION_ICON = "dialog-question";
 		private const string ERROR_ICON = "dialog-error";
@@ -26,121 +27,139 @@ namespace Sagittarius {
 		private const string NETWORK_ERROR_ICON = "network-error";
 		private const string NETWORK_WARNING_ICON = "network-offline";
 		private const string PASSWORD_ICON = "input-keyboard";
+		private const string ALARM_ICON = "alarm";
 
-		private Gtk.Entry text_entry = new Gtk.Entry ();
-		private Gtk.Button action_button;
+		[GtkChild]
+		private Gtk.Image image;
+		[GtkChild]
+		private Gtk.Label title;
+		[GtkChild]
+		private Gtk.Label description;
+		[GtkChild]
+		private Gtk.Box site_says_box;
+		[GtkChild]
+		private Gtk.Label site_says;
+		[GtkChild]
+		private Gtk.Button button_one;
+		[GtkChild]
+		private Gtk.Entry text_entry;
 
 		public ErrorMessage () {
-			Object(title: "title", description: "description", icon_name: QUESTION_ICON);
-
-			var grid = get_children ().nth_data(0) as Gtk.Grid;
-			action_button = (grid.get_child_at(2, 3) as Gtk.Revealer).get_child () as Gtk.Button;
-			grid.insert_row(3);
-			grid.attach(text_entry, 2, 3, 2, 1);
 		}
 
+		private ulong last_handler = 0;
+
 		public void set_message_for_response (NavigateFunc navigate, Content response) {
-			hide_action ();
 			text_entry.hide ();
-			action_button.sensitive = true;
+			button_one.sensitive = true;
+
+			if (last_handler != 0) {
+				SignalHandler.disconnect(button_one, last_handler);
+			}
 
 			switch (response.code) {
 			case GeminiCode.INPUT:
-				icon_name = PASSWORD_ICON;
-				title = _("Input wanted");
-				description = _("The site asks:\n%s").printf(response.text);
+				set_message(PASSWORD_ICON, _("Input wanted"), null);
+				button_one.label = _("Go");
 				text_entry.show ();
-				show_action(_("Go"));
-				action_activated.connect(() => {
+				last_handler = button_one.clicked.connect(() => {
 					response.original_uri.query_str = text_entry.text;
 					navigate(response.original_uri);
 				});
+				break;
+			case GeminiCode.SUCCESS:
+				set_message("weather-clear", _("Success!"), _("Everything worked, except the programmer's brain when they were writing this."));
+				button_one.hide ();
 				return;
 			case GeminiCode.PERMANENT_REDIRECT:
 			case GeminiCode.TEMPORARY_REDIRECT:
-				icon_name = QUESTION_ICON;
-				title = _("You are being redirected");
-				description = _("The website is trying to send you to %s. Would you like to go there?%s")
-							   .printf(response.text, response.code == GeminiCode.PERMANENT_REDIRECT ? "\n<i>The browser will remember your decision.</i>" : "");
-				show_action(_("Redirect"));
-				action_activated.connect(() => {
-					try {
-						var destination = response.original_uri.apply_reference(response.text);
-						navigate(destination);
-					} catch (Error err) {
-						internal_error(err.message);
-					}
-				});
+				set_message(QUESTION_ICON,
+							_("You are being redirected"),
+							_("The website is trying to send you to %s. Would you like to go there?").printf(response.text));
+
+				Upg.Uri destination;
+				try {
+					destination = response.original_uri.apply_reference(response.text);
+				} catch (Error err) {
+					internal_error(err.message);
+					return;
+				}
+
+				button_one.label = _("Redirect");
+				last_handler = button_one.clicked.connect(() => navigate(destination));
 				return;
 			case GeminiCode.TEMPORARY_ERROR:
-				icon_name = WARNING_ICON;
-				title = _("Temporary failure");
-				description = _("Something went wrong on the website. Try again later.");
+				set_message(WARNING_ICON, _("Temporary failure"), _("Something went wrong with the website. Try again later."));
 				break;
 			case GeminiCode.SERVER_UNAVAILABLE:
-				icon_name = ERROR_ICON;
-				title = _("Server unavailable");
-				description = _("The server is unavailable due to overload, maintenance, or some other problem.");
+				set_message(ERROR_ICON, _("Server unavailable"),
+							_("The server is unavailable due to overload, maintenance, or some other problem. Try again later."));
 				break;
 			case GeminiCode.CGI_ERROR:
-				icon_name = SCRIPT_ICON;
-				title = _("Server script error");
-				description = _("The server encountered an error when processing the request.");
+				set_message(SCRIPT_ICON, _("Server script error"),
+							_("The server encountered an error when processing your request."));
 				break;
 			case GeminiCode.PROXY_ERROR:
-				icon_name = NETWORK_ERROR_ICON;
-				title = _("Proxy error");
-				description = _("The server wasn't able to proxy your request.");
+				set_message(NETWORK_ERROR_ICON, _("Proxy error"),
+							_("The server wasn't able to proxy your request."));
 				break;
 			case GeminiCode.SLOW_DOWN:
-				icon_name = "alarm"; // XXX
-				title = _("Slow down!");
-				description = _("You're sending requests too fast.");
-				action_button.sensitive = false;
-				show_action(_("Go"));
-				action_activated.connect(() => { navigate(response.original_uri); });
+				set_message(ALARM_ICON, _("Slow down!"),
+							_("You're sending requests too fast."));
+				button_one.sensitive = false;
+				button_one.label = _("Go");
+				last_handler = button_one.clicked.connect(() => navigate(response.original_uri));
 
 				Timeout.add(5000, () => {
-					action_button.sensitive = true;
+					button_one.sensitive = true;
 					return false;
 				});
 				break;
 			case GeminiCode.PERMANENT_ERROR:
-				icon_name = ERROR_ICON;
-				title = _("Permanent error");
-				description = _("Something went wrong, and it will never work again. :(");
+				set_message(ERROR_ICON, _("Permanent error"),
+							_("Something went wrong, and it will never work again. :("));
 				break;
 			case GeminiCode.NOT_FOUND:
-				icon_name = WARNING_ICON;
-				title = _("File not found");
-				description = _("We searched far and wide\nBut it we could not find.\nIt could not be found.");
+				set_message(WARNING_ICON,
+							_("File not found"),
+							_("We searched far and wide\nBut it we could not find.\nIt could not be found."));
 				break;
 			case GeminiCode.GONE:
-				icon_name = ERROR_ICON;
-				title = _("G O N E");
-				description = _("The file is gone.\nIt will never be back.\nWas it ever there?\nIs life but a dream?");
+				set_message(ERROR_ICON, _("G O N E"),
+							_("The file is gone.\nIt will never be back.\nWas it ever there?\nIs life but a dream?"));
 				break;
 			case GeminiCode.PROXY_REQUEST_REFUSED:
-				icon_name = NETWORK_ERROR_ICON;
-				title = _("Proxy request refused");
-				description = _("You asked the server to proxy a request for you, and it won't ever happen.");
+				set_message(NETWORK_ERROR_ICON, _("Proxy request refused"),
+							_("You asked the server to proxy a request for you, but the server won't do that."));
 				break;
 			case GeminiCode.BAD_REQUEST:
-				icon_name = ERROR_ICON;
-				title = _("Bad request");
-				description = _("Something went wrong, and the request was invalid?");
+				set_message(ERROR_ICON, _("Bad request"),
+							_("Something went wrong, and the request was invalid?"));
 				break;
 			}
 
 			if (response.text != "") {
-				description += _("\n\nThe site says: %s").printf(response.text);
+				site_says_box.show ();
+				site_says.label = response.text;
+			} else {
+				site_says_box.hide ();
 			}
 		}
 
 		public void internal_error (string message) {
-			icon_name = ERROR_ICON;
-			title = _("Internal Error");
-			description = _("An error has occurred inside the browser, and the page could not be displayed. You might be able to go back or refresh, but you might want to restart.\n\nThe error is: %s").printf(message);
+			set_message(ERROR_ICON,
+						_("Internal Error"),
+						_("An error has occurred inside the browser, and the page could not be displayed. You might be able to go back or refresh, but you might want to restart.\n\nThe error is: %s").printf(message));
+		}
+
+		private void set_message (string icon, string _title, string ? _description = null) {
+			image.icon_name = icon;
+			title.label = _title;
+
+			description.visible = _description != null;
+			description.label = _description ?? "";
+
+			site_says_box.hide ();
 		}
 	}
 }
