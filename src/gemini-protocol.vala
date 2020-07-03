@@ -116,8 +116,7 @@ async GeminiResponse send_request (Upg.Uri uri) throws Error, IOError {
 		meta.append_c(current);
 	}
 	response.meta = meta.str.strip ();
-	bytearray.remove_range(0, i);
-	message("%s", response.meta);
+	bytearray.remove_range(0, i + 1);
 
 	response.contents = ByteArray.free_to_bytes(bytearray);
 	info("recieved %ld bytes of content".printf(response.contents.length));
