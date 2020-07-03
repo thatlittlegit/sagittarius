@@ -61,7 +61,7 @@ namespace Sagittarius {
 		return iter;
 	}
 
-	public Gtk.TextView display_markup (Document markup, NavigateFunc nav) {
+	public async Gtk.TextView display_markup (Document markup, NavigateFunc nav) {
 		var view = make_new_textview ();
 		var preformatted = view.buffer.tag_table.lookup("pre");
 		var h1 = view.buffer.tag_table.lookup("h1");
@@ -120,7 +120,7 @@ namespace Sagittarius {
 		return view;
 	}
 
-	public Document parse_markup (Upg.Uri original_uri, string markup) {
+	public async Document parse_markup (Upg.Uri original_uri, string markup) {
 		Document output = new Document ();
 		var lines = markup.split("\n");
 

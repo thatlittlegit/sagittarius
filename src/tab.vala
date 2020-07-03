@@ -170,7 +170,7 @@ namespace Sagittarius {
 			try {
 				var document = yield fetch_uri (uri);
 
-				view(uri, document);
+				yield view (uri, document);
 			} catch (Error err) {
 				internal_error(err.message);
 			} finally {
@@ -178,14 +178,16 @@ namespace Sagittarius {
 			}
 		}
 
-		private void view (Upg.Uri uri, Content document) {
+		private async void view (Upg.Uri uri, Content document) {
 			if (document.code == SUCCESS) {
-				var markup = parse_markup(uri, document.text);
+				var markup = yield parse_markup (uri, document.text);
+
+				var displayed = yield display_markup (markup, navigate);
 
 				if (scrolled_text_view.get_child () != null) {
 					scrolled_text_view.remove(scrolled_text_view.get_child ());
 				}
-				scrolled_text_view.add(display_markup(markup, navigate));
+				scrolled_text_view.add(displayed);
 
 				visible_child = scrolled_text_view;
 
