@@ -132,16 +132,10 @@ namespace Sagittarius {
 			stack.add_named(scrolled_text_view, "content");
 			scrolled_text_view.show_all ();
 
-			var welcome = new Granite.Widgets.Welcome(_("Sagittarius"), _("Welcome to Sagittarius!"));
-			welcome.append("input-keyboard", _("Enter a URI"), _("Type a URL in the address bar to navigate."));
+			var welcome = new Dazzle.EmptyState ();
+			welcome.title = _("Welcome to Sagittarius!");
+			welcome.subtitle = _("Start by typing a URL in the address bar.");
 			welcome.show ();
-			welcome.activated.connect((index) => {
-				switch (index) {
-				case 0:
-					window.select_address_bar ();
-					break;
-				}
-			});
 			stack.add_named(welcome, "welcome");
 			stack.visible_child = welcome;
 

@@ -32,12 +32,12 @@
     ],
     "modules" : [
         {
-            "name" : "granite",
+            "name" : "libdazzle",
             "buildsystem" : "meson",
             "sources" : [
                 {
                     "type" : "git",
-                    "url" : "https://github.com/elementary/granite.git"
+                    "url" : "https://gitlab.gnome.org/GNOME/libdazzle.git"
                 }
             ]
         },
