@@ -51,6 +51,7 @@ namespace Sagittarius {
 
 		public void set_message_for_response (NavigateFunc navigate, Content response) {
 			text_entry.hide ();
+			button_one.hide ();
 			button_one.sensitive = true;
 
 			if (last_handler != 0) {
@@ -60,6 +61,7 @@ namespace Sagittarius {
 			switch (response.code) {
 			case GeminiCode.INPUT:
 				set_message(PASSWORD_ICON, _("Input wanted"), null);
+				button_one.show ();
 				button_one.label = _("Go");
 				text_entry.show ();
 				last_handler = button_one.clicked.connect(() => {
@@ -85,6 +87,7 @@ namespace Sagittarius {
 					return;
 				}
 
+				button_one.show ();
 				button_one.label = _("Redirect");
 				last_handler = button_one.clicked.connect(() => navigate(destination));
 				return;
@@ -106,6 +109,7 @@ namespace Sagittarius {
 			case GeminiCode.SLOW_DOWN:
 				set_message(ALARM_ICON, _("Slow down!"),
 							_("You're sending requests too fast."));
+				button_one.show ();
 				button_one.sensitive = false;
 				button_one.label = _("Go");
 				last_handler = button_one.clicked.connect(() => navigate(response.original_uri));
@@ -147,6 +151,8 @@ namespace Sagittarius {
 		}
 
 		public void internal_error (string message) {
+			text_entry.hide ();
+			button_one.hide ();
 			set_message(ERROR_ICON,
 						_("Internal Error"),
 						_("An error has occurred inside the browser, and the page could not be displayed. You might be able to go back or refresh, but you might want to restart.\n\nThe error is: %s").printf(message));
