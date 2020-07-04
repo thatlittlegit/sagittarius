@@ -66,7 +66,7 @@ namespace Sagittarius {
 		public signal void close ();
 	}
 
-	public class Tab : Gtk.Stack {
+	public class Tab : Gtk.Box {
 		public int current_history_pos {
 			get {
 				return history.pos;
@@ -99,18 +99,37 @@ namespace Sagittarius {
 		private ErrorMessage errorview;
 		private Gtk.ScrolledWindow scrolled_text_view;
 
+		private Gtk.Stack stack;
+
+		private Gtk.InfoBar warning_bar;
+		private Gtk.Label warning_bar_label;
+
 		private Window window;
 
 		public Tab (Window _window, History parent_history) {
+			Object(orientation: Gtk.Orientation.VERTICAL);
 			window = _window;
 			history = new History(parent_history);
 
+			warning_bar = new Gtk.InfoBar ();
+			warning_bar_label = new Gtk.Label(_("Text currently unset."));
+			warning_bar.revealed = false;
+			warning_bar.show_close_button = true;
+			warning_bar.response.connect(() => warning_bar.set_revealed(false));
+			warning_bar.get_content_area ().add(warning_bar_label);
+			warning_bar.message_type = Gtk.MessageType.WARNING;
+			warning_bar.show_all ();
+			pack_start(warning_bar, false, false, 0);
+
+			stack = new Gtk.Stack ();
+			pack_end(stack, true, true, 0);
+
 			errorview = new ErrorMessage ();
 			errorview.show ();
-			add(errorview);
+			stack.add_named(errorview, "error");
 
 			scrolled_text_view = new Gtk.ScrolledWindow(null, null);
-			add(scrolled_text_view);
+			stack.add_named(scrolled_text_view, "content");
 			scrolled_text_view.show_all ();
 
 			var welcome = new Granite.Widgets.Welcome(_("Sagittarius"), _("Welcome to Sagittarius!"));
@@ -123,8 +142,8 @@ namespace Sagittarius {
 					break;
 				}
 			});
-			add(welcome);
-			visible_child = welcome;
+			stack.add_named(welcome, "welcome");
+			stack.visible_child = welcome;
 
 			label = new TabLabel ();
 			label.text = _("New Tab");
@@ -161,7 +180,8 @@ namespace Sagittarius {
 			try {
 				history.record(uri);
 			} catch (IOError err) {
-				warning(err.message);
+				warning_bar_label.label = _("We couldn't record this site in your history.");
+				warning_bar.set_revealed(true);
 			}
 
 			fetch_and_view(uri);
@@ -196,7 +216,7 @@ namespace Sagittarius {
 				}
 				scrolled_text_view.add(displayed);
 
-				visible_child = scrolled_text_view;
+				stack.visible_child = scrolled_text_view;
 
 				label.text = markup.title ?? uri.to_string ();
 				label.spinning = false;
@@ -205,13 +225,13 @@ namespace Sagittarius {
 
 			errorview.set_message_for_response(navigate, document);
 			label.spinning = false;
-			visible_child = errorview;
+			stack.visible_child = errorview;
 		}
 
 		public void internal_error (string ? message = null) {
 			label.spinning = false;
 			errorview.internal_error(message ?? "unknown error");
-			visible_child = errorview;
+			stack.visible_child = errorview;
 		}
 
 		public signal void on_navigate (Tab tab);
