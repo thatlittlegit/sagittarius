@@ -153,7 +153,8 @@ namespace Sagittarius {
 
 			for (int i = 0; i < current.history_uris.length (); i++) {
 				var item = new Gtk.ModelButton ();
-				item.text = current.history_uris.nth_data(i).to_string ();
+				var entry = current.history_uris.nth_data(i);
+				item.text = entry.title ?? entry.uri.to_string ();
 				item.sensitive = i != current.current_history_pos;
 				item.set_data<int>("history_pos", i);
 

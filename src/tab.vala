@@ -73,7 +73,7 @@ namespace Sagittarius {
 			}
 		}
 
-		public List<Upg.Uri> history_uris {
+		public List<HistoryEntry> history_uris {
 			get {
 				return history.history;
 			}
@@ -155,21 +155,21 @@ namespace Sagittarius {
 
 		public void go_to_history_pos (int pos) {
 			history.pos = pos;
-			fetch_and_view(history.top ());
+			fetch_and_view(history.top ().uri);
 		}
 
 		public void back () {
 			history.back ();
-			fetch_and_view(history.top ());
+			fetch_and_view(history.top ().uri);
 		}
 
 		public void forward () {
 			history.forward ();
-			fetch_and_view(history.top ());
+			fetch_and_view(history.top ().uri);
 		}
 
 		public void reload () {
-			fetch_and_view(history.top ());
+			fetch_and_view(history.top ().uri);
 		}
 
 		public void navigate (Upg.Uri uri) {
@@ -177,12 +177,6 @@ namespace Sagittarius {
 			this.uri = uri.to_string ();
 			history.navigate(uri);
 
-			try {
-				history.record(uri);
-			} catch (IOError err) {
-				warning_bar_label.label = _("We couldn't record this site in your history.");
-				warning_bar.set_revealed(true);
-			}
 
 			fetch_and_view(uri);
 		}
@@ -206,6 +200,7 @@ namespace Sagittarius {
 		}
 
 		private async void view (Upg.Uri uri, Content document) {
+			string title;
 			if (document.code == SUCCESS) {
 				var markup = yield parse_markup (uri, document.text);
 
@@ -218,14 +213,23 @@ namespace Sagittarius {
 
 				stack.visible_child = scrolled_text_view;
 
-				label.text = markup.title ?? uri.to_string ();
-				label.spinning = false;
-				return;
+				title = markup.title ?? uri.to_string ();
+			} else {
+				errorview.set_message_for_response(navigate, document);
+				stack.visible_child = errorview;
+				title = uri.to_string ();
 			}
-
-			errorview.set_message_for_response(navigate, document);
 			label.spinning = false;
-			stack.visible_child = errorview;
+			label.text = title;
+
+			try {
+				var date = new DateTime.now_utc ();
+				history.set_top(new HistoryEntry(date, uri, title));
+				history.record(date, uri, title);
+			} catch (IOError err) {
+				warning_bar_label.label = _("We couldn't record this site in your history.");
+				warning_bar.set_revealed(true);
+			}
 		}
 
 		public void internal_error (string ? message = null) {

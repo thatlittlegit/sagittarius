@@ -18,8 +18,20 @@
  */
 
 namespace Sagittarius {
+	public class HistoryEntry {
+		public DateTime date;
+		public Upg.Uri uri;
+		public string title;
+
+		public HistoryEntry (DateTime ? a, Upg.Uri b, string ? c) {
+			date = a ?? new DateTime.from_unix_utc(0);
+			uri = b;
+			title = c ?? b.to_string ();
+		}
+	}
+
 	public class History {
-		private List<Upg.Uri> queue;
+		private List<HistoryEntry> queue;
 		private int current = -1;
 		private History ? parent;
 
@@ -38,7 +50,7 @@ namespace Sagittarius {
 			read_from_file(backed.get_input_stream ());
 		}
 
-		public List<Upg.Uri> history {
+		public List<HistoryEntry> history {
 			get {
 				return queue;
 			}
@@ -77,32 +89,45 @@ namespace Sagittarius {
 			}
 		}
 
-		public Upg.Uri top () {
+		public HistoryEntry top () {
 			return queue.nth_data(current);
 		}
 
 		public void navigate (Upg.Uri full_uri) {
 			remove_all_after(current);
 			current++;
-			queue.append(full_uri);
+			queue.append(new HistoryEntry(null, full_uri, null));
 
 			if (parent != null) {
 				parent.navigate(full_uri);
 			}
 		}
 
-		public void record (Upg.Uri full_uri) throws IOError {
+		public void record (DateTime now, Upg.Uri full_uri, string title) throws IOError {
+			record_entry(new HistoryEntry(now, full_uri, title));
+		}
+
+		public void record_entry (HistoryEntry entry) throws IOError {
 			if (parent != null) {
-				parent.record(full_uri);
+				parent.record_entry(entry);
 				return;
 			}
 
 			if (file != null) {
-				uint8[] uri = full_uri.to_string ().data;
-
-				file.get_output_stream ().write(uri);
+				file.get_output_stream ().write(entry.date.format("%FT%TZ").data);
+				file.get_output_stream ().write("\t".data);
+				file.get_output_stream ().write(entry.uri.to_string ().data);
+				file.get_output_stream ().write("\t".data);
+				file.get_output_stream ().write(entry.title.data);
 				file.get_output_stream ().write("\n".data);
 			}
+		}
+
+		public void set_top (HistoryEntry entry) {
+			var top = queue.nth_data(current < 0 ? 0 : current);
+			top.date = entry.date;
+			top.uri = entry.uri;
+			top.title = entry.title;
 		}
 
 		private void remove_all_after (int current) {
@@ -127,7 +152,10 @@ namespace Sagittarius {
 						continue;
 					}
 
-					queue.append(new Upg.Uri(line));
+					var parts = line.split("\t", 3);
+					queue.append(new HistoryEntry(new DateTime.from_iso8601(parts[0], new TimeZone.utc ()),
+												  new Upg.Uri(parts[1]),
+												  parts[2]));
 				}
 			} catch (Error err) {
 				warning(err.message);
