@@ -32,6 +32,8 @@ namespace Sagittarius {
 		[GtkChild]
 		Gtk.Button forward_button;
 
+		private History history;
+
 		Gtk.Notebook notebook;
 		Tab current {
 			get {
@@ -39,9 +41,11 @@ namespace Sagittarius {
 			}
 		}
 
-		public Window (Sagittarius.Application app) {
+		public Window (Sagittarius.Application app, History history) {
 			Object(application: app);
 			icon_name = "tk.thatlittlegit.sagittarius.gnome";
+
+			this.history = history;
 
 			var newTabAction = new SimpleAction("new-tab", null);
 			newTabAction.activate.connect(() => this.create_tab ());
@@ -75,7 +79,7 @@ namespace Sagittarius {
 		}
 
 		public Tab create_tab (string ? uri = null) {
-			var tab = new Tab(this);
+			var tab = new Tab(this, history);
 			notebook.set_current_page(notebook.append_page(tab, tab.label));
 			tab.on_navigate.connect(on_navigate_cb);
 			tab.close.connect((page) => notebook.remove_page(notebook.page_num(page)));

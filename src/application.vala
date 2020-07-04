@@ -24,14 +24,32 @@ namespace Sagittarius {
 			{ "about", show_about_dialog },
 		};
 
+		private History history;
+
 		public Application () {
 			Object(application_id: "tk.thatlittlegit.sagittarius", flags : ApplicationFlags.HANDLES_OPEN);
 			add_action_entries(actions, this);
 
+			startup.connect(initialize_history);
+
 			activate.connect(() => {
-				new Window(this).present ();
+				new Window(this, history).present ();
 			});
 			open.connect(open_file);
+		}
+
+		private void initialize_history () {
+			try {
+				var history_file = File.new_build_filename(Environment.get_user_data_dir (), "sagittarius", "history.csv");
+
+				if (!history_file.query_exists ()) {
+					history_file.create_readwrite(FileCreateFlags.NONE).close ();
+				}
+
+				history = new History.with_file(null, history_file.open_readwrite ());
+			} catch (Error err) {
+				error(err.message);
+			}
 		}
 
 		private void open_file (File[] files, string hint) {

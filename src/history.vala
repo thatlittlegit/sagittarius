@@ -21,6 +21,22 @@ namespace Sagittarius {
 	public class History {
 		private List<Upg.Uri> queue;
 		private int current = -1;
+		private History ? parent;
+
+		// FIXME we should use an OutputStream, but it gets closed too early
+		// 'cause Vala can't figure out that the OS is a substream of the IOS.
+		private IOStream file;
+
+		public History (History ? parent) {
+			this.parent = parent;
+		}
+
+		public History.with_file(History ? parent, IOStream backed) {
+			this.parent = parent;
+			this.file = backed;
+
+			read_from_file(backed.get_input_stream ());
+		}
 
 		public List<Upg.Uri> history {
 			get {
@@ -69,11 +85,52 @@ namespace Sagittarius {
 			remove_all_after(current);
 			current++;
 			queue.append(full_uri);
+
+			if (parent != null) {
+				parent.navigate(full_uri);
+			}
+		}
+
+		public void record (Upg.Uri full_uri) throws IOError {
+			if (parent != null) {
+				parent.record(full_uri);
+				return;
+			}
+
+			if (file != null) {
+				uint8[] uri = full_uri.to_string ().data;
+
+				file.get_output_stream ().write(uri);
+				file.get_output_stream ().write("\n".data);
+			}
 		}
 
 		private void remove_all_after (int current) {
 			while (current + 1 < queue.length ()) {
 				queue.remove_link(queue.last ());
+			}
+		}
+
+		private void read_from_file (InputStream _stream) {
+			var stream = new DataInputStream(_stream);
+
+			string line;
+			try {
+				while (true) {
+					line = stream.read_line_utf8 ();
+
+					if (line == null) {
+						break;
+					}
+
+					if (line.strip () == "" || line.has_prefix("#")) {
+						continue;
+					}
+
+					queue.append(new Upg.Uri(line));
+				}
+			} catch (Error err) {
+				warning(err.message);
 			}
 		}
 	}

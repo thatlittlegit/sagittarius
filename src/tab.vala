@@ -101,9 +101,9 @@ namespace Sagittarius {
 
 		private Window window;
 
-		public Tab (Window _window) {
+		public Tab (Window _window, History parent_history) {
 			window = _window;
-			history = new History ();
+			history = new History(parent_history);
 
 			errorview = new ErrorMessage ();
 			errorview.show ();
@@ -157,6 +157,13 @@ namespace Sagittarius {
 			label.spinning = true;
 			this.uri = uri.to_string ();
 			history.navigate(uri);
+
+			try {
+				history.record(uri);
+			} catch (IOError err) {
+				warning(err.message);
+			}
+
 			fetch_and_view(uri);
 		}
 
