@@ -43,7 +43,12 @@ namespace Sagittarius {
 				var history_file = File.new_build_filename(Environment.get_user_data_dir (), "sagittarius", "history.csv");
 
 				if (!history_file.query_exists ()) {
-					history_file.create_readwrite(FileCreateFlags.NONE).close ();
+					var stream = history_file.create_readwrite(FileCreateFlags.NONE);
+					stream.get_output_stream ().write("# %s\n# %s\n#\n# %s\n".printf(
+														  _("history.csv: history file for Sagittarius"),
+														  _("This file stores the history from your Sagittarius browsing."),
+														  _("DATE                 URI\t\tTITLE")
+														  ).data);
 				}
 
 				history = new History.with_file(null, history_file.open_readwrite ());
