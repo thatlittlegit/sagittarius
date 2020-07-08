@@ -27,6 +27,7 @@ namespace Sagittarius {
 		LIST_ITEM,
 		LINK,
 		BROKEN_LINK,
+		BLOCKQUOTE,
 	}
 
 	public struct Tag {
@@ -49,6 +50,8 @@ namespace Sagittarius {
 		text_view.buffer.create_tag("h2", "weight", 500, "size-points", 22.0, "size-set", true);
 		text_view.buffer.create_tag("h3", "weight", 400, "size-points", 18.0, "size-set", true);
 		text_view.buffer.create_tag("ul", "tabs", tabstops);
+		text_view.buffer.create_tag("blockquote", "family", "cursive",
+									"style", Pango.Style.ITALIC, "left-margin", 64, "left-margin-set", true);
 		text_view.top_margin = text_view.bottom_margin = text_view.right_margin = text_view.left_margin = 16;
 		text_view.editable = false;
 		text_view.show ();
@@ -68,6 +71,7 @@ namespace Sagittarius {
 		var h2 = view.buffer.tag_table.lookup("h2");
 		var h3 = view.buffer.tag_table.lookup("h3");
 		var ul = view.buffer.tag_table.lookup("ul");
+		var blockquote = view.buffer.tag_table.lookup("blockquote");
 
 		bool first = true;
 		foreach (var tag in markup.tags) {
@@ -114,6 +118,9 @@ namespace Sagittarius {
 				view.add_child_at_anchor(btn, view.buffer.create_child_anchor(iter));
 				btn.show ();
 				break;
+			case TagType.BLOCKQUOTE:
+				view.buffer.insert_with_tags(ref iter, tag.contents, -1, blockquote);
+				break;
 			}
 		}
 
@@ -152,6 +159,8 @@ namespace Sagittarius {
 				output.tags.prepend({ TagType.H3, line.substring(4) });
 			} else if (line.has_prefix("*")) {
 				output.tags.prepend({ TagType.LIST_ITEM, line.substring(1).strip () });
+			} else if (line.has_prefix(">")) {
+				output.tags.prepend({ TagType.BLOCKQUOTE, line.substring(1).strip () });
 			} else {
 				output.tags.prepend({ TagType.TEXT, line });
 			}
