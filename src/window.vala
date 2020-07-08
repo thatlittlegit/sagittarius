@@ -20,7 +20,7 @@ namespace Sagittarius {
 	[GtkTemplate(ui = "/tk/thatlittlegit/sagittarius/window.ui")]
 	public class Window : Gtk.ApplicationWindow {
 		[GtkChild]
-		Gtk.Entry url_bar;
+		Gtk.Box url_bar_box;
 		[GtkChild]
 		Gtk.PopoverMenu history_menu;
 		[GtkChild]
@@ -33,6 +33,11 @@ namespace Sagittarius {
 		Gtk.Button forward_button;
 
 		private History history;
+		private HistorySuggestionModel history_model;
+
+		private bool ignore_changes = false;
+
+		Dazzle.SuggestionEntry url_bar;
 
 		Gtk.Notebook notebook;
 		Tab current {
@@ -60,6 +65,27 @@ namespace Sagittarius {
 			menu2.append(_("_About"), "app.about");
 			menu2.append(_("Quit"), "app.quit");
 			menu_button.set_menu_model(menu);
+
+			url_bar = new Dazzle.SuggestionEntry ();
+			url_bar_box.pack_start(url_bar, true, true, 0);
+			url_bar.activate_suggestion.connect(() => {
+				url_bar.hide_suggestions ();
+				navigate_cb(new Gtk.Button ());
+			});
+			url_bar.suggestion_activated.connect((sugg) => {
+				url_bar.hide_suggestions ();
+				current.navigate(sugg.get_data<Upg.Uri>("uri"));
+			});
+			history_model = new HistorySuggestionModel(history);
+			url_bar.model = history_model;
+			url_bar.changed.connect(() => {
+				if (!ignore_changes) {
+					history_model.filter(url_bar.typed_text);
+					url_bar.show_suggestions ();
+				}
+			});
+			url_bar.grab_focus.connect(() => url_bar.show_suggestions ());
+			url_bar.show_all ();
 
 			notebook = new Gtk.Notebook ();
 			notebook.switch_page.connect((newfound) => {
@@ -103,7 +129,9 @@ namespace Sagittarius {
 		private void on_navigate_cb (Tab tab) {
 			forward_button.sensitive = tab.can_go_forward;
 			back_button.sensitive = tab.can_go_back;
+			ignore_changes = true;
 			url_bar.set_text(tab.uri ?? "");
+			ignore_changes = false;
 
 			if (tab == current) {
 				title = "%s - %s".printf(tab.label.text, _("Sagittarius"));

@@ -18,7 +18,7 @@
  */
 
 namespace Sagittarius {
-	public class HistoryEntry {
+	public class HistoryEntry : Object {
 		public DateTime date;
 		public Upg.Uri uri;
 		public string title;
@@ -160,6 +160,65 @@ namespace Sagittarius {
 			} catch (Error err) {
 				warning(err.message);
 			}
+		}
+	}
+
+	public class HistorySuggestionModel : Object, ListModel {
+		private History associated;
+		private List<Dazzle.Suggestion> visible;
+
+		public HistorySuggestionModel (History assoc) {
+			associated = assoc;
+			visible = new List<Dazzle.Suggestion>();
+		}
+
+		public Object ? get_item(uint position) {
+			return visible.nth_data(position);
+		}
+
+		public Type get_item_type () {
+			return new Dazzle.Suggestion ().get_type ();
+		}
+
+		public uint get_n_items () {
+			return visible.length ();
+		}
+
+		public void filter (string query) {
+			var original_list_len = visible.length ();
+			var filtering = new List<Dazzle.Suggestion>();
+
+			foreach (var entry in associated.history) {
+				var levenshtein = Dazzle.levenshtein(query, entry.title);
+				var suggestion = new Dazzle.Suggestion ();
+				suggestion.title = entry.title;
+				suggestion.subtitle = entry.uri.to_string ();
+				suggestion.set_data<int>("weight", levenshtein);
+				suggestion.set_data<Upg.Uri>("uri", entry.uri);
+				filtering.prepend(suggestion);
+			}
+			filtering.sort((a, b) => {
+				return a.get_data<int>("weight") - b.get_data<int>("weight");
+			});
+
+			var counter = 0;
+			visible = new List<Dazzle.Suggestion>();
+			foreach (var entry in filtering) {
+				var ok = true;
+				foreach (var already_visible in visible) {
+					if (already_visible.title == entry.title && already_visible.subtitle == entry.subtitle) {
+						ok = false;
+						break;
+					}
+				}
+
+				if (counter < 10 && ok) {
+					visible.append(entry);
+				}
+				counter++;
+			}
+
+			items_changed(0, original_list_len, visible.length ());
 		}
 	}
 }
