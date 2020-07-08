@@ -9,7 +9,7 @@
         "--share=ipc",
         "--socket=x11",
         "--socket=wayland",
-        "--filesystem=xdg-data/sagittarius:create"
+        "--filesystem=xdg-data/sagittarius"
     ],
     "build-options" : {
         "cflags" : "-O2 -g",
