@@ -44,8 +44,9 @@ namespace Sagittarius {
 
 	Gtk.TextView make_new_textview () {
 		var text_view = new Gtk.TextView ();
+		text_view.wrap_mode = Gtk.WrapMode.WORD;
 		var tabstops = new Pango.TabArray.with_positions(2, true, Pango.TabAlign.LEFT, 8, Pango.TabAlign.LEFT, 16);
-		text_view.buffer.create_tag("pre", "family", "monospace");
+		text_view.buffer.create_tag("pre", "family", "monospace", "wrap-mode", Gtk.WrapMode.NONE);
 		text_view.buffer.create_tag("h1", "weight", 600, "size-points", 26.0, "size-set", true);
 		text_view.buffer.create_tag("h2", "weight", 500, "size-points", 22.0, "size-set", true);
 		text_view.buffer.create_tag("h3", "weight", 400, "size-points", 18.0, "size-set", true);
