@@ -36,8 +36,9 @@
             "buildsystem": "meson",
             "sources": [
                 {
-                    "type": "git",
-                    "url": "https://gitlab.gnome.org/GNOME/libdazzle.git"
+                    "type": "archive",
+                    "url": "https://gitlab.gnome.org/GNOME/libdazzle/-/archive/3.37.1/libdazzle-3.37.1.tar.bz2",
+                    "sha256": "f786a9c3007011a03c721c3402f86ec69642797f64a4bdaa6f1a9c10628aa0cf"
                 }
             ]
         },
@@ -53,8 +54,9 @@
             ],
             "sources": [
                 {
-                    "type": "git",
-                    "url": "https://github.com/uriparser/uriparser.git"
+                    "type": "archive",
+                    "url": "https://github.com/uriparser/uriparser/releases/download/uriparser-0.9.4/uriparser-0.9.4.tar.xz",
+                    "sha256": "c2554f555bb1640aa5d77e574966d203ab073d738366d90ec5ada0055cd05bf7"
                 }
             ]
         },
@@ -75,7 +77,8 @@
             "sources": [
                 {
                     "type": "git",
-                    "url": "https://gitlab.gnome.org/GNOME/gmime"
+                    "url": "https://gitlab.gnome.org/GNOME/gmime",
+                    "commit": "9749a44bae4bacbb59c06d9a62e5e87cb8be3081"
                 }
             ]
         },
