@@ -11,6 +11,8 @@ for path, dirs, files in walk(root):
         filepath = ospath.join(path, file)
 
         if file.endswith(".vala") or file.endswith(".c"):
-            run(['uncrustify', '-q', filepath, '-c', config, '--replace', '--no-backup'])
-        if file.endswith(".xml") or file.endswith(".ui") or file.endswith(".xml.in"):
+            run(['uncrustify', '-q', filepath, '-c',
+                 config, '--replace', '--no-backup'])
+        if file.endswith(".xml") or file.endswith(
+                ".ui") or file.endswith(".xml.in"):
             run(['xmllint', '--format', filepath, '-o', filepath])
