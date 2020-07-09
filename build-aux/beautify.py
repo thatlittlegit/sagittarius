@@ -20,3 +20,11 @@ for path, dirs, files in walk(root):
 
         if ext == "xml" or ext == "ui" or file.endswith(".xml.in"):
             run(['xmllint', '--format', filepath, '-o', filepath])
+
+        if ext == "json":
+            prettified = run(['jq', '.', '--indent', '4', filepath],
+                             capture_output=True,
+                             text=True)
+            fd = open(filepath, "w")
+            fd.write(prettified.stdout)
+            fd.close()
