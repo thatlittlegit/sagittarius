@@ -8,11 +8,15 @@ config = ospath.join(root, '.uncrustify.cfg')
 
 for path, dirs, files in walk(root):
     for file in files:
-        filepath = ospath.join(path, file)
+        if file.find(".") == -1:
+            continue
 
-        if file.endswith(".vala") or file.endswith(".c"):
+        filepath = ospath.join(path, file)
+        ext = file.rsplit(".", 1)[1]
+
+        if ext == "vala" or ext == "c":
             run(['uncrustify', '-q', filepath, '-c',
                  config, '--replace', '--no-backup'])
-        if file.endswith(".xml") or file.endswith(
-                ".ui") or file.endswith(".xml.in"):
+
+        if ext == "xml" or ext == "ui" or file.endswith(".xml.in"):
             run(['xmllint', '--format', filepath, '-o', filepath])
