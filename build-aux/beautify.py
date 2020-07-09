@@ -28,3 +28,6 @@ for path, dirs, files in walk(root):
             fd = open(filepath, 'w')
             fd.write(prettified.stdout)
             fd.close()
+
+        if ext == 'py':
+            run(['autopep8', '--in-place', '--aggressive', '--aggressive', filepath])
