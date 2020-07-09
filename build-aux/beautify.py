@@ -8,23 +8,23 @@ config = ospath.join(root, '.uncrustify.cfg')
 
 for path, dirs, files in walk(root):
     for file in files:
-        if file.find(".") == -1:
+        if file.find('.') == -1:
             continue
 
         filepath = ospath.join(path, file)
-        ext = file.rsplit(".", 1)[1]
+        ext = file.rsplit('.', 1)[1]
 
-        if ext == "vala" or ext == "c":
+        if ext == 'vala' or ext == 'c':
             run(['uncrustify', '-q', filepath, '-c',
                  config, '--replace', '--no-backup'])
 
-        if ext == "xml" or ext == "ui" or file.endswith(".xml.in"):
+        if ext == 'xml' or ext == 'ui' or file.endswith('.xml.in'):
             run(['xmllint', '--format', filepath, '-o', filepath])
 
-        if ext == "json":
+        if ext == 'json':
             prettified = run(['jq', '.', '--indent', '4', filepath],
                              capture_output=True,
                              text=True)
-            fd = open(filepath, "w")
+            fd = open(filepath, 'w')
             fd.write(prettified.stdout)
             fd.close()
