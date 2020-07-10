@@ -116,7 +116,7 @@ namespace Sagittarius {
 			if (file != null) {
 				file.get_output_stream ().write(entry.date.format("%FT%TZ").data);
 				file.get_output_stream ().write("\t".data);
-				file.get_output_stream ().write(entry.uri.to_string ().data);
+				file.get_output_stream ().write(Uri.escape_string(entry.uri.to_string ()).data);
 				file.get_output_stream ().write("\t".data);
 				file.get_output_stream ().write(entry.title.data);
 				file.get_output_stream ().write("\n".data);
