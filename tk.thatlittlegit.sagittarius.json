@@ -83,6 +83,17 @@
             ]
         },
         {
+            "name": "libpeas",
+            "buildsystem": "meson",
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://gitlab.gnome.org/GNOME/libpeas/-/archive/libpeas-1.26.0/libpeas-libpeas-1.26.0.tar.bz2",
+                    "sha256": "04c19476ea30ed581a79519ac983ce76532606501af64d1be52ce13579e59a2d"
+                }
+            ]
+        },
+        {
             "name": "sagittarius",
             "builddir": true,
             "buildsystem": "meson",

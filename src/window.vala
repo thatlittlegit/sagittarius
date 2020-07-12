@@ -60,6 +60,7 @@ namespace Sagittarius {
 			var menu1 = new Menu ();
 			menu.append_section(null, menu1);
 			menu1.append(_("_Settings"), "app.settings");
+			menu1.append(_("_Plugins"), "app.plugins");
 			var menu2 = new Menu ();
 			menu.append_section(null, menu2);
 			menu2.append(_("_About"), "app.about");

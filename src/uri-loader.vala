@@ -18,6 +18,10 @@
  */
 
 namespace Sagittarius {
+	public interface UriLoader : Object {
+		public abstract async Content fetch (Upg.Uri uri);
+	}
+
 	public struct Content {
 		Upg.Uri original_uri;
 		GeminiCode code;
@@ -26,7 +30,21 @@ namespace Sagittarius {
 		uint8[] ? data; // if content_type is not recognized
 	}
 
-	const string[] supported = { "gemini", "about" };
+	HashTable<string, UriLoader> loaders = null;
+
+	public void init_loaders () {
+		if (loaders == null)
+			loaders = new HashTable<string, UriLoader>(str_hash, str_equal);
+	}
+
+	public void add_loader (string scheme, UriLoader impl) {
+		loaders.insert(scheme, impl);
+	}
+
+	public void remove_loader (string scheme, UriLoader impl) {
+		// FIXME impl should eventually be used to only remove the right one
+		loaders.remove(scheme);
+	}
 
 	async Content open_with_glib (Upg.Uri uri) {
 		AppInfo.launch_default_for_uri_async.begin(uri.to_string (), null);
@@ -40,15 +58,15 @@ namespace Sagittarius {
 	}
 
 	public async Content fetch_uri (Upg.Uri uri) throws Error {
-		switch (uri.scheme) {
-		case "gemini":
+		if (uri.scheme == "gemini") {
 			return yield get_gemini (uri);
-
-		case "about":
-			return yield about_protocol (uri);
-
-		default:
-			return yield open_with_glib (uri);
 		}
+
+		var loader = loaders.lookup(uri.scheme);
+		if (loader != null) {
+			return yield loader.fetch (uri);
+		}
+
+		return yield open_with_glib (uri);
 	}
 }

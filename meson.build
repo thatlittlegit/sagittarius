@@ -3,6 +3,9 @@ project('sagittarius', ['c', 'vala'],
   meson_version: '>= 0.40.0',
 )
 
+version_conf = configuration_data()
+version_conf.set('VERSION', meson.project_version())
+
 i18n = import('i18n')
 localedir = join_paths (get_option ('prefix'), get_option ('localedir'))
 

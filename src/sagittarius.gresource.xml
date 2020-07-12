@@ -3,5 +3,6 @@
   <gresource prefix="/tk/thatlittlegit/sagittarius">
     <file>window.ui</file>
     <file>error.ui</file>
+    <file>plugins.ui</file>
   </gresource>
 </gresources>

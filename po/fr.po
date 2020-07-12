@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sagittarius\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-10 17:04-0400\n"
+"POT-Creation-Date: 2020-07-11 21:11-0400\n"
 "PO-Revision-Date: 2020-05-23 13:46-0400\n"
 "Last-Translator: thatlittlegit <personal@thatlittlegit.tk>\n"
 "Language-Team: none\n"
@@ -17,8 +17,9 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: data/tk.thatlittlegit.sagittarius.desktop.in:3
-#: data/tk.thatlittlegit.sagittarius.appdata.xml.in:9 src/window.vala:137
-#: src/application.vala:78
+#: data/tk.thatlittlegit.sagittarius.appdata.xml.in:9 src/window.vala:138
+#: src/application.vala:83 src/parts/proto-about.vala:71
+#: src/parts/proto-about.vala:74
 msgid "Sagittarius"
 msgstr "Sagittaire"
 
@@ -39,6 +40,7 @@ msgid "thatlittlegit"
 msgstr "thatlittlegit"
 
 #: data/tk.thatlittlegit.sagittarius.appdata.xml.in:10
+#: src/parts/proto-about.vala:72
 msgid "A browser for the Gemini protocol"
 msgstr "Un navigateur for le protocole Gemini"
 
@@ -63,11 +65,15 @@ msgstr ""
 msgid "_Settings"
 msgstr "_Paramètres"
 
-#: src/window.vala:65
+#: src/window.vala:63
+msgid "_Plugins"
+msgstr "_Modules"
+
+#: src/window.vala:66 src/parts/proto-about.vala:73
 msgid "_About"
 msgstr "À _propos"
 
-#: src/window.vala:66
+#: src/window.vala:67
 msgid "Quit"
 msgstr "Sortir"
 
@@ -224,18 +230,22 @@ msgstr ""
 "\n"
 "L'erreur est: %s"
 
-#: src/application.vala:48
+#: src/application.vala:53
 msgid "history.csv: history file for Sagittarius"
 msgstr "history.csv: fichier historique pour Sagittaire"
 
-#: src/application.vala:49
+#: src/application.vala:54
 msgid "This file stores the history from your Sagittarius browsing."
 msgstr "Cette fichier garder votre historique de navigation Sagittaire."
 
-#: src/application.vala:50
+#: src/application.vala:55
 msgid "DATE                  URI\t\tTITLE"
 msgstr "JOUR                  URI\t\tTITRE"
 
-#: src/application.vala:74
+#: src/application.vala:79
 msgid "A browser for Gemini"
 msgstr "Un navigateur for le protocole Gemini"
+
+#: src/parts/proto-about.vala:78
+msgid "The page you looked up isn't a valid about: URI."
+msgstr "Le page vous avez cherchez n'est pas un URI about: valide."

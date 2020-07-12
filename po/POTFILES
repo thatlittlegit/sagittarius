@@ -6,4 +6,4 @@ src/main.vala
 src/window.vala
 src/error.vala
 src/application.vala
-
+src/parts/proto-about.vala

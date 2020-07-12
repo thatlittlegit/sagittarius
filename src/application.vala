@@ -22,15 +22,20 @@ namespace Sagittarius {
 		private const ActionEntry[] actions = {
 			{ "quit", quit },
 			{ "about", show_about_dialog },
+			{ "plugins", manage_plugins },
 		};
 
 		private History history;
+
+		public Peas.ExtensionSet extensions;
 
 		public Application () {
 			Object(application_id: "tk.thatlittlegit.sagittarius", flags : ApplicationFlags.HANDLES_OPEN);
 			add_action_entries(actions, this);
 
 			startup.connect(initialize_history);
+			startup.connect(init_loaders);
+			startup.connect(configure_plugin_engine);
 
 			activate.connect(() => {
 				new Window(this, history).present ();
@@ -79,6 +84,11 @@ namespace Sagittarius {
 			dialog.website = "https://github.com/thatlittlegit/sagittarius";
 			dialog.run ();
 			dialog.destroy ();
+		}
+
+		private void manage_plugins () {
+			var plugin_window = new PluginsWindow ();
+			plugin_window.show ();
 		}
 	}
 }

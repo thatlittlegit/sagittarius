@@ -8,8 +8,8 @@ sagittarius_sources = [
   'application.vala',
   'tab.vala',
   'history.vala',
-  'about-protocol.vala',
   'uri-loader.vala',
+  'plugins.vala',
 ]
 
 sagittarius_deps = [
@@ -19,6 +19,8 @@ sagittarius_deps = [
   dependency('gmime-3.0', version: '>= 3'),
   dependency('liburiparser-gobject-0'),
   dependency('libdazzle-1.0'),
+  dependency('libpeas-1.0'),
+  dependency('libpeas-gtk-1.0'),
 ]
 
 gnome = import('gnome')
@@ -28,11 +30,33 @@ sagittarius_sources += gnome.compile_resources('sagittarius-resources',
   c_name: 'sagittarius'
 )
 
-executable('sagittarius', sagittarius_sources,
-  vala_args: '--target-glib=2.50',  dependencies: sagittarius_deps,
-  c_args: [
-    '-DGETTEXT_PACKAGE="sagittarius"',
-    '-DLOCALEDIR="@0@"'.format(localedir),
-  ],
+prefix = get_option('prefix')
+
+vala_args = '--target-glib=2.50'
+c_args = [
+  '-DGETTEXT_PACKAGE="sagittarius"',
+  '-DLOCALEDIR="@0@"'.format(localedir),
+  '-DLIBDIR="@0@"'.format(join_paths(prefix, get_option('libdir'))),
+  '-DDATADIR="@0@"'.format(join_paths(prefix, get_option('datadir'))),
+  '-DDEBUG="@0@"'.format(get_option('debug')),
+  '-DBUILDDIR="@0@"'.format(meson.current_build_dir()),
+]
+
+exe = executable('sagittarius', sagittarius_sources,
+  vala_args: vala_args,
+  dependencies: sagittarius_deps,
+  c_args: c_args,
   install: true,
 )
+
+lib = shared_library('sagittarius', sagittarius_sources,
+  vala_args: vala_args,
+  dependencies: sagittarius_deps,
+  c_args: c_args,
+  # don't install it: this is more meant for compilation
+  # TODO is this needed for out-of-tree plugins? if so, it should be optional
+  #      and LGPL'd (if needed)
+  install: false,
+)
+
+subdir('parts')

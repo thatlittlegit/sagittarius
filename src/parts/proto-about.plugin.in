@@ -1,0 +1,15 @@
+[Plugin]
+Module=proto-about
+Depends=
+Loader=C
+Icon=dialog-information
+Name=About Protocol
+Name[fr]=Protocole 'About'
+Description=Manages about: URIs.
+Description[fr]=Gére des URIs 'about:'.
+Authors=thatlittlegit <personal@thatlittlegit.tk>
+Copyright=Copyright © 2020 thatlittlegit
+Website=https://github.com/thatlittlegit/sagittarius
+Version=@VERSION@ (built-in)
+X-License=GPL-3.0-or-later
+X-Default=true
