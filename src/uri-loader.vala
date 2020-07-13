@@ -24,7 +24,6 @@ namespace Sagittarius {
 
 	public struct Content {
 		Upg.Uri original_uri;
-		GeminiCode code;
 		GMime.ContentType content_type;
 		string ? text; // if content_type is recognized text
 		uint8[] ? data; // if content_type is not recognized
@@ -50,7 +49,6 @@ namespace Sagittarius {
 		AppInfo.launch_default_for_uri_async.begin(uri.to_string (), null);
 		return {
 				   uri,
-				   (GeminiCode) 20,
 				   new GMime.ContentType("text", "gemini"),
 				   "# URI not recognized.\nYou should've been prompted for where to open it.",
 				   null

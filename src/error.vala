@@ -58,7 +58,9 @@ namespace Sagittarius {
 				SignalHandler.disconnect(button_one, last_handler);
 			}
 
-			switch (response.code) {
+			int code = 0;
+			response.content_type.get_parameter("code").scanf("%d", &code);
+			switch (code) {
 			case GeminiCode.INPUT:
 				set_message(PASSWORD_ICON, _("Input wanted"), null);
 				button_one.show ();

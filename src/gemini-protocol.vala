@@ -129,7 +129,7 @@ public async Sagittarius.Content get_gemini (Upg.Uri uri) throws Error {
 
 	Sagittarius.Content ret = {};
 	ret.content_type = GMime.ContentType.parse(new GMime.ParserOptions (), response.meta);
-	ret.code = response.code;
+	ret.content_type.set_parameter("code", ((uint8) response.code).to_string ());
 	ret.original_uri = uri;
 
 	uint8[] data = Bytes.unref_to_data(response.contents);
