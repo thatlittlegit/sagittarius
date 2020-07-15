@@ -128,8 +128,9 @@ namespace Sagittarius {
 		return view;
 	}
 
-	public async Document parse_markup (Upg.Uri original_uri, string markup) {
+	public async Document parse_markup (Upg.Uri original_uri, Bytes _markup) {
 		Document output = new Document ();
+		var markup = (string) Bytes.unref_to_data(_markup);
 		var lines = markup.split("\n");
 
 		bool preformatting = false;

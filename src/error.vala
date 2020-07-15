@@ -79,11 +79,11 @@ namespace Sagittarius {
 			case GeminiCode.TEMPORARY_REDIRECT:
 				set_message(QUESTION_ICON,
 							_("You are being redirected"),
-							_("The website is trying to send you to %s. Would you like to go there?").printf(response.text));
+							_("The website is trying to send you to %s. Would you like to go there?").printf((string) Bytes.unref_to_data(response.data)));
 
 				Upg.Uri destination;
 				try {
-					destination = response.original_uri.apply_reference(response.text);
+					destination = response.original_uri.apply_reference((string) Bytes.unref_to_data(response.data));
 				} catch (Error err) {
 					internal_error(err.message);
 					return;
@@ -144,9 +144,9 @@ namespace Sagittarius {
 				break;
 			}
 
-			if (response.text != "") {
+			if (response.data.length > 0) {
 				site_says_box.show ();
-				site_says.label = response.text;
+				site_says.label = (string) Bytes.unref_to_data(response.data);
 			} else {
 				site_says_box.hide ();
 			}

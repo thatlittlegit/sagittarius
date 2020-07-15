@@ -196,7 +196,7 @@ namespace Sagittarius {
 		private async void view (Upg.Uri uri, Content document) {
 			string title;
 			if (document.content_type.get_parameter("code") == "20") {
-				var markup = yield parse_markup (uri, document.text);
+				var markup = yield parse_markup (uri, document.data);
 
 				var displayed = yield display_markup (markup, navigate);
 

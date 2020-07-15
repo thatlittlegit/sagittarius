@@ -53,11 +53,13 @@ namespace Sagittarius.AboutProtocol {
 
 		public async Content fetch (Upg.Uri _uri) {
 			var uri = shift_uri(_uri);
-			Content ret = { _uri, new GMime.ContentType("text", "gemini") };
+			var type = new GMime.ContentType("text", "gemini");
+			type.set_parameter("code", "20");
+			Content ret = { _uri, type };
 
 			switch (uri.host) {
 			case "blank":
-				ret.text = "";
+				ret.data = new Bytes({});
 				break;
 			case "":
 				if (uri.query_str == "dlg") {
@@ -67,15 +69,15 @@ namespace Sagittarius.AboutProtocol {
 					});
 				}
 
-				ret.text = "# %s\n%s\n=> ?dlg %s %s"
-							.printf(_("Sagittarius"),
-									_("A browser for the Gemini protocol"),
-									_("_About").substring(1),
-									_("Sagittarius"));
+				ret.data = new Bytes.take("# %s\n%s\n=> ?dlg %s %s"
+										   .printf(_("Sagittarius"),
+												   _("A browser for the Gemini protocol"),
+												   _("_About").substring(1),
+												   _("Sagittarius")).data);
 				break;
 			default:
 				ret.content_type.set_parameter("code", "51");
-				ret.text = _("The page you looked up isn't a valid about: URI.");
+				ret.data = new Bytes(_("The page you looked up isn't a valid about: URI.").data);
 				break;
 			}
 

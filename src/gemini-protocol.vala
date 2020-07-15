@@ -118,8 +118,10 @@ async GeminiResponse send_request (Upg.Uri uri) throws Error, IOError {
 	response.meta = meta.str.strip ();
 	bytearray.remove_range(0, i + 1);
 
+	bytearray.append({ 0 });
+
 	response.contents = ByteArray.free_to_bytes(bytearray);
-	info("recieved %ld bytes of content".printf(response.contents.length));
+	info("recieved %ld bytes of content".printf(response.contents.length - 1));
 
 	return response;
 }
@@ -131,33 +133,30 @@ public async Sagittarius.Content get_gemini (Upg.Uri uri) throws Error {
 	ret.content_type = GMime.ContentType.parse(new GMime.ParserOptions (), response.meta);
 	ret.content_type.set_parameter("code", ((uint8) response.code).to_string ());
 	ret.original_uri = uri;
-
-	uint8[] data = Bytes.unref_to_data(response.contents);
+	ret.data = response.contents;
 
 	if (response.code != GeminiCode.SUCCESS) {
-		ret.text = response.meta;
+		ret.data = new Bytes(response.meta.data);
+	} else if (ret.content_type.type != "text") {
 		return ret;
 	}
 
-	if (ret.content_type.type != "text") {
-		ret.data = data;
-		return ret;
-	}
+	var text = (string) Bytes.unref_to_data(response.contents);
 
-	ret.text = (string) data;
-
-	if (!ret.text.validate(data.length)) {
-		try {
-			var charset = ret.content_type.get_parameter("charset");
-			if (charset == null || charset == "utf-8") {
-				throw new GeminiError.INVALID_ENCODING("text claims to be UTF-8, but isnt?");
-			} else {
-				ret.text = convert(ret.text, -1, "utf-8", ret.content_type.get_parameter("charset"));
-			}
-		} catch (ConvertError err) {
-			warning("ConvertError while converting contents (%s)".printf(err.message));
-			throw new GeminiError.INVALID_ENCODING("not valid text, apparently");
+	var charset = ret.content_type.get_parameter("charset");
+	if (charset == null || charset == "utf-8") {
+		if (text.validate(text.length)) {
+			return ret;
 		}
+
+		throw new GeminiError.INVALID_ENCODING("text claims to be UTF-8, but isnt?");
+	}
+
+	try {
+		ret.data = new Bytes.take(convert(text, text.length, "utf-8", charset).data);
+	} catch (ConvertError err) {
+		warning("ConvertError while converting contents (%s)".printf(err.message));
+		throw new GeminiError.INVALID_ENCODING("not valid text, apparently");
 	}
 
 	return ret;
