@@ -68,7 +68,8 @@ namespace Sagittarius {
 
 		private void open_file (File[] files, string hint) {
 			foreach (var file in files) {
-				(active_window as Window).create_tab(file.get_uri ());
+				// this *should* work, since activate is called before open?
+				((Window) active_window).create_tab(file.get_uri ());
 			}
 		}
 
