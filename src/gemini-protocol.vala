@@ -134,28 +134,30 @@ public async Sagittarius.Content get_gemini (Upg.Uri uri) throws Error {
 
 	uint8[] data = Bytes.unref_to_data(response.contents);
 
-	if (response.code == GeminiCode.SUCCESS) {
-		if (ret.content_type.type == "text") {
-			ret.text = (string) data;
-
-			if (!ret.text.validate(data.length)) {
-				try {
-					var charset = ret.content_type.get_parameter("charset");
-					if (charset == null || charset == "utf-8") {
-						throw new GeminiError.INVALID_ENCODING("text claims to be UTF-8, but isnt?");
-					} else {
-						ret.text = convert(ret.text, -1, "utf-8", ret.content_type.get_parameter("charset"));
-					}
-				} catch (ConvertError err) {
-					warning("ConvertError while converting contents (%s)".printf(err.message));
-					throw new GeminiError.INVALID_ENCODING("not valid text, apparently");
-				}
-			}
-		} else {
-			ret.data = data;
-		}
-	} else {
+	if (response.code != GeminiCode.SUCCESS) {
 		ret.text = response.meta;
+		return ret;
+	}
+
+	if (ret.content_type.type != "text") {
+		ret.data = data;
+		return ret;
+	}
+
+	ret.text = (string) data;
+
+	if (!ret.text.validate(data.length)) {
+		try {
+			var charset = ret.content_type.get_parameter("charset");
+			if (charset == null || charset == "utf-8") {
+				throw new GeminiError.INVALID_ENCODING("text claims to be UTF-8, but isnt?");
+			} else {
+				ret.text = convert(ret.text, -1, "utf-8", ret.content_type.get_parameter("charset"));
+			}
+		} catch (ConvertError err) {
+			warning("ConvertError while converting contents (%s)".printf(err.message));
+			throw new GeminiError.INVALID_ENCODING("not valid text, apparently");
+		}
 	}
 
 	return ret;
