@@ -39,14 +39,7 @@ public enum GeminiCode {
 	// THAT_CERT_IS_OLDER_THAN_I_AM = 65,
 }
 
-public struct GeminiResponse {
-	GeminiCode code;
-	string meta;
-	Bytes contents;
-}
-
-
-async GeminiResponse send_request (Upg.Uri uri) throws Error, IOError {
+async ByteArray send_request (Upg.Uri uri) throws Error {
 	var client = new SocketClient ();
 	client.set_tls(true);
 	client.set_tls_validation_flags(0);
@@ -59,8 +52,6 @@ async GeminiResponse send_request (Upg.Uri uri) throws Error, IOError {
 	yield conn.output_stream.write_all_async ("%s\r\n".printf(struri).data, 0, null, out size);
 
 	info("sent request [%ld bytes]".printf((ssize_t) size));
-
-	GeminiResponse response = {};
 
 	var bytearray = new ByteArray ();
 	while (true) {
@@ -80,17 +71,19 @@ async GeminiResponse send_request (Upg.Uri uri) throws Error, IOError {
 
 		bytearray.append(Bytes.unref_to_data(chunk));
 	}
-	;
-	yield conn.close_async ();
 
-	if (bytearray.len < 2) {
-		throw new IOError.INVALID_DATA("Invalid response (too small)");
-	}
+	conn.close_async.begin ();
+	return bytearray;
+}
 
-	response.code = ((bytearray.data[0] - 0x30) * 10)
-					+ (bytearray.data[1] - 0x30);
+private int find_status (ByteArray bytearray) {
+	var ret = ((bytearray.data[0] - 0x30) * 10)
+			  + (bytearray.data[1] - 0x30);
 	bytearray.remove_range(0, 2);
+	return ret;
+}
 
+private string find_meta (ByteArray bytearray) {
 	int i;
 	StringBuilder meta = new StringBuilder.sized(bytearray.len.clamp(0, 1024));
 	for (i = 0; i < bytearray.len && i < 1024; i++) {
@@ -108,30 +101,35 @@ async GeminiResponse send_request (Upg.Uri uri) throws Error, IOError {
 
 		meta.append_c(current);
 	}
-	response.meta = meta.str.strip ();
 	bytearray.remove_range(0, i + 1);
 
-	bytearray.append({ 0 });
-
-	response.contents = ByteArray.free_to_bytes(bytearray);
-	info("recieved %ld bytes of content".printf(response.contents.length - 1));
-
-	return response;
+	return meta.str.strip ();
 }
 
 public async Sagittarius.Content get_gemini (Upg.Uri uri) throws Error {
-	var response = yield send_request (uri);
-
 	Sagittarius.Content ret = {};
-	ret.content_type = GMime.ContentType.parse(new GMime.ParserOptions (), response.meta);
-	ret.content_type.set_parameter("code", ((uint8) response.code).to_string ());
 	ret.original_uri = uri;
 
-	if (response.code != GeminiCode.SUCCESS) {
-		ret.data = new Bytes(response.meta.data);
-	} else {
-		ret.data = response.contents;
+	var array = yield send_request (uri);
+
+	if (array.len < 2) {
+		throw new IOError.INVALID_DATA("Invalid response (too small)");
+	}
+	info("recieved %ld bytes of content".printf(array.len));
+
+	var status = find_status(array);
+	var meta = find_meta(array);
+	array.append({ 0 });
+
+	if (status == GeminiCode.SUCCESS) {
+		ret.content_type = GMime.ContentType.parse(new GMime.ParserOptions (), meta);
+		ret.content_type.set_parameter("code", ((uint8) status).to_string ());
+		ret.data = ByteArray.free_to_bytes(array);
+		return ret;
 	}
 
+	ret.content_type = new GMime.ContentType("text", "gemini");
+	ret.content_type.set_parameter("code", ((uint8) status).to_string ());
+	ret.data = new Bytes.take(meta.data);
 	return ret;
 }
