@@ -53,9 +53,7 @@ namespace Sagittarius.AboutProtocol {
 
 		public async Content fetch (Upg.Uri _uri) {
 			var uri = shift_uri(_uri);
-			var type = new GMime.ContentType("text", "gemini");
-			type.set_parameter("code", "20");
-			Content ret = { _uri, type };
+			Content ret = { UriLoadOutcome.SUCCESS, _uri, new GMime.ContentType("text", "gemini") };
 
 			switch (uri.host) {
 			case "blank":
@@ -76,7 +74,7 @@ namespace Sagittarius.AboutProtocol {
 												   _("Sagittarius")).data);
 				break;
 			default:
-				ret.content_type.set_parameter("code", "51");
+				ret.outcome = UriLoadOutcome.NOT_FOUND;
 				ret.data = new Bytes(_("The page you looked up isn't a valid about: URI.").data);
 				break;
 			}

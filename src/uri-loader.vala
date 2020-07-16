@@ -23,9 +23,27 @@ namespace Sagittarius {
 	}
 
 	public struct Content {
+		UriLoadOutcome outcome;
 		Upg.Uri original_uri;
 		GMime.ContentType content_type;
 		Bytes data;
+	}
+
+	public enum UriLoadOutcome {
+		TEXT_INPUT_WANTED = 10,
+		SUCCESS = 20,
+		TEMPORARY_REDIRECT = 30,
+		PERMANENT_REDIRECT = 31,
+		TEMPORARY_ERROR = 40,
+		SERVER_UNAVAILABLE = 41,
+		CGI_ERROR = 42,
+		PROXY_ERROR = 43,
+		SLOW_DOWN = 44,
+		PERMANENT_ERROR = 50,
+		NOT_FOUND = 51,
+		GONE = 52,
+		PROXY_REQUEST_REFUSED = 53,
+		BAD_REQUEST = 59,
 	}
 
 	HashTable<string, UriLoader> loaders = null;
@@ -49,6 +67,7 @@ namespace Sagittarius {
 
 		var content = new Bytes("# URI not recognized.\nYou should've been prompted for where to open it.".data);
 		return {
+				   UriLoadOutcome.SUCCESS,
 				   uri,
 				   new GMime.ContentType("text", "gemini"),
 				   content,

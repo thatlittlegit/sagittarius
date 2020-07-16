@@ -15,30 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-public enum GeminiCode {
-	INPUT = 10,
-	SUCCESS = 20,
-	// END_OF_SESSION = 21,
-	TEMPORARY_REDIRECT = 30,
-	PERMANENT_REDIRECT = 31,
-	TEMPORARY_ERROR = 40,
-	SERVER_UNAVAILABLE = 41,
-	CGI_ERROR = 42,
-	PROXY_ERROR = 43,
-	SLOW_DOWN = 44,
-	PERMANENT_ERROR = 50,
-	NOT_FOUND = 51,
-	GONE = 52,
-	PROXY_REQUEST_REFUSED = 53,
-	BAD_REQUEST = 59,
-	// CLIENT_CERTIFICATE_REQUIRED = 60,
-	// TRANSIENT_CERTIFICATE_REQUIRED = 61,
-	// AUTHORIZED_CERTIFICATE_REQUIRED = 62,
-	// INVALID_CERTIFICATE = 63,
-	// CERTIFICATE_FROM_FUTURE = 64,
-	// THAT_CERT_IS_OLDER_THAN_I_AM = 65,
-}
-
 async ByteArray send_request (Upg.Uri uri) throws Error {
 	var client = new SocketClient ();
 	client.set_tls(true);
@@ -118,18 +94,17 @@ public async Sagittarius.Content get_gemini (Upg.Uri uri) throws Error {
 	info("recieved %ld bytes of content".printf(array.len));
 
 	var status = find_status(array);
+	ret.outcome = (Sagittarius.UriLoadOutcome)status;
 	var meta = find_meta(array);
 	array.append({ 0 });
 
-	if (status == GeminiCode.SUCCESS) {
+	if (status == 20) {
 		ret.content_type = GMime.ContentType.parse(new GMime.ParserOptions (), meta);
-		ret.content_type.set_parameter("code", ((uint8) status).to_string ());
 		ret.data = ByteArray.free_to_bytes(array);
 		return ret;
 	}
 
 	ret.content_type = new GMime.ContentType("text", "gemini");
-	ret.content_type.set_parameter("code", ((uint8) status).to_string ());
 	ret.data = new Bytes.take(meta.data);
 	return ret;
 }

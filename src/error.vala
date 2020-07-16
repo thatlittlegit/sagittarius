@@ -58,10 +58,8 @@ namespace Sagittarius {
 				SignalHandler.disconnect(button_one, last_handler);
 			}
 
-			int code = 0;
-			response.content_type.get_parameter("code").scanf("%d", &code);
-			switch (code) {
-			case GeminiCode.INPUT:
+			switch (response.outcome) {
+			case UriLoadOutcome.TEXT_INPUT_WANTED:
 				set_message(PASSWORD_ICON, _("Input wanted"), null);
 				button_one.show ();
 				button_one.label = _("Go");
@@ -71,12 +69,12 @@ namespace Sagittarius {
 					navigate(response.original_uri);
 				});
 				break;
-			case GeminiCode.SUCCESS:
+			case UriLoadOutcome.SUCCESS:
 				set_message("weather-clear", _("Success!"), _("Everything worked, except the programmer's brain when they were writing this."));
 				button_one.hide ();
 				return;
-			case GeminiCode.PERMANENT_REDIRECT:
-			case GeminiCode.TEMPORARY_REDIRECT:
+			case UriLoadOutcome.PERMANENT_REDIRECT:
+			case UriLoadOutcome.TEMPORARY_REDIRECT:
 				set_message(QUESTION_ICON,
 							_("You are being redirected"),
 							_("The website is trying to send you to %s. Would you like to go there?").printf((string) Bytes.unref_to_data(response.data)));
@@ -93,22 +91,22 @@ namespace Sagittarius {
 				button_one.label = _("Redirect");
 				last_handler = button_one.clicked.connect(() => navigate(destination));
 				return;
-			case GeminiCode.TEMPORARY_ERROR:
+			case UriLoadOutcome.TEMPORARY_ERROR:
 				set_message(WARNING_ICON, _("Temporary failure"), _("Something went wrong with the website. Try again later."));
 				break;
-			case GeminiCode.SERVER_UNAVAILABLE:
+			case UriLoadOutcome.SERVER_UNAVAILABLE:
 				set_message(ERROR_ICON, _("Server unavailable"),
 							_("The server is unavailable due to overload, maintenance, or some other problem. Try again later."));
 				break;
-			case GeminiCode.CGI_ERROR:
+			case UriLoadOutcome.CGI_ERROR:
 				set_message(SCRIPT_ICON, _("Server script error"),
 							_("The server encountered an error when processing your request."));
 				break;
-			case GeminiCode.PROXY_ERROR:
+			case UriLoadOutcome.PROXY_ERROR:
 				set_message(NETWORK_ERROR_ICON, _("Proxy error"),
 							_("The server wasn't able to proxy your request."));
 				break;
-			case GeminiCode.SLOW_DOWN:
+			case UriLoadOutcome.SLOW_DOWN:
 				set_message(ALARM_ICON, _("Slow down!"),
 							_("You're sending requests too fast."));
 				button_one.show ();
@@ -121,24 +119,24 @@ namespace Sagittarius {
 					return false;
 				});
 				break;
-			case GeminiCode.PERMANENT_ERROR:
+			case UriLoadOutcome.PERMANENT_ERROR:
 				set_message(ERROR_ICON, _("Permanent error"),
 							_("Something went wrong, and it will never work again. :("));
 				break;
-			case GeminiCode.NOT_FOUND:
+			case UriLoadOutcome.NOT_FOUND:
 				set_message(WARNING_ICON,
 							_("File not found"),
 							_("We searched far and wide\nBut it we could not find.\nIt could not be found."));
 				break;
-			case GeminiCode.GONE:
+			case UriLoadOutcome.GONE:
 				set_message(ERROR_ICON, _("G O N E"),
 							_("The file is gone.\nIt will never be back.\nWas it ever there?\nIs life but a dream?"));
 				break;
-			case GeminiCode.PROXY_REQUEST_REFUSED:
+			case UriLoadOutcome.PROXY_REQUEST_REFUSED:
 				set_message(NETWORK_ERROR_ICON, _("Proxy request refused"),
 							_("You asked the server to proxy a request for you, but the server won't do that."));
 				break;
-			case GeminiCode.BAD_REQUEST:
+			case UriLoadOutcome.BAD_REQUEST:
 				set_message(ERROR_ICON, _("Bad request"),
 							_("Something went wrong, and the request was invalid?"));
 				break;
