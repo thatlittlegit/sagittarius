@@ -19,7 +19,7 @@
 
 namespace Sagittarius {
 	public interface UriLoader : Object {
-		public abstract async Content fetch (Upg.Uri uri);
+		public abstract async Content fetch (Upg.Uri uri) throws Error;
 	}
 
 	public struct Content {
@@ -75,10 +75,6 @@ namespace Sagittarius {
 	}
 
 	public async Content fetch_uri (Upg.Uri uri) throws Error {
-		if (uri.scheme == "gemini") {
-			return yield get_gemini (uri);
-		}
-
 		var loader = loaders.lookup(uri.scheme);
 		if (loader != null) {
 			return yield loader.fetch (uri);
