@@ -39,13 +39,6 @@ public enum GeminiCode {
 	// THAT_CERT_IS_OLDER_THAN_I_AM = 65,
 }
 
-public errordomain GeminiError {
-	UNKNOWN_RESPONSE_CODE,
-	INVALID_REQUEST,
-	INVALID_ENCODING,
-	INVALID_RESPONSE,
-}
-
 public struct GeminiResponse {
 	GeminiCode code;
 	string meta;
@@ -91,7 +84,7 @@ async GeminiResponse send_request (Upg.Uri uri) throws Error, IOError {
 	yield conn.close_async ();
 
 	if (bytearray.len < 2) {
-		throw new GeminiError.INVALID_RESPONSE("Invalid response (too small)");
+		throw new IOError.INVALID_DATA("Invalid response (too small)");
 	}
 
 	response.code = ((bytearray.data[0] - 0x30) * 10)
