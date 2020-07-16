@@ -193,10 +193,11 @@ namespace Sagittarius {
 			}
 		}
 
-		private async void view (Upg.Uri uri, Content document) {
+		private async void view (Upg.Uri uri, Content document) throws Error {
 			string title;
 			if (document.content_type.get_parameter("code") == "20") {
-				var markup = yield parse_markup (uri, document.data);
+				var corrected = ensure_utf8(document);
+				var markup = yield parse_markup (uri, corrected.data);
 
 				var displayed = yield display_markup (markup, navigate);
 

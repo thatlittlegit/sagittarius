@@ -133,30 +133,11 @@ public async Sagittarius.Content get_gemini (Upg.Uri uri) throws Error {
 	ret.content_type = GMime.ContentType.parse(new GMime.ParserOptions (), response.meta);
 	ret.content_type.set_parameter("code", ((uint8) response.code).to_string ());
 	ret.original_uri = uri;
-	ret.data = response.contents;
 
 	if (response.code != GeminiCode.SUCCESS) {
 		ret.data = new Bytes(response.meta.data);
-	} else if (ret.content_type.type != "text") {
-		return ret;
-	}
-
-	var text = (string) Bytes.unref_to_data(response.contents);
-
-	var charset = ret.content_type.get_parameter("charset");
-	if (charset == null || charset == "utf-8") {
-		if (text.validate(text.length)) {
-			return ret;
-		}
-
-		throw new GeminiError.INVALID_ENCODING("text claims to be UTF-8, but isnt?");
-	}
-
-	try {
-		ret.data = new Bytes.take(convert(text, text.length, "utf-8", charset).data);
-	} catch (ConvertError err) {
-		warning("ConvertError while converting contents (%s)".printf(err.message));
-		throw new GeminiError.INVALID_ENCODING("not valid text, apparently");
+	} else {
+		ret.data = response.contents;
 	}
 
 	return ret;
