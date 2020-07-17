@@ -8,7 +8,7 @@ foreach part: parts
     install: true,
     c_args: c_args,
     dependencies: declare_dependency(
-      link_with: lib,
+      link_with: lib.get_shared_lib(),
       dependencies: sagittarius_deps,
       include_directories: '..'),
   )

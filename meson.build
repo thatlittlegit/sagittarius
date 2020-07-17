@@ -1,6 +1,6 @@
 project('sagittarius', ['c', 'vala'],
         version: '0.1.0',
-  meson_version: '>= 0.40.0',
+  meson_version: '>= 0.46.0',
 )
 
 version_conf = configuration_data()

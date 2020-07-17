@@ -41,14 +41,7 @@ c_args = [
   '-DBUILDDIR="@0@"'.format(meson.current_build_dir()),
 ]
 
-exe = executable('sagittarius', sagittarius_sources,
-  vala_args: vala_args,
-  dependencies: sagittarius_deps,
-  c_args: c_args,
-  install: true,
-)
-
-lib = shared_library('sagittarius', sagittarius_sources,
+lib = both_libraries('sagittarius', sagittarius_sources,
   vala_args: vala_args,
   dependencies: sagittarius_deps,
   c_args: c_args,
@@ -56,6 +49,12 @@ lib = shared_library('sagittarius', sagittarius_sources,
   # TODO is this needed for out-of-tree plugins? if so, it should be optional
   #      and LGPL'd (if needed)
   install: false,
+)
+
+exe = executable('sagittarius', [],
+  link_with: lib.get_static_lib(),
+  dependencies: sagittarius_deps,
+  install: true,
 )
 
 subdir('parts')
