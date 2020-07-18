@@ -47,18 +47,6 @@ namespace Sagittarius {
 
 	public async RenderingOutcome render_content (NavigateFunc nav, Content content) throws Error {
 		var type = stringify_mime_type(content.content_type);
-
-		if (type == "text/gemini") {
-			var markup = yield parse_markup (content.original_uri, content.data);
-
-			var widget = yield display_markup (markup, nav);
-
-			RenderingOutcome ret = {};
-			ret.title = markup.title ?? content.original_uri.to_string ();
-			ret.widget = widget;
-			return ret;
-		}
-
 		var renderer = renderers.lookup(type);
 		if (renderer != null) {
 			return yield renderer.render (nav, content);

@@ -1,6 +1,7 @@
 parts = [
   'proto-about',
   'proto-gemini',
+  'render-gemini',
 ]
 
 foreach part: parts

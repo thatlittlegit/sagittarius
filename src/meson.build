@@ -2,7 +2,6 @@ sagittarius_sources = [
   'main.vala',
   'window.vala',
   'config.vapi',
-  'gemini-markup.vala',
   'error.vala',
   'application.vala',
   'tab.vala',

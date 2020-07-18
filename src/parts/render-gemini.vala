@@ -17,8 +17,48 @@
  *
  */
 
-namespace Sagittarius {
-	public enum TagType {
+using Sagittarius;
+
+namespace Sagittarius.GeminiRenderer {
+	public class GeminiRendererPlugin : Object, Peas.Activatable {
+		public Object object { owned get; construct; }
+		public Renderer gemini_renderer;
+
+		[CCode(cname = "peas_register_types")]
+		public static void peas_register_types (Peas.ObjectModule module) {
+			module.register_extension_type(
+				PEAS_TYPE_ACTIVATABLE,
+				new GeminiRendererPlugin ().get_type ()
+				);
+		}
+
+		public void activate () {
+			gemini_renderer = new GeminiRenderer ();
+			add_renderer("text/gemini", gemini_renderer);
+		}
+
+		public void deactivate () {
+			remove_renderer("gemini", gemini_renderer);
+		}
+
+		public void update_state () {
+		}
+	}
+
+	public class GeminiRenderer : Object, Renderer {
+		public async RenderingOutcome render (NavigateFunc ? nav, Content content) {
+			var markup = yield parse_markup (content.original_uri, content.data);
+
+			var widget = yield display_markup (markup, nav);
+
+			RenderingOutcome ret = {};
+			ret.title = markup.title ?? content.original_uri.to_string ();
+			ret.widget = widget;
+			return ret;
+		}
+	}
+
+	enum TagType {
 		TEXT,
 		H1,
 		H2,
@@ -30,14 +70,14 @@ namespace Sagittarius {
 		BLOCKQUOTE,
 	}
 
-	public struct Tag {
+	struct Tag {
 		TagType type;
 		string contents;
 		Upg.Uri ? target;
 		string ? auxillary;
 	}
 
-	public class Document {
+	class Document {
 		public string ? title;
 		public List<Tag ? > tags;
 	}
@@ -65,7 +105,7 @@ namespace Sagittarius {
 		return iter;
 	}
 
-	public async Gtk.TextView display_markup (Document markup, NavigateFunc nav) {
+	async Gtk.TextView display_markup (Document markup, NavigateFunc nav) {
 		var view = make_new_textview ();
 		var preformatted = view.buffer.tag_table.lookup("pre");
 		var h1 = view.buffer.tag_table.lookup("h1");
@@ -128,7 +168,7 @@ namespace Sagittarius {
 		return view;
 	}
 
-	public async Document parse_markup (Upg.Uri original_uri, Bytes _markup) {
+	async Document parse_markup (Upg.Uri original_uri, Bytes _markup) {
 		Document output = new Document ();
 		var markup = (string) Bytes.unref_to_data(_markup);
 		var lines = markup.split("\n");
