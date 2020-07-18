@@ -197,18 +197,16 @@ namespace Sagittarius {
 			string title;
 			if (document.outcome == UriLoadOutcome.SUCCESS) {
 				var corrected = ensure_utf8(document);
-				var markup = yield parse_markup (uri, corrected.data);
-
-				var displayed = yield display_markup (markup, navigate);
+				var rendered = yield render_content (navigate, corrected);
 
 				if (scrolled_text_view.get_child () != null) {
 					scrolled_text_view.remove(scrolled_text_view.get_child ());
 				}
-				scrolled_text_view.add(displayed);
+				scrolled_text_view.add(rendered.widget);
 
 				stack.visible_child = scrolled_text_view;
 
-				title = markup.title ?? uri.to_string ();
+				title = rendered.title ?? uri.to_string ();
 			} else {
 				errorview.set_message_for_response(navigate, document);
 				stack.visible_child = errorview;

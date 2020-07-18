@@ -35,6 +35,7 @@ namespace Sagittarius {
 
 			startup.connect(initialize_history);
 			startup.connect(init_loaders);
+			startup.connect(init_renderers);
 			startup.connect(configure_plugin_engine);
 
 			activate.connect(() => {

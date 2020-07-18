@@ -9,6 +9,7 @@ sagittarius_sources = [
   'history.vala',
   'uri-loader.vala',
   'plugins.vala',
+  'renderer.vala',
 ]
 
 sagittarius_deps = [
