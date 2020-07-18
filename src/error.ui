@@ -66,7 +66,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <child>
-          <object class="GtkLabel">
+          <object class="GtkLabel" id="site_says_text">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">The site says: </property>

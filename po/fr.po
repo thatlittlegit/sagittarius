@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sagittarius\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-11 21:11-0400\n"
+"POT-Creation-Date: 2020-07-17 22:25-0400\n"
 "PO-Revision-Date: 2020-05-23 13:46-0400\n"
 "Last-Translator: thatlittlegit <personal@thatlittlegit.tk>\n"
 "Language-Team: none\n"
@@ -18,7 +18,7 @@ msgstr ""
 
 #: data/tk.thatlittlegit.sagittarius.desktop.in:3
 #: data/tk.thatlittlegit.sagittarius.appdata.xml.in:9 src/window.vala:138
-#: src/application.vala:83 src/parts/proto-about.vala:71
+#: src/application.vala:84 src/parts/proto-about.vala:71
 #: src/parts/proto-about.vala:74
 msgid "Sagittarius"
 msgstr "Sagittaire"
@@ -77,53 +77,53 @@ msgstr "À _propos"
 msgid "Quit"
 msgstr "Sortir"
 
-#: src/error.vala:63
+#: src/error.vala:66
 msgid "Input wanted"
 msgstr "Votre donnée est voulu"
 
-#: src/error.vala:65 src/error.vala:114
+#: src/error.vala:68 src/error.vala:117
 msgid "Go"
 msgstr "Aller"
 
-#: src/error.vala:73
+#: src/error.vala:76
 msgid "Success!"
 msgstr "Succès!"
 
-#: src/error.vala:73
+#: src/error.vala:76
 msgid ""
 "Everything worked, except the programmer's brain when they were writing this."
 msgstr ""
 "Tout a travaillé, mais pas la cervelle du programmeur quand il à m'écrive."
 
-#: src/error.vala:79
+#: src/error.vala:82
 msgid "You are being redirected"
 msgstr "Le site est en train de vous réorienter"
 
-#: src/error.vala:80
+#: src/error.vala:83
 #, c-format
 msgid "The website is trying to send you to %s. Would you like to go there?"
 msgstr ""
 "Le site du Gemini est en train de essayer vous envoyer á %s. Voulez-vous y "
 "aller?%s"
 
-#: src/error.vala:91
+#: src/error.vala:94
 msgid "Redirect"
 msgstr "Réorienter"
 
-#: src/error.vala:95
+#: src/error.vala:98
 msgid "Temporary failure"
 msgstr "Erreur temporaire"
 
-#: src/error.vala:95
+#: src/error.vala:98
 msgid "Something went wrong with the website. Try again later."
 msgstr ""
 "Quelque chose a fait un erreur sur la site. Esseyez encore à plus tard."
 
-#: src/error.vala:98
+#: src/error.vala:101
 msgid "Server unavailable"
 msgstr "Serveur est indisponsible"
 
-#: src/error.vala:99
+#: src/error.vala:102
 msgid ""
 "The server is unavailable due to overload, maintenance, or some other "
 "problem. Try again later."
@@ -131,43 +131,43 @@ msgstr ""
 "Le serveur est indisponsible parce que il est surchargé, il a la "
 "maintenance, ou quelque autre problem. Esseyez encore à plus tard."
 
-#: src/error.vala:102
+#: src/error.vala:105
 msgid "Server script error"
 msgstr "Script du serveur a eu un erreur"
 
-#: src/error.vala:103
+#: src/error.vala:106
 msgid "The server encountered an error when processing your request."
 msgstr "Le serveur a vu un erreur quand il était répondre à votre requête."
 
-#: src/error.vala:106
+#: src/error.vala:109
 msgid "Proxy error"
 msgstr "Erreur avec le serveur proxy"
 
-#: src/error.vala:107
+#: src/error.vala:110
 msgid "The server wasn't able to proxy your request."
 msgstr "Le serveur ne pouvait pas relayer votre requête."
 
-#: src/error.vala:110
+#: src/error.vala:113
 msgid "Slow down!"
 msgstr "Ralentissez!"
 
-#: src/error.vala:111
+#: src/error.vala:114
 msgid "You're sending requests too fast."
 msgstr "Vous êtes en train de eux donne un beaucoup des requêtes maintenant."
 
-#: src/error.vala:123
+#: src/error.vala:126
 msgid "Permanent error"
 msgstr "Erreur permanent"
 
-#: src/error.vala:124
+#: src/error.vala:127
 msgid "Something went wrong, and it will never work again. :("
 msgstr "Quelque chose a fait un erreur, et il sera le faire pour toujours. :("
 
-#: src/error.vala:128
+#: src/error.vala:131
 msgid "File not found"
 msgstr "Fichier non trouvé"
 
-#: src/error.vala:129
+#: src/error.vala:132
 msgid ""
 "We searched far and wide\n"
 "But it we could not find.\n"
@@ -177,11 +177,11 @@ msgstr ""
 "Mais il, il n'etait pas là.\n"
 "Ç'est introuvable."
 
-#: src/error.vala:132
+#: src/error.vala:135
 msgid "G O N E"
 msgstr "D I S P A R U"
 
-#: src/error.vala:133
+#: src/error.vala:136
 msgid ""
 "The file is gone.\n"
 "It will never be back.\n"
@@ -193,42 +193,31 @@ msgstr ""
 "Était-il là déjà?\n"
 "Est la vie mais un rêve?"
 
-#: src/error.vala:136
+#: src/error.vala:139
 msgid "Proxy request refused"
 msgstr "Le serveur a refusé votre demande proxy"
 
-#: src/error.vala:137
+#: src/error.vala:140
 msgid ""
 "You asked the server to proxy a request for you, but the server won't do "
 "that."
 msgstr "Vous l'a demandé relayer un demande, et il ne se passera pas."
 
-#: src/error.vala:140
+#: src/error.vala:143
 msgid "Bad request"
 msgstr "Requête mal"
 
-#: src/error.vala:141
+#: src/error.vala:144
 msgid "Something went wrong, and the request was invalid?"
 msgstr "Quelque chose a fait un erreur, et le requête était erroné?"
 
-#: src/error.vala:157
-msgid "Internal Error"
-msgstr "Erreur interne"
+#: src/error.vala:160
+msgid "Uh-oh!"
+msgstr "Ah non!"
 
-#: src/error.vala:158
-#, c-format
-msgid ""
-"An error has occurred inside the browser, and the page could not be "
-"displayed. You might be able to go back or refresh, but you might want to "
-"restart.\n"
-"\n"
-"The error is: %s"
-msgstr ""
-"Le navigateur a rencontré une erreur, et il ne pourrait pas faire la page."
-"Peut-être vous pourriez retourner ou rafraîchir, mais vous devrais "
-"redémarrage.\n"
-"\n"
-"L'erreur est: %s"
+#: src/error.vala:161
+msgid "Something went wrong when displaying this page."
+msgstr "Quelque chose a fait un erreur quand nous avons visité la site."
 
 #: src/application.vala:53
 msgid "history.csv: history file for Sagittarius"
@@ -242,7 +231,7 @@ msgstr "Cette fichier garder votre historique de navigation Sagittaire."
 msgid "DATE                  URI\t\tTITLE"
 msgstr "JOUR                  URI\t\tTITRE"
 
-#: src/application.vala:79
+#: src/application.vala:80
 msgid "A browser for Gemini"
 msgstr "Un navigateur for le protocole Gemini"
 

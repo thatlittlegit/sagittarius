@@ -38,6 +38,8 @@ namespace Sagittarius {
 		[GtkChild]
 		private Gtk.Box site_says_box;
 		[GtkChild]
+		private Gtk.Label site_says_text;
+		[GtkChild]
 		private Gtk.Label site_says;
 		[GtkChild]
 		private Gtk.Button button_one;
@@ -53,6 +55,7 @@ namespace Sagittarius {
 			text_entry.hide ();
 			button_one.hide ();
 			button_one.sensitive = true;
+			site_says_text.show ();
 
 			if (last_handler != 0) {
 				SignalHandler.disconnect(button_one, last_handler);
@@ -154,8 +157,11 @@ namespace Sagittarius {
 			text_entry.hide ();
 			button_one.hide ();
 			set_message(ERROR_ICON,
-						_("Internal Error"),
-						_("An error has occurred inside the browser, and the page could not be displayed. You might be able to go back or refresh, but you might want to restart.\n\nThe error is: %s").printf(message));
+						_("Uh-oh!"),
+						_("Something went wrong when displaying this page."));
+			site_says_box.show ();
+			site_says.label = message;
+			site_says_text.hide ();
 		}
 
 		private void set_message (string icon, string _title, string ? _description = null) {
