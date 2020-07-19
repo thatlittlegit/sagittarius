@@ -95,7 +95,6 @@ namespace Sagittarius.GeminiRenderer {
 									"style", Pango.Style.ITALIC, "left-margin", 64, "left-margin-set", true);
 		text_view.top_margin = text_view.bottom_margin = text_view.right_margin = text_view.left_margin = 16;
 		text_view.editable = false;
-		text_view.show ();
 		return text_view;
 	}
 

@@ -203,6 +203,7 @@ namespace Sagittarius {
 					scrolled_text_view.remove(scrolled_text_view.get_child ());
 				}
 				scrolled_text_view.add(rendered.widget);
+				rendered.widget.show_all();
 
 				stack.visible_child = scrolled_text_view;
 
