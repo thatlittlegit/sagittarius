@@ -38,7 +38,7 @@ namespace Sagittarius.GeminiRenderer {
 		}
 
 		public void deactivate () {
-			remove_renderer("gemini", gemini_renderer);
+			remove_renderer("text/gemini", gemini_renderer);
 		}
 
 		public void update_state () {
