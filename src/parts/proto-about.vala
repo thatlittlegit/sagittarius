@@ -59,6 +59,14 @@ namespace Sagittarius.AboutProtocol {
 			case "blank":
 				ret.data = new Bytes({});
 				break;
+			case "home":
+				if (uri.query_str == null) {
+					uri.query_str = "Home";
+				}
+
+				ret.data = new Bytes(Uri.unescape_string(uri.query_str).data);
+				ret.content_type = new GMime.ContentType("application", "x-sagittarius-welcome");
+				break;
 			case "":
 				if (uri.query_str == "dlg") {
 					Idle.add(() => {

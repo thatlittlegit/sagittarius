@@ -132,19 +132,18 @@ namespace Sagittarius {
 			stack.add_named(scrolled_text_view, "content");
 			scrolled_text_view.show_all ();
 
-			var welcome = new Dazzle.EmptyState ();
-			welcome.title = _("Welcome to Sagittarius!");
-			welcome.subtitle = _("Start by typing a URL in the address bar.");
-			welcome.show ();
-			stack.add_named(welcome, "welcome");
-			stack.visible_child = welcome;
-
 			label = new TabLabel ();
 			label.text = _("New Tab");
 			label.close.connect(() => close(this));
 			label.show_all ();
 
 			show_all ();
+
+			try {
+				navigate(new Upg.Uri("about:home?%s".printf(Uri.escape_string(_("New Tab")))));
+			} catch (Error err) {
+				error("this is impossible! failed to parse fixed homepage uri, file a bug please (%s)", err.message);
+			}
 		}
 
 		public void go_to_history_pos (int pos) {
@@ -203,7 +202,7 @@ namespace Sagittarius {
 					scrolled_text_view.remove(scrolled_text_view.get_child ());
 				}
 				scrolled_text_view.add(rendered.widget);
-				rendered.widget.show_all();
+				rendered.widget.show_all ();
 
 				stack.visible_child = scrolled_text_view;
 

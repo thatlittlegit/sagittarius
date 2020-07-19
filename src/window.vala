@@ -130,8 +130,13 @@ namespace Sagittarius {
 		private void on_navigate_cb (Tab tab) {
 			forward_button.sensitive = tab.can_go_forward;
 			back_button.sensitive = tab.can_go_back;
+
 			ignore_changes = true;
-			url_bar.set_text(tab.uri ?? "");
+			if (tab.uri == "about:home?%s".printf(Uri.escape_string(_("New Tab")))) {
+				url_bar.set_text("");
+			} else {
+				url_bar.set_text(tab.uri ?? "");
+			}
 			ignore_changes = false;
 
 			if (tab == current) {

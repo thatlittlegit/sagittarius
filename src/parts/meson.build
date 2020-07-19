@@ -2,6 +2,7 @@ parts = [
   'proto-about',
   'proto-gemini',
   'render-gemini',
+  'render-welcome',
 ]
 
 foreach part: parts
