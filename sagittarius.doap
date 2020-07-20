@@ -1,0 +1,32 @@
+# (c) 2020 thatlittlegit. Licensed under CC0.
+@prefix : <http://usefulinc.com/ns/doap#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+[]
+  :name "Sagittarius"@en, "Sagittaire"@fr ;
+  :created "2020-05-22" ;
+  :shortdesc
+    "A browser for the Gemini protocol."@en,
+    "Un navigateur por le protocol Gemini."@fr
+  ;
+  :description """
+    Sagittarius is a browser for the Gemini protocol. It currently displays
+    Gemini pages as plain-text and crashes a lot.
+  """@en, """
+    Sagittaire est un navigateur pour le protocole Gemini. Maintenant, il montre
+    des pages Gemini comme texte simple, et il plante beaucoup.
+  """@fr
+  ;
+  :homepage <https://github.com/thatlittlegit/sagittarius> ;
+  :download-page <https://github.com/thatlittlegit/sagittarius/releases> ;
+  :bug-database <https://github.com/thatlittlegit/sagittarius/issues> ;
+  :category <http://api.gnome.org/doap-extensions#apps> ;
+  :programming-language "Vala" ;
+
+  :maintainer [
+    a foaf:Person ;
+    foaf:name "thatlittlegit" ;
+    foaf:mbox <mailto:personal+sagit@thatlittlegit.tk> ;
+  ] ;
+  a :Project .
