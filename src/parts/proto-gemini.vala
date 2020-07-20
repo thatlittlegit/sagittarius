@@ -21,9 +21,17 @@
 using Sagittarius;
 
 namespace Sagittarius.GeminiProtocol {
-	public class GeminiProtocol : Object, Peas.Activatable {
-		public Object object { owned get; construct; }
-		public UriLoader gemini_loader;
+	errordomain GeminiError {
+		UNKNOWN_RESPONSE_CODE,
+		INVALID_ENCODING,
+		INVALID_RESPONSE,
+	}
+
+	public class GeminiProtocol : UriLoader {
+		protected override void startup () {
+			scheme = "gemini";
+			instance = new GeminiProtocol ();
+		}
 
 		[CCode(cname = "peas_register_types")]
 		public static void peas_register_types (Peas.ObjectModule module) {
@@ -31,29 +39,6 @@ namespace Sagittarius.GeminiProtocol {
 				PEAS_TYPE_ACTIVATABLE,
 				new GeminiProtocol ().get_type ()
 				);
-		}
-
-		public void activate () {
-			gemini_loader = new GeminiLoader ();
-			add_loader("gemini", gemini_loader);
-		}
-
-		public void deactivate () {
-			remove_loader("gemini", gemini_loader);
-		}
-
-		public void update_state () {
-		}
-	}
-
-	errordomain GeminiError {
-		UNKNOWN_RESPONSE_CODE,
-		INVALID_ENCODING,
-		INVALID_RESPONSE,
-	}
-
-	public class GeminiLoader : Object, UriLoader {
-		public GeminiLoader () {
 		}
 
 		async ByteArray send_request (Upg.Uri uri) throws Error {
@@ -123,7 +108,7 @@ namespace Sagittarius.GeminiProtocol {
 			return meta.str.strip ();
 		}
 
-		public async Content fetch (Upg.Uri uri) throws Error {
+		public override async Content fetch (Upg.Uri uri) throws Error {
 			Content ret = {};
 			ret.original_uri = uri;
 

@@ -21,9 +21,11 @@
 using Sagittarius;
 
 namespace Sagittarius.WelcomeRenderer {
-	public class WelcomeRenderer : Object, Peas.Activatable, Renderer {
-		public Object object { owned get; construct; }
-		public Renderer welcome_renderer;
+	public class WelcomeRenderer : Renderer {
+		protected override void startup () {
+			content_type = "application/x-sagittarius-welcome";
+			instance = new WelcomeRenderer ();
+		}
 
 		[CCode(cname = "peas_register_types")]
 		public static void peas_register_types (Peas.ObjectModule module) {
@@ -33,18 +35,7 @@ namespace Sagittarius.WelcomeRenderer {
 				);
 		}
 
-		public void activate () {
-			add_renderer("application/x-sagittarius-welcome", this);
-		}
-
-		public void deactivate () {
-			remove_renderer("application/x-sagittarius-welcome", this);
-		}
-
-		public void update_state () {
-		}
-
-		public async RenderingOutcome render (NavigateFunc ? nav, Content content) {
+		public override async RenderingOutcome render (NavigateFunc ? nav, Content content) {
 			var widget = new Dazzle.EmptyState ();
 			widget.title = _("Welcome to Sagittarius!");
 			widget.subtitle = _("Start by typing a URL in the address bar.");

@@ -24,7 +24,21 @@ namespace Sagittarius {
 		Gtk.Widget widget;
 	}
 
-	public interface Renderer : Object {
+	public abstract class Renderer : Startuppable {
+		public string content_type = null;
+
+		public override void activate () {
+			if (instance == null) {
+				startup ();
+			}
+
+			add_renderer(content_type, instance as Renderer);
+		}
+
+		public override void deactivate () {
+			remove_renderer(content_type, instance as Renderer);
+		}
+
 		public abstract async RenderingOutcome render (NavigateFunc ? nav, Content content) throws Error;
 	}
 

@@ -18,7 +18,21 @@
  */
 
 namespace Sagittarius {
-	public interface UriLoader : Object {
+	public abstract class UriLoader : Startuppable {
+		public string scheme = null;
+
+		public override void activate () {
+			if (instance == null) {
+				startup ();
+			}
+
+			add_loader(scheme, instance as UriLoader);
+		}
+
+		public override void deactivate () {
+			remove_loader(scheme, instance as UriLoader);
+		}
+
 		public abstract async Content fetch (Upg.Uri uri) throws Error;
 	}
 

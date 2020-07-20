@@ -22,6 +22,20 @@ using Peas;
 using PeasGtk;
 
 namespace Sagittarius {
+	public abstract class Startuppable : Object, Activatable {
+		protected Object instance = null;
+
+		public Object object { owned get; construct; }
+
+		public abstract void activate ();
+		public abstract void deactivate ();
+
+		public void update_state () {
+		}
+
+		protected abstract void startup ();
+	}
+
 	private bool configured;
 	public void configure_plugin_engine (GLib.Application app) {
 		if (configured) {

@@ -21,9 +21,11 @@
 using Sagittarius;
 
 namespace Sagittarius.AboutProtocol {
-	public class AboutProtocol : Object, Peas.Activatable {
-		public Object object { owned get; construct; }
-		public UriLoader about_loader;
+	public class AboutProtocol : UriLoader {
+		protected override void startup () {
+			scheme = "about";
+			instance = new AboutProtocol ();
+		}
 
 		[CCode(cname = "peas_register_types")]
 		public static void peas_register_types (Peas.ObjectModule module) {
@@ -33,25 +35,7 @@ namespace Sagittarius.AboutProtocol {
 				);
 		}
 
-		public void activate () {
-			about_loader = new AboutLoader ();
-			add_loader("about", about_loader);
-			add_loader("sagittarius", about_loader);
-		}
-
-		public void deactivate () {
-			remove_loader("about", about_loader);
-		}
-
-		public void update_state () {
-		}
-	}
-
-	public class AboutLoader : Object, UriLoader {
-		public AboutLoader () {
-		}
-
-		public async Content fetch (Upg.Uri _uri) {
+		public override async Content fetch (Upg.Uri _uri) {
 			var uri = shift_uri(_uri);
 			Content ret = { UriLoadOutcome.SUCCESS, _uri, new GMime.ContentType("text", "gemini") };
 

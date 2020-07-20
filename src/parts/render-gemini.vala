@@ -20,33 +20,21 @@
 using Sagittarius;
 
 namespace Sagittarius.GeminiRenderer {
-	public class GeminiRendererPlugin : Object, Peas.Activatable {
-		public Object object { owned get; construct; }
-		public Renderer gemini_renderer;
+	public class GeminiRenderer : Renderer {
+		protected override void startup () {
+			content_type = "text/gemini";
+			instance = new GeminiRenderer ();
+		}
 
 		[CCode(cname = "peas_register_types")]
 		public static void peas_register_types (Peas.ObjectModule module) {
 			module.register_extension_type(
 				PEAS_TYPE_ACTIVATABLE,
-				new GeminiRendererPlugin ().get_type ()
+				new GeminiRenderer ().get_type ()
 				);
 		}
 
-		public void activate () {
-			gemini_renderer = new GeminiRenderer ();
-			add_renderer("text/gemini", gemini_renderer);
-		}
-
-		public void deactivate () {
-			remove_renderer("text/gemini", gemini_renderer);
-		}
-
-		public void update_state () {
-		}
-	}
-
-	public class GeminiRenderer : Object, Renderer {
-		public async RenderingOutcome render (NavigateFunc ? nav, Content content) {
+		public override async RenderingOutcome render (NavigateFunc ? nav, Content content) {
 			var markup = yield parse_markup (content.original_uri, content.data);
 
 			var widget = yield display_markup (markup, nav);
