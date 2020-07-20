@@ -208,6 +208,22 @@ namespace Sagittarius {
 
 				title = rendered.title ?? uri.to_string ();
 			} else {
+				if (document.outcome == UriLoadOutcome.PERMANENT_REDIRECT ||
+					document.outcome == UriLoadOutcome.TEMPORARY_REDIRECT) {
+					try {
+						var redirect_uri = new Upg.Uri((string) Bytes.unref_to_data(document.data));
+
+						var redirectstr = redirect_uri.to_string ();
+						var originalstr = document.original_uri.to_string ();
+						if (originalstr.substring(0, originalstr.length - 1) == redirectstr ||
+							redirectstr.substring(0, redirectstr.length - 1) == originalstr) {
+							on_navigate(this);
+							navigate(redirect_uri);
+							return;
+						}
+					} catch (Error err) {
+					}
+				}
 				errorview.set_message_for_response(navigate, document);
 				stack.visible_child = errorview;
 				title = uri.to_string ();
