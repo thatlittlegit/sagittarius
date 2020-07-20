@@ -78,13 +78,14 @@ namespace Sagittarius {
 				return;
 			case UriLoadOutcome.PERMANENT_REDIRECT:
 			case UriLoadOutcome.TEMPORARY_REDIRECT:
+				string reference = bytes_to_string(response.data);
 				set_message(QUESTION_ICON,
 							_("You are being redirected"),
-							_("The website is trying to send you to %s. Would you like to go there?").printf((string) Bytes.unref_to_data(response.data)));
+							_("The website is trying to send you to %s. Would you like to go there?").printf(reference));
 
 				Upg.Uri destination;
 				try {
-					destination = response.original_uri.apply_reference((string) Bytes.unref_to_data(response.data));
+					destination = response.original_uri.apply_reference(reference);
 				} catch (Error err) {
 					internal_error(err.message);
 					return;
@@ -147,7 +148,7 @@ namespace Sagittarius {
 
 			if (response.data.length > 0) {
 				site_says_box.show ();
-				site_says.label = (string) Bytes.unref_to_data(response.data);
+				site_says.label = bytes_to_string(response.data);
 			} else {
 				site_says_box.hide ();
 			}

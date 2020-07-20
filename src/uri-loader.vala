@@ -82,24 +82,4 @@ namespace Sagittarius {
 
 		return yield open_with_glib (uri);
 	}
-
-	public Content ensure_utf8 (Content content) throws ConvertError {
-		if (content.content_type.type != "text" || content.data.length == 0) {
-			return content;
-		}
-
-		var text = (string) Bytes.unref_to_data(content.data);
-
-		var charset = content.content_type.get_parameter("charset");
-		if (charset == null || charset == "utf-8") {
-			if (text.validate(text.length)) {
-				return content;
-			}
-
-			throw new ConvertError.ILLEGAL_SEQUENCE("text claims to be UTF-8, but isnt?");
-		}
-
-		content.data = new Bytes.take(convert(text, text.length, "utf-8", charset).data);
-		return content;
-	}
 }

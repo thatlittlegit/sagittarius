@@ -48,7 +48,7 @@ namespace Sagittarius.WelcomeRenderer {
 			var widget = new Dazzle.EmptyState ();
 			widget.title = _("Welcome to Sagittarius!");
 			widget.subtitle = _("Start by typing a URL in the address bar.");
-			return { (string) Bytes.unref_to_data(content.data), widget };
+			return { bytes_to_string(content.data), widget };
 		}
 	}
 }

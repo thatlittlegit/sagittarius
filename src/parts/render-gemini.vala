@@ -169,7 +169,7 @@ namespace Sagittarius.GeminiRenderer {
 
 	async Document parse_markup (Upg.Uri original_uri, Bytes _markup) {
 		Document output = new Document ();
-		var markup = (string) Bytes.unref_to_data(_markup);
+		var markup = bytes_to_string(_markup);
 		var lines = markup.split("\n");
 
 		bool preformatting = false;

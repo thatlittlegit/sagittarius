@@ -211,7 +211,7 @@ namespace Sagittarius {
 				if (document.outcome == UriLoadOutcome.PERMANENT_REDIRECT ||
 					document.outcome == UriLoadOutcome.TEMPORARY_REDIRECT) {
 					try {
-						var redirect_uri = new Upg.Uri((string) Bytes.unref_to_data(document.data));
+						var redirect_uri = new Upg.Uri(bytes_to_string(document.data));
 
 						var redirectstr = redirect_uri.to_string ();
 						var originalstr = document.original_uri.to_string ();
