@@ -23,7 +23,6 @@ namespace Sagittarius.GeminiRenderer {
 	public class GeminiRenderer : Renderer {
 		protected override void startup () {
 			content_type = "text/gemini";
-			instance = new GeminiRenderer ();
 		}
 
 		[CCode(cname = "peas_register_types")]

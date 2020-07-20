@@ -30,7 +30,6 @@ namespace Sagittarius.GeminiProtocol {
 	public class GeminiProtocol : UriLoader {
 		protected override void startup () {
 			scheme = "gemini";
-			instance = new GeminiProtocol ();
 		}
 
 		[CCode(cname = "peas_register_types")]

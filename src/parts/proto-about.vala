@@ -24,7 +24,6 @@ namespace Sagittarius.AboutProtocol {
 	public class AboutProtocol : UriLoader {
 		protected override void startup () {
 			scheme = "about";
-			instance = new AboutProtocol ();
 		}
 
 		[CCode(cname = "peas_register_types")]

@@ -23,8 +23,6 @@ using PeasGtk;
 
 namespace Sagittarius {
 	public abstract class Startuppable : Object, Activatable {
-		protected Object instance = null;
-
 		public Object object { owned get; construct; }
 
 		public abstract void activate ();

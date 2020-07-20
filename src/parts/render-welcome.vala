@@ -24,7 +24,6 @@ namespace Sagittarius.WelcomeRenderer {
 	public class WelcomeRenderer : Renderer {
 		protected override void startup () {
 			content_type = "application/x-sagittarius-welcome";
-			instance = new WelcomeRenderer ();
 		}
 
 		[CCode(cname = "peas_register_types")]

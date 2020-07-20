@@ -22,15 +22,12 @@ namespace Sagittarius {
 		public string scheme = null;
 
 		public override void activate () {
-			if (instance == null) {
-				startup ();
-			}
-
-			add_loader(scheme, instance as UriLoader);
+			startup ();
+			add_loader(scheme, this);
 		}
 
 		public override void deactivate () {
-			remove_loader(scheme, instance as UriLoader);
+			remove_loader(scheme, this);
 		}
 
 		public abstract async Content fetch (Upg.Uri uri) throws Error;

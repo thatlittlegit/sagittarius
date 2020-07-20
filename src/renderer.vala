@@ -28,15 +28,12 @@ namespace Sagittarius {
 		public string content_type = null;
 
 		public override void activate () {
-			if (instance == null) {
-				startup ();
-			}
-
-			add_renderer(content_type, instance as Renderer);
+			startup ();
+			add_renderer(content_type, this);
 		}
 
 		public override void deactivate () {
-			remove_renderer(content_type, instance as Renderer);
+			remove_renderer(content_type, this);
 		}
 
 		public abstract async RenderingOutcome render (NavigateFunc ? nav, Content content) throws Error;
