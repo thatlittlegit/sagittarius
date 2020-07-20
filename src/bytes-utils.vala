@@ -31,7 +31,7 @@ namespace Sagittarius {
 	}
 
 	public Content ensure_utf8 (Content content) throws ConvertError {
-		if (content.content_type.type != "text") {
+		if (content.content_type.type != "text" || content.data.length == 0) {
 			return content;
 		}
 
