@@ -185,7 +185,7 @@ namespace Sagittarius.GeminiRenderer {
 
 				try {
 					var destination = original_uri.apply_reference(line_parts[0]);
-					output.tags.prepend({ TagType.LINK, "", destination, line_parts[1] });
+					output.tags.prepend({ TagType.LINK, "", destination, line_parts[1] ?? line_parts[0] });
 				} catch (Error err) {
 					output.tags.prepend({ TagType.BROKEN_LINK, "", null, line_parts[1] });
 				}
