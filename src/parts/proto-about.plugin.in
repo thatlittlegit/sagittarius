@@ -1,6 +1,6 @@
 [Plugin]
 Module=proto-about
-Depends=
+Depends=render-welcome
 Loader=C
 Icon=dialog-information
 Name=About Protocol
