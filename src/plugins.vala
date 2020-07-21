@@ -31,7 +31,8 @@ namespace Sagittarius {
 		public void update_state () {
 		}
 
-		protected abstract void startup ();
+		protected virtual void startup () {
+		}
 	}
 
 	private bool configured;
