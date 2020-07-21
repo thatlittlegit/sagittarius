@@ -144,27 +144,34 @@ namespace Sagittarius {
 		private void read_from_file (InputStream _stream) {
 			var stream = new DataInputStream(_stream);
 
-			string line;
-			try {
-				while (true) {
+			while (true) {
+				string line;
+				try {
 					line = stream.read_line_utf8 ();
-
-					if (line == null) {
-						break;
-					}
-
-					if (line.strip () == "" || line.has_prefix("#")) {
-						continue;
-					}
-
-					var parts = line.split("\t", 3);
-					queue.append(new HistoryEntry(new DateTime.from_iso8601(parts[0], new TimeZone.utc ()),
-												  new Upg.Uri(parts[1]),
-												  parts[2]));
+				} catch (IOError error) {
+					warning("IOError when reading: %s", error.message);
+					continue;
 				}
-			} catch (Error err) {
-				warning(err.message);
+
+				if (line == null) {
+					break;
+				}
+
+				if (line.strip () == "" || line.has_prefix("#")) {
+					continue;
+				}
+
+				var parts = line.split("\t", 3);
+				try {
+					queue.prepend(new HistoryEntry(new DateTime.from_iso8601(parts[0], new TimeZone.utc ()),
+												   new Upg.Uri(parts[1]),
+												   parts[2]));
+				} catch (Error err) {
+					warning("failed to make HistoryEntry for %s: %s", parts[1], err.message);
+				}
 			}
+
+			queue.reverse ();
 		}
 	}
 
