@@ -114,12 +114,17 @@ namespace Sagittarius {
 			}
 
 			if (file != null) {
-				file.get_output_stream ().write(entry.date.format("%FT%TZ").data);
-				file.get_output_stream ().write("\t".data);
-				file.get_output_stream ().write(Uri.escape_string(entry.uri.to_string ()).data);
-				file.get_output_stream ().write("\t".data);
-				file.get_output_stream ().write(entry.title.data);
-				file.get_output_stream ().write("\n".data);
+				var line = "%s\t%s\t%s\n".printf(
+					new DateTime.now_utc ().format("%FT%TZ"),
+					entry.uri.to_string (),
+					entry.title
+					);
+
+				if (!line.validate(-1)) {
+					warning("data is not valid UTF-8!");
+				}
+
+				file.get_output_stream ().write(line.data);
 			}
 		}
 
