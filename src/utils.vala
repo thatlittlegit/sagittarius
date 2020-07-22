@@ -35,7 +35,7 @@ namespace Sagittarius {
 			return content;
 		}
 
-		var text = (string) Bytes.unref_to_data(content.data);
+		var text = bytes_to_string(content.data);
 
 		var charset = content.content_type.get_parameter("charset");
 		if (charset == null || charset == "utf-8") {
