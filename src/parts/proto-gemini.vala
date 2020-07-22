@@ -27,9 +27,9 @@ namespace Sagittarius.GeminiProtocol {
 		INVALID_RESPONSE,
 	}
 
-	public class GeminiProtocol : UriLoader {
-		protected override void startup () {
-			scheme = "gemini";
+	public class GeminiProtocol : Plugin, UriLoader {
+		construct {
+			add_loader("gemini", this);
 		}
 
 		[CCode(cname = "peas_register_types")]
@@ -107,7 +107,7 @@ namespace Sagittarius.GeminiProtocol {
 			return meta.str.strip ();
 		}
 
-		public override async Content fetch (Upg.Uri uri) throws Error {
+		public async Content fetch (Upg.Uri uri) throws Error {
 			Content ret = {};
 			ret.original_uri = uri;
 

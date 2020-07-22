@@ -21,9 +21,9 @@
 using Sagittarius;
 
 namespace Sagittarius.WelcomeRenderer {
-	public class WelcomeRenderer : Renderer {
-		protected override void startup () {
-			content_type = "application/x-sagittarius-welcome";
+	public class WelcomeRenderer : Plugin, Renderer {
+		construct {
+			add_renderer("application/x-sagittarius-welcome", this);
 		}
 
 		[CCode(cname = "peas_register_types")]
@@ -34,7 +34,7 @@ namespace Sagittarius.WelcomeRenderer {
 				);
 		}
 
-		public override async RenderingOutcome render (NavigateFunc ? nav, Content content) {
+		public async RenderingOutcome render (NavigateFunc ? nav, Content content) {
 			var widget = new Dazzle.EmptyState ();
 			widget.title = _("Welcome to Sagittarius!");
 			widget.subtitle = _("Start by typing a URL in the address bar.");

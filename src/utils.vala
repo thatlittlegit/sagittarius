@@ -49,4 +49,16 @@ namespace Sagittarius {
 		content.data = new Bytes.take(convert(text, text.length, "utf-8", charset).data);
 		return content;
 	}
+
+	public class FeebleRef<T> {
+		private WeakRef<T> wr;
+
+		public FeebleRef (T obj) {
+			wr = WeakRef((Object) obj);
+		}
+
+		public T ? @get () {
+			return (T ? ) wr.@get ();
+		}
+	}
 }

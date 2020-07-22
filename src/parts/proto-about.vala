@@ -21,9 +21,9 @@
 using Sagittarius;
 
 namespace Sagittarius.AboutProtocol {
-	public class AboutProtocol : UriLoader {
-		protected override void startup () {
-			scheme = "about";
+	public class AboutProtocol : Plugin, UriLoader {
+		construct {
+			add_loader("about", this);
 		}
 
 		[CCode(cname = "peas_register_types")]
@@ -34,7 +34,7 @@ namespace Sagittarius.AboutProtocol {
 				);
 		}
 
-		public override async Content fetch (Upg.Uri _uri) {
+		public async Content fetch (Upg.Uri _uri) {
 			var uri = shift_uri(_uri);
 			Content ret = { UriLoadOutcome.SUCCESS, _uri, new GMime.ContentType("text", "gemini") };
 

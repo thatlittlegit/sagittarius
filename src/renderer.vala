@@ -24,31 +24,20 @@ namespace Sagittarius {
 		Gtk.Widget widget;
 	}
 
-	public abstract class Renderer : Startuppable {
-		public string content_type = null;
-
-		public override void activate () {
-			startup ();
-			add_renderer(content_type, this);
-		}
-
-		public override void deactivate () {
-			remove_renderer(content_type, this);
-		}
-
+	public interface Renderer : Plugin {
 		public abstract async RenderingOutcome render (NavigateFunc ? nav, Content content) throws Error;
 	}
 
-	HashTable<string, Renderer> renderers = null;
+	HashTable<string, FeebleRef<Renderer> > renderers = null;
 
 	public void init_renderers () {
 		if (renderers == null) {
-			renderers = new HashTable<string, Renderer>(str_hash, str_equal);
+			renderers = new HashTable<string, FeebleRef<Renderer> >(str_hash, str_equal);
 		}
 	}
 
 	public void add_renderer (string mime, Renderer renderer) {
-		renderers.insert(mime, renderer);
+		renderers.insert(mime, new FeebleRef<Renderer>(renderer));
 	}
 
 	public void remove_renderer (string mime, Renderer renderer) {
@@ -59,8 +48,8 @@ namespace Sagittarius {
 	public async RenderingOutcome render_content (NavigateFunc nav, Content content) throws Error {
 		var type = stringify_mime_type(content.content_type);
 		var renderer = renderers.lookup(type);
-		if (renderer != null) {
-			return yield renderer.render (nav, content);
+		if (renderer != null && renderer.@get () != null) {
+			return yield renderer.@get ().render(nav, content);
 		}
 
 		return open_user_default(content);

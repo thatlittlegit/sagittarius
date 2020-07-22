@@ -18,18 +18,7 @@
  */
 
 namespace Sagittarius {
-	public abstract class UriLoader : Startuppable {
-		public string scheme = null;
-
-		public override void activate () {
-			startup ();
-			add_loader(scheme, this);
-		}
-
-		public override void deactivate () {
-			remove_loader(scheme, this);
-		}
-
+	public interface UriLoader : Object {
 		public abstract async Content fetch (Upg.Uri uri) throws Error;
 	}
 
@@ -57,15 +46,15 @@ namespace Sagittarius {
 		BAD_REQUEST = 59,
 	}
 
-	HashTable<string, UriLoader> loaders = null;
+	HashTable<string, FeebleRef<UriLoader> > loaders = null;
 
 	public void init_loaders () {
 		if (loaders == null)
-			loaders = new HashTable<string, UriLoader>(str_hash, str_equal);
+			loaders = new HashTable<string, FeebleRef<UriLoader> ? >(str_hash, str_equal);
 	}
 
 	public void add_loader (string scheme, UriLoader impl) {
-		loaders.insert(scheme, impl);
+		loaders.replace(scheme, new FeebleRef<UriLoader>(impl));
 	}
 
 	public void remove_loader (string scheme, UriLoader impl) {
@@ -87,8 +76,8 @@ namespace Sagittarius {
 
 	public async Content fetch_uri (Upg.Uri uri) throws Error {
 		var loader = loaders.lookup(uri.scheme);
-		if (loader != null) {
-			return yield loader.fetch (uri);
+		if (loader != null && loader.@get () != null) {
+			return yield loader.@get ().fetch(uri);
 		}
 
 		return yield open_with_glib (uri);

@@ -22,16 +22,16 @@ using Peas;
 using PeasGtk;
 
 namespace Sagittarius {
-	public abstract class Startuppable : Object, Activatable {
+	public abstract class Plugin : Object, Activatable {
 		public Object object { owned get; construct; }
 
-		public abstract void activate ();
-		public abstract void deactivate ();
-
-		public void update_state () {
+		public virtual void activate () {
 		}
 
-		protected virtual void startup () {
+		public virtual void deactivate () {
+		}
+
+		public void update_state () {
 		}
 	}
 

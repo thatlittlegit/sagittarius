@@ -20,9 +20,9 @@
 using Sagittarius;
 
 namespace Sagittarius.GeminiRenderer {
-	public class GeminiRenderer : Renderer {
-		protected override void startup () {
-			content_type = "text/gemini";
+	public class GeminiRenderer : Plugin, Renderer {
+		construct {
+			add_renderer("text/gemini", this);
 		}
 
 		[CCode(cname = "peas_register_types")]
@@ -33,7 +33,7 @@ namespace Sagittarius.GeminiRenderer {
 				);
 		}
 
-		public override async RenderingOutcome render (NavigateFunc ? nav, Content content) {
+		public async RenderingOutcome render (NavigateFunc ? nav, Content content) {
 			var markup = yield parse_markup (content.original_uri, content.data);
 
 			var widget = yield display_markup (markup, nav);
