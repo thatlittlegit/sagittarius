@@ -9,10 +9,7 @@ foreach part: parts
   shared_library(part, [ '../config.vapi', '@0@.vala'.format(part) ],
     install: true,
     c_args: c_args,
-    dependencies: declare_dependency(
-      link_with: lib.get_shared_lib(),
-      dependencies: sagittarius_deps,
-      include_directories: '..'),
+    dependencies: dep,
   )
 
   conf = configure_file(

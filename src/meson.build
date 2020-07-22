@@ -46,10 +46,19 @@ lib = both_libraries('sagittarius', sagittarius_sources,
   vala_args: vala_args,
   dependencies: sagittarius_deps,
   c_args: c_args,
-  # don't install it: this is more meant for compilation
-  # TODO is this needed for out-of-tree plugins? if so, it should be optional
-  #      and LGPL'd (if needed)
   install: false,
+)
+
+dep = declare_dependency(
+  dependencies: sagittarius_deps,
+  link_with: lib.get_shared_lib(),
+  include_directories: '.',
+)
+
+import('pkgconfig').generate(lib.get_shared_lib(),
+  description: 'A browser for the Gemini protocol.',
+  libraries: [ lib.get_shared_lib(), dependency('libpeas-1.0') ],
+  libraries_private: sagittarius_deps,
 )
 
 exe = executable('sagittarius', [],
