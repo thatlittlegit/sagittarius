@@ -25,14 +25,17 @@ namespace Sagittarius {
 	}
 
 	public interface Renderer : Plugin {
-		public abstract async RenderingOutcome render (NavigateFunc ? nav, Content content) throws Error;
+		public abstract async RenderingOutcome render (NavigateFunc ? nav,
+			Content content) throws
+		Error;
 	}
 
 	HashTable<string, FeebleRef<Renderer> > renderers = null;
 
 	public void init_renderers () {
 		if (renderers == null) {
-			renderers = new HashTable<string, FeebleRef<Renderer> >(str_hash, str_equal);
+			renderers = new HashTable<string, FeebleRef<Renderer> >(str_hash,
+				str_equal);
 		}
 	}
 
@@ -45,7 +48,8 @@ namespace Sagittarius {
 		renderers.remove(mime);
 	}
 
-	public async RenderingOutcome render_content (NavigateFunc nav, Content content) throws Error {
+	public async RenderingOutcome render_content (NavigateFunc nav,
+		Content content) throws Error {
 		var type = stringify_mime_type(content.content_type);
 		var renderer = renderers.lookup(type);
 		if (renderer != null && renderer.@get () != null) {
@@ -65,6 +69,7 @@ namespace Sagittarius {
 
 	RenderingOutcome open_user_default (Content content) throws Error {
 		// TODO we need to support writing to a file first
-		throw new RenderingError.NO_MIME_TYPE(_("You don't have a plugin for handling this type of file."));
+		throw new RenderingError.NO_MIME_TYPE(_(
+			"You don't have a plugin for handling this type of file."));
 	}
 }

@@ -47,17 +47,26 @@ namespace Sagittarius {
 			PEAS_TYPE_ACTIVATABLE,
 			"object", application, null
 			);
-		application.extensions.extension_added.connect((info, activatable) => ((Activatable) activatable).activate ());
-		application.extensions.extension_removed.connect((info, activatable) => ((Activatable) activatable).deactivate ());
+		application.extensions.extension_added.connect((info,
+														activatable) => ((
+																			 Activatable)
+																		 activatable).activate ());
+		application.extensions.extension_removed.connect((info,
+														  activatable) => ((
+																			   Activatable)
+																		   activatable).deactivate ());
 
 		configured = true;
 		Engine.get_default ().add_search_path(LIBDIR, DATADIR);
 		Engine.get_default ().add_search_path(
-			Path.build_path("/", Environment.get_user_data_dir (), "sagittarius", "plugins"),
-			Path.build_path("/", Environment.get_user_data_dir (), "sagittarius", "plugin-data"));
+			Path.build_path("/", Environment.get_user_data_dir (),
+				"sagittarius", "plugins"),
+			Path.build_path("/", Environment.get_user_data_dir (),
+				"sagittarius", "plugin-data"));
 
 		if (DEBUG == "true") {
-			Engine.get_default ().add_search_path(Path.build_path("/", BUILDDIR, "parts"), null);
+			Engine.get_default ().add_search_path(Path.build_path("/", BUILDDIR,
+				"parts"), null);
 		}
 
 		Engine.get_default ().rescan_plugins ();
@@ -89,10 +98,13 @@ namespace Sagittarius {
 
 		construct {
 			var installed = Engine.get_default ().get_plugin_list ().length ();
-			headerbar.subtitle = ngettext("One plugin installed", "%u plugins installed", installed).printf(installed);
+			headerbar.subtitle = ngettext("One plugin installed",
+				"%u plugins installed",
+				installed).printf(installed);
 
 			manager = new PluginManagerView(Engine.get_default ());
-			manager.get_selection ().changed.connect(() => { update_buttons (); });
+			manager.get_selection ().changed.connect(
+				() => { update_buttons (); });
 			manager.get_selection ().mode = Gtk.SelectionMode.SINGLE;
 			manager.button_press_event.connect(() => manager.unselect_all ());
 			content_stack.add_named(manager, "manager");
@@ -115,7 +127,8 @@ namespace Sagittarius {
 				return;
 			}
 
-			var extension = Engine.get_default ().create_extension(selected, PEAS_GTK_TYPE_CONFIGURABLE);
+			var extension = Engine.get_default ().create_extension(selected,
+				PEAS_GTK_TYPE_CONFIGURABLE);
 
 			if (extension == null) {
 				properties_button.sensitive = false;
@@ -133,8 +146,11 @@ namespace Sagittarius {
 
 		[GtkCallback]
 		private void open_properties_cb () {
-			content_stack.add_named(((PeasGtk.Configurable)Engine.get_default ().create_extension(manager.get_selected_plugin (), PEAS_GTK_TYPE_CONFIGURABLE))
-									 .create_configure_widget (), "properties");
+			content_stack.add_named(((PeasGtk.Configurable)Engine.get_default ()
+									  .create_extension(manager.
+										  get_selected_plugin (),
+										 PEAS_GTK_TYPE_CONFIGURABLE))
+				 .create_configure_widget (), "properties");
 			content_stack.visible_child_name = "properties";
 			back_button_revealer.reveal_child = true;
 		}
@@ -151,7 +167,8 @@ namespace Sagittarius {
 			dialog.copyright = plugin.get_copyright ();
 			dialog.version = plugin.get_version ();
 
-			dialog.license_type = decode_license(plugin.get_external_data("License"));
+			dialog.license_type =
+				decode_license(plugin.get_external_data("License"));
 			if (dialog.license_type == Gtk.License.CUSTOM) {
 				dialog.license = plugin.get_external_data("License-Data") ??
 								 "This plugin is proprietary.";

@@ -50,7 +50,8 @@ namespace Sagittarius.GeminiProtocol {
 
 			conn.socket.set_blocking(true);
 			size_t size;
-			yield conn.output_stream.write_all_async ("%s\r\n".printf(struri).data, 0, null, out size);
+			yield conn.output_stream.write_all_async (
+				"%s\r\n".printf(struri).data, 0, null, out size);
 
 			info("sent request [%ld bytes]".printf((ssize_t) size));
 
@@ -86,7 +87,8 @@ namespace Sagittarius.GeminiProtocol {
 
 		private string find_meta (ByteArray bytearray) {
 			int i;
-			StringBuilder meta = new StringBuilder.sized(bytearray.len.clamp(0, 1024));
+			StringBuilder meta =
+				new StringBuilder.sized(bytearray.len.clamp(0, 1024));
 			for (i = 0; i < bytearray.len && i < 1024; i++) {
 				char current = (char) bytearray.data[i];
 
@@ -124,7 +126,8 @@ namespace Sagittarius.GeminiProtocol {
 			array.append({ 0 });
 
 			if (status == 20) {
-				ret.content_type = GMime.ContentType.parse(new GMime.ParserOptions (), meta);
+				ret.content_type = GMime.ContentType.parse(
+					new GMime.ParserOptions (), meta);
 				ret.data = ByteArray.free_to_bytes(array);
 				return ret;
 			}

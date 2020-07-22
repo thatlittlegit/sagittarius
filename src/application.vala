@@ -30,7 +30,8 @@ namespace Sagittarius {
 		public Peas.ExtensionSet extensions;
 
 		public Application () {
-			Object(application_id: "tk.thatlittlegit.sagittarius", flags : ApplicationFlags.HANDLES_OPEN);
+			Object(application_id: "tk.thatlittlegit.sagittarius",
+				flags : ApplicationFlags.HANDLES_OPEN);
 			add_action_entries(actions, this);
 
 			startup.connect(initialize_history);
@@ -46,22 +47,26 @@ namespace Sagittarius {
 
 		private void initialize_history () {
 			try {
-				var history_file = File.new_build_filename(Environment.get_user_data_dir (), "sagittarius", "history.csv");
+				var history_file = File.new_build_filename(
+					Environment.get_user_data_dir (), "sagittarius",
+					"history.csv");
 
 				try {
 					history_file.create(FileCreateFlags.NONE)
 					 .write("# %s\n# %s\n#\n# %s\n".printf(
-								_("history.csv: history file for Sagittarius"),
-								_("This file stores the history from your Sagittarius browsing."),
-								_("DATE                  URI\t\tTITLE")
-								).data);
+						_("history.csv: history file for Sagittarius"),
+						_(
+							"This file stores the history from your Sagittarius browsing."),
+						_("DATE                  URI\t\tTITLE")
+						).data);
 				} catch (IOError err) {
 					if (err.code != IOError.EXISTS) {
 						throw err;
 					}
 				}
 
-				history = new History.with_file(null, history_file.open_readwrite ());
+				history = new History.with_file(null,
+					history_file.open_readwrite ());
 			} catch (Error err) {
 				error(err.message);
 			}

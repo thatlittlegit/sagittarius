@@ -103,7 +103,8 @@ namespace Sagittarius {
 			}
 		}
 
-		public void record (DateTime now, Upg.Uri full_uri, string title) throws IOError {
+		public void record (DateTime now, Upg.Uri full_uri,
+			string title) throws IOError {
 			record_entry(new HistoryEntry(now, full_uri, title));
 		}
 
@@ -163,11 +164,13 @@ namespace Sagittarius {
 
 				var parts = line.split("\t", 3);
 				try {
-					queue.prepend(new HistoryEntry(new DateTime.from_iso8601(parts[0], new TimeZone.utc ()),
-												   new Upg.Uri(parts[1]),
-												   parts[2]));
+					queue.prepend(new HistoryEntry(new DateTime.from_iso8601(
+						parts[0], new TimeZone.utc ()),
+						new Upg.Uri(parts[1]),
+						parts[2]));
 				} catch (Error err) {
-					warning("failed to make HistoryEntry for %s: %s", parts[1], err.message);
+					warning("failed to make HistoryEntry for %s: %s", parts[1],
+						err.message);
 				}
 			}
 
@@ -218,7 +221,8 @@ namespace Sagittarius {
 			foreach (var entry in filtering) {
 				var ok = true;
 				foreach (var already_visible in visible) {
-					if (already_visible.title == entry.title && already_visible.subtitle == entry.subtitle) {
+					if (already_visible.title == entry.title &&
+						already_visible.subtitle == entry.subtitle) {
 						ok = false;
 						break;
 					}

@@ -33,8 +33,10 @@ namespace Sagittarius.GeminiRenderer {
 				);
 		}
 
-		public async RenderingOutcome render (NavigateFunc ? nav, Content content) {
-			var markup = yield parse_markup (content.original_uri, content.data);
+		public async RenderingOutcome render (NavigateFunc ? nav,
+			Content content) {
+			var markup = yield parse_markup (content.original_uri,
+				content.data);
 
 			var widget = yield display_markup (markup, nav);
 
@@ -72,15 +74,24 @@ namespace Sagittarius.GeminiRenderer {
 	Gtk.TextView make_new_textview () {
 		var text_view = new Gtk.TextView ();
 		text_view.wrap_mode = Gtk.WrapMode.WORD;
-		var tabstops = new Pango.TabArray.with_positions(2, true, Pango.TabAlign.LEFT, 8, Pango.TabAlign.LEFT, 16);
-		text_view.buffer.create_tag("pre", "family", "monospace", "wrap-mode", Gtk.WrapMode.NONE);
-		text_view.buffer.create_tag("h1", "weight", 600, "size-points", 26.0, "size-set", true);
-		text_view.buffer.create_tag("h2", "weight", 500, "size-points", 22.0, "size-set", true);
-		text_view.buffer.create_tag("h3", "weight", 400, "size-points", 18.0, "size-set", true);
+		var tabstops = new Pango.TabArray.with_positions(2, true,
+			Pango.TabAlign.LEFT, 8,
+			Pango.TabAlign.LEFT,
+			16);
+		text_view.buffer.create_tag("pre", "family", "monospace", "wrap-mode",
+			Gtk.WrapMode.NONE);
+		text_view.buffer.create_tag("h1", "weight", 600, "size-points", 26.0,
+			"size-set", true);
+		text_view.buffer.create_tag("h2", "weight", 500, "size-points", 22.0,
+			"size-set", true);
+		text_view.buffer.create_tag("h3", "weight", 400, "size-points", 18.0,
+			"size-set", true);
 		text_view.buffer.create_tag("ul", "tabs", tabstops);
 		text_view.buffer.create_tag("blockquote", "family", "cursive",
-									"style", Pango.Style.ITALIC, "left-margin", 64, "left-margin-set", true);
-		text_view.top_margin = text_view.bottom_margin = text_view.right_margin = text_view.left_margin = 16;
+			"style", Pango.Style.ITALIC, "left-margin", 64, "left-margin-set",
+			true);
+		text_view.top_margin = text_view.bottom_margin =
+			text_view.right_margin = text_view.left_margin = 16;
 		text_view.editable = false;
 		return text_view;
 	}
@@ -116,7 +127,8 @@ namespace Sagittarius.GeminiRenderer {
 				view.buffer.insert(ref iter, tag.contents, -1);
 				break;
 			case TagType.PREFORMATTED:
-				view.buffer.insert_with_tags(ref iter, tag.contents, -1, preformatted);
+				view.buffer.insert_with_tags(ref iter, tag.contents, -1,
+					preformatted);
 				break;
 			case TagType.H1:
 				view.buffer.insert_with_tags(ref iter, tag.contents, -1, h1);
@@ -128,11 +140,13 @@ namespace Sagittarius.GeminiRenderer {
 				view.buffer.insert_with_tags(ref iter, tag.contents, -1, h3);
 				break;
 			case TagType.LIST_ITEM:
-				view.buffer.insert_with_tags(ref iter, "\t\u2022\t%s".printf(tag.contents), -1, ul);
+				view.buffer.insert_with_tags(ref iter,
+					"\t\u2022\t%s".printf(tag.contents), -1, ul);
 				break;
 			case TagType.LINK:
 			case TagType.BROKEN_LINK:
-				var btn = new Gtk.LinkButton.with_label(tag.contents, tag.auxillary);
+				var btn = new Gtk.LinkButton.with_label(tag.contents,
+					tag.auxillary);
 				btn.activate_link.connect((button) => {
 					nav(tag.target);
 					return true;
@@ -142,11 +156,13 @@ namespace Sagittarius.GeminiRenderer {
 					btn.sensitive = false;
 				}
 
-				view.add_child_at_anchor(btn, view.buffer.create_child_anchor(iter));
+				view.add_child_at_anchor(btn,
+					view.buffer.create_child_anchor(iter));
 				btn.show ();
 				break;
 			case TagType.BLOCKQUOTE:
-				view.buffer.insert_with_tags(ref iter, tag.contents, -1, blockquote);
+				view.buffer.insert_with_tags(ref iter, tag.contents, -1,
+					blockquote);
 				break;
 			}
 		}
@@ -168,13 +184,17 @@ namespace Sagittarius.GeminiRenderer {
 			} else if (preformatting) {
 				output.tags.prepend({ TagType.PREFORMATTED, line, null });
 			} else if (line.has_prefix("=>")) {
-				var line_parts = line.split("=>", 2)[1].strip ().split_set(" \t", 2);
+				var line_parts = line.split("=>", 2)[1].strip ().split_set(
+					" \t", 2);
 
 				try {
-					var destination = original_uri.apply_reference(line_parts[0]);
-					output.tags.prepend({ TagType.LINK, "", destination, line_parts[1] ?? line_parts[0] });
+					var destination =
+						original_uri.apply_reference(line_parts[0]);
+					output.tags.prepend({ TagType.LINK, "", destination,
+										  line_parts[1] ?? line_parts[0] });
 				} catch (Error err) {
-					output.tags.prepend({ TagType.BROKEN_LINK, "", null, line_parts[1] });
+					output.tags.prepend({ TagType.BROKEN_LINK, "", null,
+										  line_parts[1] });
 				}
 			} else if (line.has_prefix("# ")) {
 				if (output.title == null) {
@@ -186,9 +206,11 @@ namespace Sagittarius.GeminiRenderer {
 			} else if (line.has_prefix("###")) {
 				output.tags.prepend({ TagType.H3, line.substring(4) });
 			} else if (line.has_prefix("*")) {
-				output.tags.prepend({ TagType.LIST_ITEM, line.substring(1).strip () });
+				output.tags.prepend({ TagType.LIST_ITEM, line.substring(
+					1).strip () });
 			} else if (line.has_prefix(">")) {
-				output.tags.prepend({ TagType.BLOCKQUOTE, line.substring(1).strip () });
+				output.tags.prepend({ TagType.BLOCKQUOTE, line.substring(
+					1).strip () });
 			} else {
 				output.tags.prepend({ TagType.TEXT, line });
 			}

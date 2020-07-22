@@ -36,7 +36,8 @@ namespace Sagittarius.AboutProtocol {
 
 		public async Content fetch (Upg.Uri _uri) {
 			var uri = shift_uri(_uri);
-			Content ret = { UriLoadOutcome.SUCCESS, _uri, new GMime.ContentType("text", "gemini") };
+			Content ret = { UriLoadOutcome.SUCCESS, _uri, new GMime.ContentType(
+				"text", "gemini") };
 
 			switch (uri.host) {
 			case "blank":
@@ -48,7 +49,8 @@ namespace Sagittarius.AboutProtocol {
 				}
 
 				ret.data = new Bytes(Uri.unescape_string(uri.query_str).data);
-				ret.content_type = new GMime.ContentType("application", "x-sagittarius-welcome");
+				ret.content_type = new GMime.ContentType("application",
+					"x-sagittarius-welcome");
 				break;
 			case "":
 				if (uri.query_str == "dlg") {
@@ -59,14 +61,16 @@ namespace Sagittarius.AboutProtocol {
 				}
 
 				ret.data = new Bytes.take("# %s\n%s\n=> ?dlg %s %s"
-										   .printf(_("Sagittarius"),
-												   _("A browser for the Gemini protocol"),
-												   _("_About").substring(1),
-												   _("Sagittarius")).data);
+					 .printf(_("Sagittarius"),
+						_("A browser for the Gemini protocol"),
+						_("_About").substring(1),
+						_("Sagittarius")).data);
 				break;
 			default:
 				ret.outcome = UriLoadOutcome.NOT_FOUND;
-				ret.data = new Bytes(_("The page you looked up isn't a valid about: URI.").data);
+				ret.data =
+					new Bytes(_(
+						"The page you looked up isn't a valid about: URI.").data);
 				break;
 			}
 

@@ -109,7 +109,8 @@ namespace Sagittarius {
 			var tab = new Tab(this, history);
 			notebook.set_current_page(notebook.append_page(tab, tab.label));
 			tab.on_navigate.connect(on_navigate_cb);
-			tab.close.connect((page) => notebook.remove_page(notebook.page_num(page)));
+			tab.close.connect((page) => notebook.remove_page(notebook.page_num(
+				page)));
 
 			notebook.set_tab_reorderable(tab, true);
 
@@ -132,7 +133,8 @@ namespace Sagittarius {
 			back_button.sensitive = tab.can_go_back;
 
 			ignore_changes = true;
-			if (tab.uri == "about:home?%s".printf(Uri.escape_string(_("New Tab")))) {
+			if (tab.uri ==
+				"about:home?%s".printf(Uri.escape_string(_("New Tab")))) {
 				url_bar.set_text("");
 			} else {
 				url_bar.set_text(tab.uri ?? "");
@@ -176,7 +178,8 @@ namespace Sagittarius {
 		}
 
 		[GtkCallback]
-		private bool show_history_menu (Gtk.Widget relative_to, Gdk.EventButton button) {
+		private bool show_history_menu (Gtk.Widget relative_to,
+			Gdk.EventButton button) {
 			if (button.button != 3) return false;
 
 			history_menu_box.forall(item => history_menu_box.remove(item));
@@ -193,7 +196,8 @@ namespace Sagittarius {
 				item.set_data<int>("history_pos", i);
 
 				item.clicked.connect(() => {
-					current.go_to_history_pos(item.get_data<int>("history_pos"));
+					current.go_to_history_pos(item.get_data<int>(
+						"history_pos"));
 				});
 
 				item.show ();

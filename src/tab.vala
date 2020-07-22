@@ -46,7 +46,8 @@ namespace Sagittarius {
 		construct {
 			label = new Gtk.Label("");
 			spinner = new Gtk.Spinner ();
-			close_button = new Gtk.Button.from_icon_name("window-close-symbolic");
+			close_button =
+				new Gtk.Button.from_icon_name("window-close-symbolic");
 
 			label.ellipsize = Pango.EllipsizeMode.END;
 			label.set_width_chars(10);
@@ -140,9 +141,12 @@ namespace Sagittarius {
 			show_all ();
 
 			try {
-				navigate(new Upg.Uri("about:home?%s".printf(Uri.escape_string(_("New Tab")))));
+				navigate(new Upg.Uri("about:home?%s".printf(Uri.escape_string(_(
+					"New Tab")))));
 			} catch (Error err) {
-				error("this is impossible! failed to parse fixed homepage uri, file a bug please (%s)", err.message);
+				error(
+					"this is impossible! failed to parse fixed homepage uri, file a bug please (%s)",
+					err.message);
 			}
 		}
 
@@ -169,7 +173,6 @@ namespace Sagittarius {
 			label.spinning = true;
 			this.uri = uri.to_string ();
 			history.navigate(uri);
-
 
 			fetch_and_view(uri);
 		}
@@ -211,12 +214,15 @@ namespace Sagittarius {
 				if (document.outcome == UriLoadOutcome.PERMANENT_REDIRECT ||
 					document.outcome == UriLoadOutcome.TEMPORARY_REDIRECT) {
 					try {
-						var redirect_uri = new Upg.Uri(bytes_to_string(document.data));
+						var redirect_uri =
+							new Upg.Uri(bytes_to_string(document.data));
 
 						var redirectstr = redirect_uri.to_string ();
 						var originalstr = document.original_uri.to_string ();
-						if (originalstr.substring(0, originalstr.length - 1) == redirectstr ||
-							redirectstr.substring(0, redirectstr.length - 1) == originalstr) {
+						if (originalstr.substring(0,
+							originalstr.length - 1) == redirectstr ||
+							redirectstr.substring(0,
+								redirectstr.length - 1) == originalstr) {
 							on_navigate(this);
 							navigate(redirect_uri);
 							return;
@@ -236,7 +242,8 @@ namespace Sagittarius {
 				history.set_top(new HistoryEntry(date, uri, title));
 				history.record(date, uri, title);
 			} catch (IOError err) {
-				warning_bar_label.label = _("We couldn't record this site in your history.");
+				warning_bar_label.label = _(
+					"We couldn't record this site in your history.");
 				warning_bar.set_revealed(true);
 			}
 		}
@@ -248,6 +255,7 @@ namespace Sagittarius {
 		}
 
 		public signal void on_navigate (Tab tab);
+
 		public signal void close (Tab tab);
 	}
 }

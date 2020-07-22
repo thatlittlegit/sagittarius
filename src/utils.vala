@@ -43,10 +43,12 @@ namespace Sagittarius {
 				return content;
 			}
 
-			throw new ConvertError.ILLEGAL_SEQUENCE("text claims to be UTF-8, but isnt?");
+			throw new ConvertError.ILLEGAL_SEQUENCE(
+				"text claims to be UTF-8, but isnt?");
 		}
 
-		content.data = new Bytes.take(convert(text, text.length, "utf-8", charset).data);
+		content.data =
+			new Bytes.take(convert(text, text.length, "utf-8", charset).data);
 		return content;
 	}
 
