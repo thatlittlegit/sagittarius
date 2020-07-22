@@ -20,6 +20,7 @@
 namespace Sagittarius {
 	[GtkTemplate(ui = "/tk/thatlittlegit/sagittarius/error.ui")]
 	public class ErrorMessage : Gtk.Grid {
+		private const string INFO_ICON = "dialog-information";
 		private const string WARNING_ICON = "dialog-warning";
 		private const string QUESTION_ICON = "dialog-question";
 		private const string ERROR_ICON = "dialog-error";
@@ -143,6 +144,15 @@ namespace Sagittarius {
 			case UriLoadOutcome.BAD_REQUEST:
 				set_message(ERROR_ICON, _("Bad request"),
 							_("Something went wrong, and the request was invalid?"));
+				break;
+			case UriLoadOutcome.UNKNOWN_SCHEME:
+				// TODO in future, might be nice to have a proper app chooser
+				set_message(INFO_ICON, _("Huh?"),
+							_("We don't know how to open this URI, but you can try opening it with something else."));
+				button_one.show ();
+				button_one.label = _("Launch");
+				last_handler = button_one.clicked.connect(() =>
+														  AppInfo.launch_default_for_uri_async.begin(response.original_uri.to_string (), null));
 				break;
 			}
 

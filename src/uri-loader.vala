@@ -44,6 +44,7 @@ namespace Sagittarius {
 		GONE = 52,
 		PROXY_REQUEST_REFUSED = 53,
 		BAD_REQUEST = 59,
+		UNKNOWN_SCHEME = 100,
 	}
 
 	HashTable<string, FeebleRef<UriLoader> > loaders = null;
@@ -62,24 +63,12 @@ namespace Sagittarius {
 		loaders.remove(scheme);
 	}
 
-	async Content open_with_glib (Upg.Uri uri) {
-		AppInfo.launch_default_for_uri_async.begin(uri.to_string (), null);
-
-		var content = new Bytes("# URI not recognized.\nYou should've been prompted for where to open it.".data);
-		return {
-				   UriLoadOutcome.SUCCESS,
-				   uri,
-				   new GMime.ContentType("text", "gemini"),
-				   content,
-		};
-	}
-
 	public async Content fetch_uri (Upg.Uri uri) throws Error {
 		var loader = loaders.lookup(uri.scheme);
 		if (loader != null && loader.@get () != null) {
 			return yield loader.@get ().fetch(uri);
 		}
 
-		return yield open_with_glib (uri);
+		return { UriLoadOutcome.UNKNOWN_SCHEME, uri, null, new Bytes({}) };
 	}
 }
