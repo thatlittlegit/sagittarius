@@ -39,10 +39,9 @@ vala_args = '--target-glib=2.50'
 c_args = [
   '-DGETTEXT_PACKAGE="sagittarius"',
   '-DLOCALEDIR="@0@"'.format(localedir),
-  '-DLIBDIR="@0@"'.format(join_paths(prefix, get_option('libdir'))),
-  '-DDATADIR="@0@"'.format(join_paths(prefix, get_option('datadir'))),
+  '-DPLUGINDIR="@0@"'.format(join_paths(prefix, get_option('datadir'), 'sagittarius')),
   '-DDEBUG="@0@"'.format(get_option('debug')),
-  '-DBUILDDIR="@0@"'.format(meson.current_build_dir()),
+  '-DBUILT_PLUGINDIR="@0@"'.format(join_paths(meson.current_build_dir(), 'parts')),
 ]
 
 lib = shared_library('sagittarius', sagittarius_sources,

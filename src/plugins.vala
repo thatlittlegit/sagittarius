@@ -57,16 +57,14 @@ namespace Sagittarius {
 																		   activatable).deactivate ());
 
 		configured = true;
-		Engine.get_default ().add_search_path(LIBDIR, DATADIR);
+		Engine.get_default ().add_search_path(PLUGINDIR, null);
 		Engine.get_default ().add_search_path(
 			Path.build_path("/", Environment.get_user_data_dir (),
 				"sagittarius", "plugins"),
-			Path.build_path("/", Environment.get_user_data_dir (),
-				"sagittarius", "plugin-data"));
+			null);
 
 		if (DEBUG == "true") {
-			Engine.get_default ().add_search_path(Path.build_path("/", BUILDDIR,
-				"parts"), null);
+			Engine.get_default ().add_search_path(BUILT_PLUGINDIR, null);
 		}
 
 		Engine.get_default ().rescan_plugins ();
