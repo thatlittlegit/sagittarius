@@ -7,6 +7,9 @@ srcdir = ospath.join(root, 'src')
 config = ospath.join(root, '.uncrustify.cfg')
 
 for path, dirs, files in walk(root):
+    if path.find('build') > 0:
+        continue
+
     for file in files:
         if file.find('.') == -1:
             continue
