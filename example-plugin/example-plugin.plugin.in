@@ -1,0 +1,37 @@
+# example-plugin.plugin.in
+#
+# By thatlittlegit for the Sagittarius project.
+# This file is licensed under the CC0 license, with NO WARRANTY OR LIABILITY.
+# You should've recieved a copy of the CC0 license with this software; if you
+# didn't, visit <https://creativecommons.org/publicdomain/zero/1.0>.
+
+# This is the plugin manifest: it tells LibPeas how to find your plugin, and
+# some information about it.
+[Plugin]
+# This should be the same as the shared_library name
+Module=example-plugin
+# Dependencies
+Depends=
+# Which loader to use (see LibPeas documentation)
+Loader=C
+
+# Change this around!
+Icon=starred
+Name=Example Plugin
+Description=This is an example plugin!
+
+# If you want to localize, you can put the translated name here too!
+# All of the fields can be localized like this.
+# (This is completely optional)
+Name[fr]=Plug-in Démonstratif
+Description[fr]=Je suis un plug-in démonstratif!
+
+Authors=Everyone <everyone@example.edu>
+Website=https://github.com/thatlittlegit/sagittarius/tree/master/example-plugin
+Version=@VERSION@
+
+# You should replace CUSTOM with the correct SPDX identifier; see plugins.vala
+# for the supported ones.
+Copyright=
+X-License=CUSTOM
+X-License-Data=Licensed under the CC0 license, with NO WARRANTY OR LIABILITY.
