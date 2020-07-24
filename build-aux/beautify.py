@@ -3,7 +3,6 @@ from subprocess import run
 from os import walk, environ, path as ospath
 
 root = environ.get('MESON_SOURCE_ROOT')
-srcdir = ospath.join(root, 'src')
 config = ospath.join(root, '.uncrustify.cfg')
 
 for path, dirs, files in walk(root):
