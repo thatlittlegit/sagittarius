@@ -24,7 +24,7 @@ namespace Sagittarius {
 		Gtk.Widget widget;
 	}
 
-	public interface Renderer : Plugin {
+	public interface Renderer : Object {
 		public abstract async RenderingOutcome render (NavigateFunc ? nav,
 			Content content) throws
 		Error;
