@@ -72,4 +72,5 @@ exe = executable('sagittarius', [],
   install: true,
 )
 
-subdir('parts')
+subdir('about')
+subdir('gemini')

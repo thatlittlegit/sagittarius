@@ -1,12 +1,12 @@
 [Plugin]
-Module=proto-gemini
+Module=gemini
 Depends=
 Loader=C
 Icon=network-wired
 Name=Gemini Protocol
 Name[fr]=Protocole Gemini
-Description=Downloads pages with Gemini.
-Description[fr]=Telécharge des pages avec Gemini.
+Description=Downloads and shows Gemini pages.
+Description[fr]=Telécharge et montre des pages Gemini.
 Authors=thatlittlegit <personal@thatlittlegit.tk>
 Copyright=Copyright © 2020 thatlittlegit
 Website=https://github.com/thatlittlegit/sagittarius

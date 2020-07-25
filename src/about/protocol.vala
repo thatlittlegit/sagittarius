@@ -21,9 +21,10 @@
 using Sagittarius;
 
 namespace Sagittarius.AboutProtocol {
-	public class AboutProtocol : Plugin, UriLoader {
+	public class AboutProtocol : Plugin, UriLoader, Renderer {
 		construct {
 			add_loader("about", this);
+			add_renderer("application/x-sagittarius-welcome", this);
 		}
 
 		[CCode(cname = "peas_register_types")]
@@ -91,6 +92,14 @@ namespace Sagittarius.AboutProtocol {
 			}
 
 			return uri;
+		}
+
+		public async RenderingOutcome render (NavigateFunc ? nav,
+			Content content) {
+			var widget = new Dazzle.EmptyState ();
+			widget.title = _("Welcome to Sagittarius!");
+			widget.subtitle = _("Start by typing a URL in the address bar.");
+			return { bytes_to_string(content.data), widget };
 		}
 	}
 }

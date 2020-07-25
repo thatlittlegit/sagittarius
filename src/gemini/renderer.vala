@@ -19,20 +19,8 @@
 
 using Sagittarius;
 
-namespace Sagittarius.GeminiRenderer {
-	public class GeminiRenderer : Plugin, Renderer {
-		construct {
-			add_renderer("text/gemini", this);
-		}
-
-		[CCode(cname = "peas_register_types")]
-		public static void peas_register_types (Peas.ObjectModule module) {
-			module.register_extension_type(
-				PEAS_TYPE_ACTIVATABLE,
-				new GeminiRenderer ().get_type ()
-				);
-		}
-
+namespace Sagittarius.Gemini {
+	public class Renderer : Object, Sagittarius.Renderer {
 		public async RenderingOutcome render (NavigateFunc ? nav,
 			Content content) {
 			var markup = yield parse_markup (content.original_uri,

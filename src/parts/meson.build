@@ -1,7 +1,4 @@
 parts = [
-  'proto-about',
-  'proto-gemini',
-  'render-gemini',
   'render-welcome',
 ]
 

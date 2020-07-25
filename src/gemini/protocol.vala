@@ -20,26 +20,14 @@
 
 using Sagittarius;
 
-namespace Sagittarius.GeminiProtocol {
+namespace Sagittarius.Gemini {
 	errordomain GeminiError {
 		UNKNOWN_RESPONSE_CODE,
 		INVALID_ENCODING,
 		INVALID_RESPONSE,
 	}
 
-	public class GeminiProtocol : Plugin, UriLoader {
-		construct {
-			add_loader("gemini", this);
-		}
-
-		[CCode(cname = "peas_register_types")]
-		public static void peas_register_types (Peas.ObjectModule module) {
-			module.register_extension_type(
-				PEAS_TYPE_ACTIVATABLE,
-				new GeminiProtocol ().get_type ()
-				);
-		}
-
+	public class Protocol : Object, UriLoader {
 		async ByteArray send_request (Upg.Uri uri) throws Error {
 			var client = new SocketClient ();
 			client.set_tls(true);

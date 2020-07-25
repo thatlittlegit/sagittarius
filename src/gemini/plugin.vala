@@ -1,4 +1,4 @@
-/* render-welcome.vala
+/* plugin.vala
  *
  * Copyright 2020 thatlittlegit <personal@thatlittlegit.tk>
  *
@@ -20,26 +20,39 @@
 
 using Sagittarius;
 
-namespace Sagittarius.WelcomeRenderer {
-	public class WelcomeRenderer : Plugin, Renderer {
+namespace Sagittarius.Gemini {
+	public class GeminiPlugin : Plugin {
+		/* This one is a bit complicated, since Protocol and Renderer are
+		 * separate classes. We can't rely on normal refcounting; the objects
+		 * would be invalidated too early.
+		 */
+		private static Protocol proto;
+		private static Renderer renderer;
+
 		construct {
-			add_renderer("application/x-sagittarius-welcome", this);
+			if (proto == null) {
+				proto = new Protocol ();
+			}
+
+			if (renderer == null) {
+				renderer = new Renderer ();
+			}
+
+			add_loader("gemini", proto);
+			add_renderer("text/gemini", renderer);
+		}
+
+		public override void deactivate () {
+			remove_loader("gemini", proto);
+			remove_renderer("text/gemini", renderer);
 		}
 
 		[CCode(cname = "peas_register_types")]
 		public static void peas_register_types (Peas.ObjectModule module) {
 			module.register_extension_type(
 				PEAS_TYPE_ACTIVATABLE,
-				new WelcomeRenderer ().get_type ()
+				new GeminiPlugin ().get_type ()
 				);
-		}
-
-		public async RenderingOutcome render (NavigateFunc ? nav,
-			Content content) {
-			var widget = new Dazzle.EmptyState ();
-			widget.title = _("Welcome to Sagittarius!");
-			widget.subtitle = _("Start by typing a URL in the address bar.");
-			return { bytes_to_string(content.data), widget };
 		}
 	}
 }
