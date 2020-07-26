@@ -20,7 +20,8 @@ static void example_plugin_finalize (GObject * plugin);
 static void example_plugin_uriloader_interface_init (
 	SagittariusUriLoaderIface * iface);
 
-static void example_plugin_fetch (SagittariusUriLoader * self, UpgUri * uri,
+static void example_plugin_fetch (SagittariusUriLoader * self,
+	GHashTable * state, UpgUri * uri,
 	GAsyncReadyCallback cb, void * data);
 
 static void example_plugin_fetch_finish (SagittariusUriLoader * self,
@@ -88,7 +89,8 @@ static void example_plugin_uriloader_interface_init (
  *
  * Read the GIO docs to learn how to do it properly.
  */
-static void example_plugin_fetch (SagittariusUriLoader * self, UpgUri * uri,
+static void example_plugin_fetch (SagittariusUriLoader * self,
+	GHashTable * state, UpgUri * uri,
 	GAsyncReadyCallback cb, void * data) {
 	EXAMPLE_PLUGIN(self)->counter++;
 	g_object_ref(uri);

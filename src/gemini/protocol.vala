@@ -97,7 +97,8 @@ namespace Sagittarius.Gemini {
 			return meta.str.strip ();
 		}
 
-		public async Content fetch (Upg.Uri uri) throws Error {
+		public async Content fetch (HashTable<string, Object ? > state,
+			Upg.Uri uri) throws Error {
 			Content ret = {};
 			ret.original_uri = uri;
 

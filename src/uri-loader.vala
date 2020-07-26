@@ -19,7 +19,8 @@
 
 namespace Sagittarius {
 	public interface UriLoader : Object {
-		public abstract async Content fetch (Upg.Uri uri) throws Error;
+		public abstract async Content fetch (HashTable<string, Object ? > state,
+			Upg.Uri uri) throws Error;
 	}
 
 	public struct Content {
@@ -64,10 +65,11 @@ namespace Sagittarius {
 		loaders.remove(scheme);
 	}
 
-	public async Content fetch_uri (Upg.Uri uri) throws Error {
+	public async Content fetch_uri (HashTable<string, Object ? > state,
+		Upg.Uri uri) throws Error {
 		var loader = loaders.lookup(uri.scheme);
 		if (loader != null && loader.@get () != null) {
-			return yield loader.@get ().fetch(uri);
+			return yield loader.@get ().fetch(state, uri);
 		}
 
 		return { UriLoadOutcome.UNKNOWN_SCHEME, uri, null, new Bytes({}) };

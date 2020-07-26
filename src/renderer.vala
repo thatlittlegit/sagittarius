@@ -25,7 +25,9 @@ namespace Sagittarius {
 	}
 
 	public interface Renderer : Object {
-		public abstract async RenderingOutcome render (NavigateFunc ? nav,
+		public abstract async RenderingOutcome render (HashTable<string,
+																 Object ? > state,
+			NavigateFunc ? nav,
 			Content content) throws
 		Error;
 	}
@@ -48,12 +50,14 @@ namespace Sagittarius {
 		renderers.remove(mime);
 	}
 
-	public async RenderingOutcome render_content (NavigateFunc nav,
+	public async RenderingOutcome render_content (HashTable<string,
+															Object ? > state,
+		NavigateFunc nav,
 		Content content) throws Error {
 		var type = stringify_mime_type(content.content_type);
 		var renderer = renderers.lookup(type);
 		if (renderer != null && renderer.@get () != null) {
-			return yield renderer.@get ().render(nav, content);
+			return yield renderer.@get ().render(state, nav, content);
 		}
 
 		return open_user_default(content);

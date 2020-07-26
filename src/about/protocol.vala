@@ -35,7 +35,8 @@ namespace Sagittarius.AboutProtocol {
 				);
 		}
 
-		public async Content fetch (Upg.Uri _uri) {
+		public async Content fetch (HashTable<string, Object ? > state,
+			Upg.Uri _uri) {
 			var uri = shift_uri(_uri);
 			Content ret = { UriLoadOutcome.SUCCESS, _uri, new GMime.ContentType(
 				"text", "gemini") };
@@ -94,7 +95,9 @@ namespace Sagittarius.AboutProtocol {
 			return uri;
 		}
 
-		public async RenderingOutcome render (NavigateFunc ? nav,
+		public async RenderingOutcome render (HashTable<string,
+														Object ? > state,
+			NavigateFunc ? nav,
 			Content content) {
 			var widget = new Dazzle.EmptyState ();
 			widget.title = _("Welcome to Sagittarius!");

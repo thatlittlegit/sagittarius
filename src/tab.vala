@@ -107,10 +107,14 @@ namespace Sagittarius {
 
 		private Window window;
 
+		public HashTable<string, Object ? > state;
+
 		public Tab (Window _window, History parent_history) {
 			Object(orientation: Gtk.Orientation.VERTICAL);
 			window = _window;
 			history = new History(parent_history);
+
+			state = new HashTable<string, Object ? >(str_hash, str_equal);
 
 			warning_bar = new Gtk.InfoBar ();
 			warning_bar_label = new Gtk.Label(_("Text currently unset."));
@@ -185,7 +189,7 @@ namespace Sagittarius {
 
 		private async void fetch_and_view_async (Upg.Uri uri) {
 			try {
-				var document = yield fetch_uri (uri);
+				var document = yield fetch_uri (state, uri);
 
 				yield view (uri, document);
 			} catch (Error err) {
@@ -199,7 +203,8 @@ namespace Sagittarius {
 			string title;
 			if (document.outcome == UriLoadOutcome.SUCCESS) {
 				var corrected = ensure_utf8(document);
-				var rendered = yield render_content (navigate, corrected);
+				var rendered = yield render_content (state, navigate,
+					corrected);
 
 				if (scrolled_text_view.get_child () != null) {
 					scrolled_text_view.remove(scrolled_text_view.get_child ());

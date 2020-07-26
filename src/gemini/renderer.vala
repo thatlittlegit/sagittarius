@@ -21,7 +21,9 @@ using Sagittarius;
 
 namespace Sagittarius.Gemini {
 	public class Renderer : Object, Sagittarius.Renderer {
-		public async RenderingOutcome render (NavigateFunc ? nav,
+		public async RenderingOutcome render (HashTable<string,
+														Object ? > state,
+			NavigateFunc ? nav,
 			Content content) {
 			var markup = yield parse_markup (content.original_uri,
 				content.data);
