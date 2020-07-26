@@ -45,7 +45,13 @@ namespace Sagittarius {
 		[GtkChild]
 		private Gtk.Button button_one;
 		[GtkChild]
-		private Gtk.Entry text_entry;
+		private Gtk.Box prebutton_box;
+
+		public Gtk.Button button {
+			get {
+				return button_one;
+			}
+		}
 
 		public ErrorMessage () {
 		}
@@ -54,10 +60,12 @@ namespace Sagittarius {
 
 		public void set_message_for_response (NavigateFunc navigate,
 			Content response) {
-			text_entry.hide ();
+			prebutton_box.hide ();
 			button_one.hide ();
 			button_one.sensitive = true;
 			site_says_text.show ();
+
+			string meta = bytes_to_string(response.data);
 
 			if (last_handler != 0) {
 				SignalHandler.disconnect(button_one, last_handler);
@@ -65,12 +73,14 @@ namespace Sagittarius {
 
 			switch (response.outcome) {
 			case UriLoadOutcome.TEXT_INPUT_WANTED:
-				set_message(PASSWORD_ICON, _("Input wanted"), null);
+				set_message(PASSWORD_ICON, _("Input wanted"), null, meta);
 				button_one.show ();
 				button_one.label = _("Go");
-				text_entry.show ();
+				Gtk.Entry text_entry = new Gtk.Entry ();
+				set_prebutton_widget(text_entry);
 				last_handler = button_one.clicked.connect(() => {
 					response.original_uri.query_str = text_entry.text;
+					button_one.sensitive = false;
 					navigate(response.original_uri);
 				});
 				break;
@@ -78,8 +88,7 @@ namespace Sagittarius {
 				set_message("weather-clear", _("Success!"),
 					_(
 						"Everything worked, except the programmer's brain when they were writing this."));
-				button_one.hide ();
-				return;
+				break;
 			case UriLoadOutcome.PERMANENT_REDIRECT:
 			case UriLoadOutcome.TEMPORARY_REDIRECT:
 				string reference = bytes_to_string(response.data);
@@ -87,7 +96,8 @@ namespace Sagittarius {
 					_("You are being redirected"),
 					_(
 						"The website is trying to send you to %s. Would you like to go there?").printf(
-						reference));
+						reference),
+					meta);
 
 				Upg.Uri destination;
 				try {
@@ -105,25 +115,29 @@ namespace Sagittarius {
 				return;
 			case UriLoadOutcome.TEMPORARY_ERROR:
 				set_message(WARNING_ICON, _("Temporary failure"),
-					_("Something went wrong with the website. Try again later."));
+					_(
+						"Something went wrong with the website. Try again later."),
+					meta);
 				break;
 			case UriLoadOutcome.SERVER_UNAVAILABLE:
 				set_message(ERROR_ICON, _("Server unavailable"),
 					_(
-						"The server is unavailable due to overload, maintenance, or some other problem. Try again later."));
+						"The server is unavailable due to overload, maintenance, or some other problem. Try again later."),
+					meta);
 				break;
 			case UriLoadOutcome.CGI_ERROR:
 				set_message(SCRIPT_ICON, _("Server script error"),
 					_(
-						"The server encountered an error when processing your request."));
+						"The server encountered an error when processing your request."),
+					meta);
 				break;
 			case UriLoadOutcome.PROXY_ERROR:
 				set_message(NETWORK_ERROR_ICON, _("Proxy error"),
-					_("The server wasn't able to proxy your request."));
+					_("The server wasn't able to proxy your request."), meta);
 				break;
 			case UriLoadOutcome.SLOW_DOWN:
 				set_message(ALARM_ICON, _("Slow down!"),
-					_("You're sending requests too fast."));
+					_("You're sending requests too fast."), meta);
 				button_one.show ();
 				button_one.sensitive = false;
 				button_one.label = _("Go");
@@ -138,33 +152,41 @@ namespace Sagittarius {
 				break;
 			case UriLoadOutcome.PERMANENT_ERROR:
 				set_message(ERROR_ICON, _("Permanent error"),
-					_("Something went wrong, and it will never work again. :("));
+					_(
+						"Something went wrong, and it will never work again. :("),
+					meta);
 				break;
 			case UriLoadOutcome.NOT_FOUND:
 				set_message(WARNING_ICON,
 					_("File not found"),
 					_(
-						"We searched far and wide\nBut it we could not find.\nIt could not be found."));
+						"We searched far and wide\nBut it we could not find.\nIt could not be found."),
+					meta);
 				break;
 			case UriLoadOutcome.GONE:
 				set_message(ERROR_ICON, _("G O N E"),
 					_(
-						"The file is gone.\nIt will never be back.\nWas it ever there?\nIs life but a dream?"));
+						"The file is gone.\nIt will never be back.\nWas it ever there?\nIs life but a dream?"),
+					meta);
 				break;
 			case UriLoadOutcome.PROXY_REQUEST_REFUSED:
 				set_message(NETWORK_ERROR_ICON, _("Proxy request refused"),
 					_(
-						"You asked the server to proxy a request for you, but the server won't do that."));
+						"You asked the server to proxy a request for you, but the server won't do that."),
+					meta);
 				break;
 			case UriLoadOutcome.BAD_REQUEST:
 				set_message(ERROR_ICON, _("Bad request"),
-					_("Something went wrong, and the request was invalid?"));
+					_(
+						"Something went wrong, and the request was invalid?"),
+					meta);
 				break;
 			case UriLoadOutcome.UNKNOWN_SCHEME:
 				// TODO in future, might be nice to have a proper app chooser
 				set_message(INFO_ICON, _("Huh?"),
 					_(
-						"We don't know how to open this URI, but you can try opening it with something else."));
+						"We don't know how to open this URI, but you can try opening it with something else."),
+					meta);
 				button_one.show ();
 				button_one.label = _("Launch");
 				last_handler = button_one.clicked.connect(() =>
@@ -172,17 +194,10 @@ namespace Sagittarius {
 						 original_uri.to_string (), null));
 				break;
 			}
-
-			if (response.data.length > 0) {
-				site_says_box.show ();
-				site_says.label = bytes_to_string(response.data);
-			} else {
-				site_says_box.hide ();
-			}
 		}
 
 		public void internal_error (string message) {
-			text_entry.hide ();
+			prebutton_box.hide ();
 			button_one.hide ();
 			set_message(ERROR_ICON,
 				_("Uh-oh!"),
@@ -192,15 +207,29 @@ namespace Sagittarius {
 			site_says_text.hide ();
 		}
 
-		private void set_message (string icon, string _title,
-			string ? _description = null) {
+		public void set_message (string icon, string _title,
+			string ? _description = null, string ? site_says_contents = null) {
 			image.icon_name = icon;
 			title.label = _title;
 
 			description.visible = _description != null;
 			description.label = _description ?? "";
 
-			site_says_box.hide ();
+			if (site_says_contents != null) {
+				site_says_box.show ();
+				site_says.label = site_says_contents;
+			} else {
+				site_says_box.hide ();
+			}
+		}
+
+		public void set_prebutton_widget (Gtk.Widget widget) {
+			foreach (var child in prebutton_box.get_children ()) {
+				prebutton_box.remove(child);
+			}
+
+			prebutton_box.pack_start(widget);
+			prebutton_box.show_all ();
 		}
 	}
 }
