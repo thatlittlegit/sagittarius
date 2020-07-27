@@ -22,13 +22,9 @@ using Sagittarius;
 
 namespace Sagittarius.Gemini {
 	internal enum CryptoCodes {
-		END_OF_SESSION = 21,
 		CERTIFICATE_WANTED = 60,
-		TRANSIENT_CERT_WANTED = 61,
-		AUTHORIZED_CERT_WANTED = 62,
-		INVALID_CERTIFICATE = 63,
-		YOUR_A_TIME_TRAVELLER = 64,
-		HELLO_GRANDMA = 65,
+		CERTIFICATE_NOT_AUTHORIZED = 61,
+		CERTIFICATE_NOT_VALID = 62,
 	}
 
 	internal errordomain CryptoError {
@@ -49,22 +45,13 @@ namespace Sagittarius.Gemini {
 			content.content_type.get_parameter("code").scanf("%d", ref code);
 
 			switch ((CryptoCodes) code) {
-			case END_OF_SESSION:
-				state.remove("$gemini$");
-				content.outcome = UriLoadOutcome.SUCCESS;
-				return yield GeminiPlugin.renderer.render (state, nav, content);
-
 			case CERTIFICATE_WANTED:
-			case TRANSIENT_CERT_WANTED:
-			case AUTHORIZED_CERT_WANTED:
 				message.set_message("application-certificate",
 					_("Certificate wanted"),
 					_(
 						"The Gemini server wants a certificate. The code to add one is currently missing."));
 				break;
 			case INVALID_CERTIFICATE:
-			case YOUR_A_TIME_TRAVELLER:
-			case HELLO_GRANDMA:
 				message.set_message("dialog-error",
 					_("Invalid certificate"),
 					_("The certificate you gave isn't valid."));
