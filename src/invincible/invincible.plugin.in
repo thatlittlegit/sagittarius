@@ -1,0 +1,13 @@
+[Plugin]
+Module=invincible
+Depends=
+Loader=C
+Icon=evince
+Name=Invincible
+Description=Shows PDF and other types of documents.
+Authors=thatlittlegit <personal@thatlittlegit.tk>
+Copyright=Copyright © 2020 thatlittlegit
+Website=https://github.com/thatlittlegit/sagittarius
+Version=@VERSION@ (built with Sagittarius)
+X-License=GPL-3.0-or-later
+# NOT a default plugin

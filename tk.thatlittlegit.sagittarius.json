@@ -94,6 +94,26 @@
             ]
         },
         {
+            "name": "evince",
+            "buildsystem": "meson",
+            "config-opts": [
+                "-Dnautilus=false",
+                "-Dthumbnailer=false",
+                "-Dpreviewer=false",
+                "-Dviewer=false",
+                "-Dgtk_doc=false",
+                "-Duser_doc=false",
+                "-Ddbus=false"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://gitlab.gnome.org/GNOME/evince/-/archive/3.37.3/evince-3.37.3.tar.bz2",
+                    "sha256": "94995a4f3c7f6f0d786747cdec50ee781adb5028ecbe0562c46ea54f88b77ec2"
+                }
+            ]
+        },
+        {
             "name": "sagittarius",
             "builddir": true,
             "buildsystem": "meson",
