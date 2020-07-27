@@ -57,7 +57,8 @@ namespace Sagittarius.Gemini {
 					_("The certificate you gave isn't valid."));
 				break;
 			default:
-				throw new CryptoError.INVALID_OUTCOME("invalid code %d",
+				throw new CryptoError.INVALID_OUTCOME(
+					"invalid code given to CryptographyMessageViewer.render: %d",
 					content.outcome);
 			}
 
