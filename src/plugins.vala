@@ -64,7 +64,13 @@ namespace Sagittarius {
 			null);
 
 		if (DEBUG == "true") {
-			Engine.get_default ().add_search_path(BUILT_PLUGINDIR, null);
+			message("DEBUG is enabled (%s)", BUILT_PLUGINDIR);
+			Engine.get_default ().add_search_path(Path.build_path("/",
+				BUILT_PLUGINDIR, "about"), null);
+			Engine.get_default ().add_search_path(Path.build_path("/",
+				BUILT_PLUGINDIR, "gemini"), null);
+			Engine.get_default ().add_search_path(Path.build_path("/",
+				BUILT_PLUGINDIR, "invincible"), null);
 		}
 
 		Engine.get_default ().rescan_plugins ();

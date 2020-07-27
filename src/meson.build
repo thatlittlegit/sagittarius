@@ -41,7 +41,7 @@ c_args = [
   '-DLOCALEDIR="@0@"'.format(localedir),
   '-DPLUGINDIR="@0@"'.format(join_paths(prefix, get_option('datadir'), 'sagittarius')),
   '-DDEBUG="@0@"'.format(get_option('debug')),
-  '-DBUILT_PLUGINDIR="@0@"'.format(join_paths(meson.current_build_dir(), 'parts')),
+  '-DBUILT_PLUGINDIR="@0@"'.format(join_paths(meson.current_build_dir())),
 ]
 
 lib = shared_library('sagittarius', sagittarius_sources,
