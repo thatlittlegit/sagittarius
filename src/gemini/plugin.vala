@@ -26,8 +26,9 @@ namespace Sagittarius.Gemini {
 		 * separate classes. We can't rely on normal refcounting; the objects
 		 * would be invalidated too early.
 		 */
-		private static Protocol proto;
-		private static Renderer renderer;
+		internal static Protocol proto;
+		internal static Renderer renderer;
+		internal static CryptographyMessageViewer certrender;
 
 		construct {
 			if (proto == null) {
@@ -38,13 +39,21 @@ namespace Sagittarius.Gemini {
 				renderer = new Renderer ();
 			}
 
+			if (certrender == null) {
+				certrender = new CryptographyMessageViewer ();
+			}
+
 			add_loader("gemini", proto);
 			add_renderer("text/gemini", renderer);
+			add_renderer("application/x-gemini-certificate-response",
+				certrender);
 		}
 
 		public override void deactivate () {
 			remove_loader("gemini", proto);
 			remove_renderer("text/gemini", renderer);
+			remove_renderer("application/x-gemini-certificate-response",
+				certrender);
 		}
 
 		[CCode(cname = "peas_register_types")]

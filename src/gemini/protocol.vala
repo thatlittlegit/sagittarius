@@ -121,7 +121,15 @@ namespace Sagittarius.Gemini {
 				return ret;
 			}
 
-			ret.content_type = new GMime.ContentType("text", "gemini");
+			if (status == 21 || (status >= 60 && status <= 65)) {
+				ret.outcome = UriLoadOutcome.SUCCESS;
+				ret.content_type = new GMime.ContentType("application",
+					"x-gemini-certificate-response");
+				ret.content_type.set_parameter("code", status.to_string ());
+			} else {
+				ret.content_type = new GMime.ContentType("text", "gemini");
+			}
+
 			ret.data = new Bytes.take(meta.data);
 			return ret;
 		}
