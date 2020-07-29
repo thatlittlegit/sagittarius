@@ -1,6 +1,7 @@
 shared_library('gemini',
   [
     '../config.vapi',
+    'crypto.c',
     'crypto.vala',
     'plugin.vala',
     'protocol.vala',
@@ -8,8 +9,16 @@ shared_library('gemini',
   ],
   install: true,
   install_dir: join_paths(get_option('datadir'), 'sagittarius'),
-  c_args: c_args,
-  dependencies: dep,
+  c_args: [
+    '-DGCR_API_SUBJECT_TO_CHANGE',
+    c_args,
+  ],
+  dependencies: [
+    dep,
+    dependency('gcr-3'),
+    dependency('gcr-ui-3'),
+    dependency('gnutls'),
+  ],
 )
 
 install_data(configure_file(

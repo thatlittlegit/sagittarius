@@ -28,15 +28,38 @@ namespace Sagittarius.Gemini {
 	}
 
 	public class Protocol : Object, UriLoader {
-		async ByteArray send_request (Upg.Uri uri) throws Error {
+		async ByteArray send_request (Upg.Uri uri, Wrapped<HashTable<string,
+																	 Certificate> > ? cert)
+		throws Error {
 			var client = new SocketClient ();
 			client.set_tls(true);
 			client.set_tls_validation_flags(0);
 
+			client.event.connect((event, __, rconn) => {
+				if (event != SocketClientEvent.TLS_HANDSHAKING || cert == null) {
+					return;
+				}
+
+				var conn = rconn as TlsConnection;
+				var iter = HashTableIter<string, Certificate>(
+					cert.unwrap ());
+
+				string path;
+				Certificate certificate = null;
+				while (iter.next(out path, out certificate)) {
+					if (uri.to_string ().has_prefix(path)) {
+						break;
+					}
+				}
+
+				if (certificate != null) {
+					conn.certificate = certificate.glib;
+				}
+			});
+
 			var struri = uri.to_string ();
 			var conn = yield client.connect_to_uri_async (struri, 1965);
 
-			conn.socket.set_blocking(true);
 			size_t size;
 			yield conn.output_stream.write_all_async (
 				"%s\r\n".printf(struri).data, 0, null, out size);
@@ -102,7 +125,8 @@ namespace Sagittarius.Gemini {
 			Content ret = {};
 			ret.original_uri = uri;
 
-			var array = yield send_request (uri);
+			var array = yield send_request (uri, (Wrapped<HashTable<string, Certificate> >) state.lookup(
+				"$gemini$"));
 
 			if (array.len < 2) {
 				throw new IOError.INVALID_DATA("Invalid response (too small)");

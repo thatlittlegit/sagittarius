@@ -63,4 +63,21 @@ namespace Sagittarius {
 			return (T ? ) wr.@get ();
 		}
 	}
+
+	public class Wrapped<T>: Object {
+		private T wrapped;
+
+		public Wrapped (T subject) {
+			wrapped = subject;
+		}
+
+		// *rust flashbacks*
+		public T unwrap () {
+			return wrapped;
+		}
+
+		public void replace (T subject) {
+			wrapped = subject;
+		}
+	}
 }
