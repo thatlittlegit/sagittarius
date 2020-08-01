@@ -30,7 +30,7 @@ namespace Sagittarius {
 		}
 	}
 
-	public class History {
+	internal class History {
 		private List<HistoryEntry> queue;
 		private int current = -1;
 		private History ? parent;
@@ -39,11 +39,11 @@ namespace Sagittarius {
 		// 'cause Vala can't figure out that the OS is a substream of the IOS.
 		private IOStream file;
 
-		public History (History ? parent) {
+		internal History (History ? parent) {
 			this.parent = parent;
 		}
 
-		public History.with_file(History ? parent, IOStream backed) {
+		internal History.with_file (History ? parent, IOStream backed) {
 			this.parent = parent;
 			this.file = backed;
 
@@ -178,28 +178,28 @@ namespace Sagittarius {
 		}
 	}
 
-	public class HistorySuggestionModel : Object, ListModel {
+	internal class HistorySuggestionModel : Object, ListModel {
 		private History associated;
 		private List<Dazzle.Suggestion> visible;
 
-		public HistorySuggestionModel (History assoc) {
+		internal HistorySuggestionModel (History assoc) {
 			associated = assoc;
 			visible = new List<Dazzle.Suggestion>();
 		}
 
-		public Object ? get_item(uint position) {
+		internal Object ? get_item(uint position) {
 			return visible.nth_data(position);
 		}
 
-		public Type get_item_type () {
+		internal Type get_item_type () {
 			return new Dazzle.Suggestion ().get_type ();
 		}
 
-		public uint get_n_items () {
+		internal uint get_n_items () {
 			return visible.length ();
 		}
 
-		public void filter (string query) {
+		internal void filter (string query) {
 			var original_list_len = visible.length ();
 			var filtering = new List<Dazzle.Suggestion>();
 

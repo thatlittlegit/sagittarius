@@ -50,7 +50,7 @@ namespace Sagittarius {
 
 	HashTable<string, FeebleRef<UriLoader> > loaders = null;
 
-	public void init_loaders () {
+	internal void init_loaders () {
 		if (loaders == null)
 			loaders = new HashTable<string, FeebleRef<UriLoader> ? >(str_hash,
 				str_equal);

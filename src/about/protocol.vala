@@ -57,7 +57,7 @@ namespace Sagittarius.AboutProtocol {
 			case "":
 				if (uri.query_str == "dlg") {
 					Idle.add(() => {
-						Application.show_about_dialog ();
+						application.show_about_dialog ();
 						return false;
 					});
 				}

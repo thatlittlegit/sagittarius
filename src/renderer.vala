@@ -34,7 +34,7 @@ namespace Sagittarius {
 
 	HashTable<string, FeebleRef<Renderer> > renderers = null;
 
-	public void init_renderers () {
+	internal void init_renderers () {
 		if (renderers == null) {
 			renderers = new HashTable<string, FeebleRef<Renderer> >(str_hash,
 				str_equal);

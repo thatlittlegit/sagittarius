@@ -20,12 +20,12 @@
 public delegate void NavigateFunc (Upg.Uri uri);
 
 namespace Sagittarius {
-	public class TabLabel : Gtk.Box {
+	internal class TabLabel : Gtk.Box {
 		private Gtk.Label label;
 		private Gtk.Spinner spinner;
 		private Gtk.Button close_button;
 
-		public bool spinning {
+		internal bool spinning {
 			get {
 				return spinner.active;
 			}
@@ -34,7 +34,7 @@ namespace Sagittarius {
 			}
 		}
 
-		public string text {
+		internal string text {
 			get {
 				return label.get_text ();
 			}
@@ -61,10 +61,10 @@ namespace Sagittarius {
 			pack_end(label, false, false, 4);
 		}
 
-		public TabLabel () {
+		internal TabLabel () {
 		}
 
-		public signal void close ();
+		internal signal void close ();
 	}
 
 	public class Tab : Gtk.Box {
@@ -93,7 +93,7 @@ namespace Sagittarius {
 		}
 
 		public string uri { get; private set; }
-		public TabLabel label { get; construct set; }
+		internal TabLabel label;
 
 		private History history;
 
@@ -107,9 +107,10 @@ namespace Sagittarius {
 
 		private Window window;
 
-		public HashTable<string, Object ? > state;
+		internal HashTable<string, Object ? > state { internal get; private set;
+		}
 
-		public Tab (Window _window, History parent_history) {
+		internal Tab (Window _window, History parent_history) {
 			Object(orientation: Gtk.Orientation.VERTICAL);
 			window = _window;
 			history = new History(parent_history);
@@ -253,7 +254,7 @@ namespace Sagittarius {
 			}
 		}
 
-		public void internal_error (string ? message = null) {
+		internal void internal_error (string ? message = null) {
 			label.spinning = false;
 			errorview.internal_error(message ?? "unknown error");
 			stack.visible_child = errorview;

@@ -35,12 +35,7 @@ namespace Sagittarius {
 	[CCode(cname = "SAGITTARIUS_TYPE_PLUGIN")]
 	public extern Type PluginType;
 
-	private bool configured;
-	public void configure_plugin_engine (GLib.Application app) {
-		if (configured) {
-			return;
-		}
-
+	internal void configure_plugin_engine (GLib.Application app) {
 		var application = (Application) app;
 		application.extensions = new ExtensionSet(
 			Engine.get_default (),
@@ -55,7 +50,6 @@ namespace Sagittarius {
 																			   Plugin)
 																		   activatable).deactivate ());
 
-		configured = true;
 		Engine.get_default ().add_search_path(PLUGINDIR, null);
 		Engine.get_default ().add_search_path(
 			Path.build_path("/", Environment.get_user_data_dir (),
@@ -84,7 +78,7 @@ namespace Sagittarius {
 	}
 
 	[GtkTemplate(ui = "/tk/thatlittlegit/sagittarius/plugins.ui")]
-	public class PluginsWindow : Gtk.Window {
+	internal class PluginsWindow : Gtk.Window {
 		[GtkChild]
 		Gtk.HeaderBar headerbar;
 		[GtkChild]
@@ -98,7 +92,7 @@ namespace Sagittarius {
 
 		PluginManagerView manager;
 
-		public PluginsWindow () {
+		internal PluginsWindow () {
 		}
 
 		construct {

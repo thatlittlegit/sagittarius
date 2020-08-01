@@ -46,7 +46,7 @@ namespace Sagittarius {
 			}
 		}
 
-		public Window (Sagittarius.Application app, History history) {
+		internal Window (Sagittarius.Application app, History history) {
 			Object(application: app);
 			icon_name = "tk.thatlittlegit.sagittarius.gnome";
 

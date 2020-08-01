@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-int main (string[] args) {
+internal int main (string[] args) {
 	Intl.setlocale(LocaleCategory.ALL, "");
 	Intl.bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR);
 	Intl.bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");

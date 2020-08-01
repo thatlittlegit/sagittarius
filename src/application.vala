@@ -27,9 +27,9 @@ namespace Sagittarius {
 
 		private History history;
 
-		public Peas.ExtensionSet extensions;
+		internal Peas.ExtensionSet extensions;
 
-		public Application () {
+		internal Application () {
 			Object(application_id: "tk.thatlittlegit.sagittarius",
 				flags : ApplicationFlags.HANDLES_OPEN);
 			add_action_entries(actions, this);
@@ -79,7 +79,7 @@ namespace Sagittarius {
 			}
 		}
 
-		public static void show_about_dialog () {
+		public void show_about_dialog () {
 			var dialog = new Gtk.AboutDialog ();
 			dialog.modal = true;
 			dialog.authors = { "thatlittlegit" };
