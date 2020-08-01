@@ -59,7 +59,7 @@ namespace Sagittarius.Gemini {
 		[CCode(cname = "peas_register_types")]
 		public static void peas_register_types (Peas.ObjectModule module) {
 			module.register_extension_type(
-				PEAS_TYPE_ACTIVATABLE,
+				PluginType,
 				new GeminiPlugin ().get_type ()
 				);
 		}

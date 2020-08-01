@@ -22,18 +22,18 @@ using Peas;
 using PeasGtk;
 
 namespace Sagittarius {
-	public abstract class Plugin : Object, Activatable {
-		public Object object { owned get; construct; }
+	public abstract class Plugin : Object {
+		public Application application { protected owned get; construct; }
 
 		public virtual void activate () {
 		}
 
 		public virtual void deactivate () {
 		}
-
-		public void update_state () {
-		}
 	}
+
+	[CCode(cname = "SAGITTARIUS_TYPE_PLUGIN")]
+	public extern Type PluginType;
 
 	private bool configured;
 	public void configure_plugin_engine (GLib.Application app) {
@@ -44,16 +44,15 @@ namespace Sagittarius {
 		var application = (Application) app;
 		application.extensions = new ExtensionSet(
 			Engine.get_default (),
-			PEAS_TYPE_ACTIVATABLE,
-			"object", application, null
+			PluginType,
+			"application", application, null
 			);
 		application.extensions.extension_added.connect((info,
-														activatable) => ((
-																			 Activatable)
+														activatable) => ((Plugin)
 																		 activatable).activate ());
 		application.extensions.extension_removed.connect((info,
 														  activatable) => ((
-																			   Activatable)
+																			   Plugin)
 																		   activatable).deactivate ());
 
 		configured = true;

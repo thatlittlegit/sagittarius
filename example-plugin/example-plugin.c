@@ -122,7 +122,7 @@ static void example_plugin_fetch_finish (SagittariusUriLoader * self,
  * Peas will load this file and maybe complain.
  */
 void peas_register_types (PeasObjectModule * module) {
-	peas_object_module_register_extension_type(module, PEAS_TYPE_ACTIVATABLE,
+	peas_object_module_register_extension_type(module, SAGITTARIUS_TYPE_PLUGIN,
 		EXAMPLE_TYPE_PLUGIN);
 }
 
