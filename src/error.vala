@@ -231,5 +231,9 @@ namespace Sagittarius {
 			prebutton_box.pack_start(widget);
 			prebutton_box.show_all ();
 		}
+
+		public override void show_all () {
+			show ();
+		}
 	}
 }
