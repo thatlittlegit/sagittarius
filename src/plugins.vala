@@ -50,12 +50,6 @@ namespace Sagittarius {
 																			   Plugin)
 																		   activatable).deactivate ());
 
-		Engine.get_default ().add_search_path(PLUGINDIR, null);
-		Engine.get_default ().add_search_path(
-			Path.build_path("/", Environment.get_user_data_dir (),
-				"sagittarius", "plugins"),
-			null);
-
 		if (DEBUG == "true") {
 			message("DEBUG is enabled (%s)", BUILT_PLUGINDIR);
 			Engine.get_default ().add_search_path(Path.build_path("/",
@@ -67,6 +61,12 @@ namespace Sagittarius {
 			Engine.get_default ().add_search_path(Path.build_path("/",
 				BUILT_PLUGINDIR, "text"), null);
 		}
+
+		Engine.get_default ().add_search_path(PLUGINDIR, null);
+		Engine.get_default ().add_search_path(
+			Path.build_path("/", Environment.get_user_data_dir (),
+				"sagittarius", "plugins"),
+			null);
 
 		Engine.get_default ().rescan_plugins ();
 
