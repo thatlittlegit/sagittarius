@@ -45,7 +45,7 @@ namespace Sagittarius.Gemini {
 			RenderingOutcome outcome = {};
 			ErrorMessage message = new ErrorMessage ();
 			outcome.widget = message;
-			outcome.title = "Crypto";
+			outcome.title = null;
 
 			int code = 0;
 			content.content_type.get_parameter("code").scanf("%d", ref code);
