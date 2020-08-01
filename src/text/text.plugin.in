@@ -1,0 +1,13 @@
+[Plugin]
+Module=text
+Depends=
+Loader=C
+Icon=text-x-generic
+Name=Text File Viewer
+Description=Shows text files in GtkSourceView.
+Authors=thatlittlegit <personal@thatlittlegit.tk>
+Copyright=Copyright © 2020 thatlittlegit
+Website=https://github.com/thatlittlegit/sagittarius
+Version=@VERSION@ (built-in)
+X-License=GPL-3.0-or-later
+X-Default=true

@@ -136,6 +136,17 @@
             ]
         },
         {
+            "name": "gtksourceview",
+            "buildsystem": "meson",
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.gnome.org/sources/gtksourceview/4.6/gtksourceview-4.6.1.tar.xz",
+                    "sha256": "63f487a7ab59612ffa9e7be1883dbd274ab1016afcede3239b93b0fc384df874"
+                }
+            ]
+        },
+        {
             "name": "sagittarius",
             "builddir": true,
             "buildsystem": "meson",
