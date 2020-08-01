@@ -114,17 +114,6 @@
             ]
         },
         {
-            "name": "gcr",
-            "buildsystem": "meson",
-            "sources": [
-                {
-                    "type": "archive",
-                    "url": "https://gitlab.gnome.org/GNOME/gcr/-/archive/3.36/gcr-3.36.tar.bz2",
-                    "sha256": "a697eeea8333f0a77e743dc5a062d785138386516b4d5907a131ea58da7257fe"
-                }
-            ]
-        },
-        {
             "name": "gnutls",
             "buildsystem": "autotools",
             "sources": [

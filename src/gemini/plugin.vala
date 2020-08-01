@@ -47,27 +47,6 @@ namespace Sagittarius.Gemini {
 			add_renderer("text/gemini", renderer);
 			add_renderer("application/x-gemini-certificate-response",
 				certrender);
-
-			try {
-				var certdirname = Path.build_path("/",
-					Environment.get_user_data_dir (), "sagittarius",
-					"certificates");
-				var certdir = File.new_for_path(certdirname);
-				var enumerator = certdir.enumerate_children("standard::name", 0,
-					null);
-				while (true) {
-					var info = enumerator.next_file ();
-
-					if (info == null) {
-						break;
-					}
-
-					certrender.add_certificate(Path.build_path("/", certdirname,
-						info.get_attribute_byte_string("standard::name")));
-				}
-			} catch (Error err) {
-				warning("when loading certificates: %s", err.message);
-			}
 		}
 
 		public override void deactivate () {

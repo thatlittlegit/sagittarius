@@ -32,12 +32,6 @@ namespace Sagittarius.Gemini {
 	}
 
 	public class CryptographyMessageViewer : Object, Sagittarius.Renderer {
-		private List<Certificate> certificates;
-
-		construct {
-			certificates = new List<Certificate>();
-		}
-
 		public async RenderingOutcome render (HashTable<string,
 														Object ? > state,
 			NavigateFunc ? nav,
@@ -50,6 +44,12 @@ namespace Sagittarius.Gemini {
 			int code = 0;
 			content.content_type.get_parameter("code").scanf("%d", ref code);
 
+			if (state.lookup("$gemini$") == null) {
+				state.insert("$gemini$", new Wrapped<HashTable<string, string> >(
+					new HashTable<string, string>(str_hash,
+						str_equal)));
+			}
+
 			switch ((CryptoCodes) code) {
 			case CERTIFICATE_WANTED:
 				message.set_message("application-certificate",
@@ -58,29 +58,19 @@ namespace Sagittarius.Gemini {
 						"The server is requesting you provide a certificate. You can choose one from the box below."),
 					bytes_to_string(content.data));
 
-				var chooser = new Gcr.ComboSelector(gcr_certs ());
-				chooser.changed.connect(() => message.button.sensitive = true);
+				var filechooser =
+					new Gtk.FileChooserButton(_(
+						"Choose a certificate..."), Gtk.FileChooserAction.OPEN);
+				var box = new Gtk.Box(Gtk.Orientation.VERTICAL, 8);
+				box.pack_start(filechooser);
+				message.set_prebutton_widget(box);
 
-				message.button.label = _("Go");
-				message.button.sensitive = false;
-				message.button.clicked.connect(() => {
-					var table =
-						((Wrapped<HashTable<string, Certificate> >)state.lookup(
-							"$gemini$")).unwrap () ??
-						new HashTable<string, Certificate>(str_hash,
-							str_equal);
-					table.insert(content.original_uri.to_string (),
-						from_index(chooser.get_selected ().get_data<int>("i")));
-					state.replace("$gemini$",
-						(Object ? ) new Wrapped<HashTable<string,
-														  Certificate> >(
-							table));
+				filechooser.file_set.connect(() => {
+					((Wrapped<HashTable<string, string> >)
+					 state.lookup("$gemini$")).unwrap ().insert(content.
+						 original_uri.to_string (), filechooser.get_uri ());
 					nav(content.original_uri);
 				});
-
-				var box = new Gtk.Box(Gtk.Orientation.VERTICAL, 8);
-				box.pack_start(chooser);
-				message.set_prebutton_widget(box);
 				break;
 			case CERTIFICATE_NOT_VALID:
 				message.set_message("dialog-error",
@@ -94,41 +84,6 @@ namespace Sagittarius.Gemini {
 			}
 
 			return outcome;
-		}
-
-		private Gcr.Collection gcr_certs () {
-			var gcr = new Gcr.SimpleCollection ();
-			int i = 0;
-			foreach (var cert in certificates) {
-				cert.gcr.set_data<int>("i", i++);
-				gcr.add(cert.gcr);
-			}
-
-			return gcr;
-		}
-
-		private Certificate from_index (int index) {
-			return certificates.nth_data(index);
-		}
-
-		public void add_certificate (string filename) {
-			certificates.prepend(cert_from_file(filename));
-		}
-
-		[CCode(cname = "cert_from_file")]
-		private extern static Certificate cert_from_file (string filename);
-	}
-
-	[CCode(cname = "gcr_to_glib")]
-	internal extern static TlsCertificate gcr_to_glib (Gcr.Certificate cert);
-
-	public class Certificate {
-		public Gcr.Certificate gcr;
-		public TlsCertificate glib;
-
-		public Certificate (Gcr.Certificate gcr, TlsCertificate glib) {
-			this.gcr = gcr;
-			this.glib = glib;
 		}
 	}
 }

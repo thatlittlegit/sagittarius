@@ -29,7 +29,7 @@ namespace Sagittarius.Gemini {
 
 	public class Protocol : Object, UriLoader {
 		async ByteArray send_request (Upg.Uri uri, Wrapped<HashTable<string,
-																	 Certificate> > ? cert)
+																	 string> > ? cert)
 		throws Error {
 			var client = new SocketClient ();
 			client.set_tls(true);
@@ -41,19 +41,25 @@ namespace Sagittarius.Gemini {
 				}
 
 				var conn = rconn as TlsConnection;
-				var iter = HashTableIter<string, Certificate>(
+				var iter = HashTableIter<string, string>(
 					cert.unwrap ());
-
 				string path;
-				Certificate certificate = null;
-				while (iter.next(out path, out certificate)) {
+				string file = null;
+				while (iter.next(out path, out file)) {
 					if (uri.to_string ().has_prefix(path)) {
 						break;
 					}
 				}
 
-				if (certificate != null) {
-					conn.certificate = certificate.glib;
+				if (file != null) {
+					try {
+						conn.certificate =
+							new TlsCertificate.from_file(Filename.from_uri(
+								file));
+					} catch (Error err) {
+						warning("failed to read certificate %s: %s", file,
+							err.message);
+					}
 				}
 			});
 
@@ -125,7 +131,7 @@ namespace Sagittarius.Gemini {
 			Content ret = {};
 			ret.original_uri = uri;
 
-			var array = yield send_request (uri, (Wrapped<HashTable<string, Certificate> >) state.lookup(
+			var array = yield send_request (uri, (Wrapped<HashTable<string, string> >) state.lookup(
 				"$gemini$"));
 
 			if (array.len < 2) {
