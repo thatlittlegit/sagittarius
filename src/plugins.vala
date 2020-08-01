@@ -84,6 +84,8 @@ namespace Sagittarius {
 		[GtkChild]
 		Gtk.Stack content_stack;
 		[GtkChild]
+		Gtk.Box menu_box;
+		[GtkChild]
 		Gtk.Button properties_button;
 		[GtkChild]
 		Gtk.Button about_button;
@@ -96,18 +98,30 @@ namespace Sagittarius {
 		}
 
 		construct {
-			var installed = Engine.get_default ().get_plugin_list ().length ();
-			headerbar.subtitle = ngettext("One plugin installed",
-				"%u plugins installed",
-				installed).printf(installed);
-
 			manager = new PluginManagerView(Engine.get_default ());
 			manager.get_selection ().changed.connect(
 				() => { update_buttons (); });
 			manager.get_selection ().mode = Gtk.SelectionMode.SINGLE;
 			manager.button_press_event.connect(() => manager.unselect_all ());
-			content_stack.add_named(manager, "manager");
+			menu_box.pack_start(manager, true, true);
 			content_stack.show_all ();
+			content_stack.transition_type = Gtk.StackTransitionType.SLIDE_LEFT;
+		}
+
+		private void update_title (string ? title = null,
+			string ? subtitle = null) {
+			if (title == null) {
+				headerbar.title = _("Plugins");
+				var installed =
+					Engine.get_default ().get_plugin_list ().length ();
+				headerbar.subtitle = ngettext("One plugin installed",
+					"%u plugins installed",
+					installed).printf(installed);
+				return;
+			}
+
+			headerbar.title = title;
+			headerbar.subtitle = subtitle;
 		}
 
 		private void update_buttons () {
@@ -140,18 +154,31 @@ namespace Sagittarius {
 		private void back_cb () {
 			content_stack.visible_child_name = "manager";
 			back_button_revealer.reveal_child = false;
-			content_stack.remove(content_stack.get_child_by_name("properties"));
+			content_stack.transition_type = Gtk.StackTransitionType.SLIDE_LEFT;
+			update_title(null);
+
+			// Removing it immediately looks glitchy
+			Timeout.add(300, () => {
+				content_stack.remove(content_stack.get_child_by_name(
+					"properties"));
+				return false;
+			});
 		}
 
 		[GtkCallback]
 		private void open_properties_cb () {
+			var selected = manager.get_selected_plugin ();
+
 			content_stack.add_named(((PeasGtk.Configurable)Engine.get_default ()
 									  .create_extension(manager.
 										  get_selected_plugin (),
 										 PEAS_GTK_TYPE_CONFIGURABLE))
 				 .create_configure_widget (), "properties");
+
+			update_title(selected.get_name (), _("Configuration"));
 			content_stack.visible_child_name = "properties";
 			back_button_revealer.reveal_child = true;
+			content_stack.transition_type = Gtk.StackTransitionType.SLIDE_RIGHT;
 		}
 
 		[GtkCallback]
