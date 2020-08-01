@@ -1,4 +1,4 @@
-sagittarius_sources = [
+src = files(
   'main.vala',
   'window.vala',
   'config.vapi',
@@ -10,7 +10,7 @@ sagittarius_sources = [
   'plugins.vala',
   'renderer.vala',
   'utils.vala',
-]
+)
 
 _sagittarius_deps = [
   dependency('gio-2.0', version: '>= 2.50'),
@@ -28,7 +28,7 @@ sagittarius_deps = [
 
 gnome = import('gnome')
 
-sagittarius_sources += gnome.compile_resources('sagittarius-resources',
+sagittarius_sources = src + gnome.compile_resources('sagittarius-resources',
   'sagittarius.gresource.xml',
   c_name: 'sagittarius'
 )

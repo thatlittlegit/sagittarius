@@ -13,5 +13,7 @@ subdir('data')
 subdir('src')
 subdir('po')
 
+subdir('docs')
+
 meson.add_install_script('build-aux/postinstall.py')
 run_target('beautify', command: 'build-aux/beautify.py')
