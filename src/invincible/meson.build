@@ -1,6 +1,5 @@
 shared_library('invincible',
   [
-    '../config.vapi',
     'invincible.vala',
   ],
   install: true,

@@ -1,6 +1,5 @@
 shared_library('gemini',
   [
-    '../config.vapi',
     'crypto.vala',
     'plugin.vala',
     'protocol.vala',

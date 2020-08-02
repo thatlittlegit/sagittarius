@@ -192,7 +192,7 @@ namespace Sagittarius {
 		}
 
 		internal Type get_item_type () {
-			return new Dazzle.Suggestion ().get_type ();
+			return typeof (Dazzle.Suggestion);
 		}
 
 		internal uint get_n_items () {

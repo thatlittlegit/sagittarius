@@ -30,9 +30,8 @@ namespace Sagittarius.AboutProtocol {
 		[CCode(cname = "peas_register_types")]
 		public static void peas_register_types (Peas.ObjectModule module) {
 			module.register_extension_type(
-				PluginType,
-				new AboutProtocol ().get_type ()
-				);
+				typeof (Plugin),
+				typeof (AboutProtocol));
 		}
 
 		public async Content fetch (HashTable<string, Object ? > state,

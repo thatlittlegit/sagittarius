@@ -29,8 +29,8 @@ namespace Sagittarius.Invincible {
 		[CCode(cname = "peas_register_types")]
 		public static void peas_register_types (Peas.ObjectModule module) {
 			module.register_extension_type(
-				PluginType,
-				new InvinciblePlugin ().get_type ()
+				typeof (Plugin),
+				typeof (InvinciblePlugin)
 				);
 		}
 

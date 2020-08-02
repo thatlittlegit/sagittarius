@@ -27,12 +27,12 @@ namespace Sagittarius.Text {
 		[CCode(cname = "peas_register_types")]
 		public static void peas_register_types (Peas.ObjectModule module) {
 			module.register_extension_type(
-				PluginType,
-				new TextPlugin ().get_type ()
+				typeof (Plugin),
+				typeof (TextPlugin)
 				);
 			module.register_extension_type(
-				PEAS_GTK_TYPE_CONFIGURABLE,
-				new TextPlugin ().get_type ()
+				typeof (PeasGtk.Configurable),
+				typeof (TextPlugin)
 				);
 		}
 

@@ -1,6 +1,5 @@
 shared_library('about',
   [
-    '../config.vapi',
     'protocol.vala',
   ],
   install: true,

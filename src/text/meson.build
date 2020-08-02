@@ -1,6 +1,5 @@
 shared_library('text',
   [
-    '../config.vapi',
     'settings.vala',
     'text.vala',
     import('gnome').compile_resources('text-resources',

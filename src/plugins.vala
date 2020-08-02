@@ -32,14 +32,11 @@ namespace Sagittarius {
 		}
 	}
 
-	[CCode(cname = "SAGITTARIUS_TYPE_PLUGIN")]
-	public extern Type PluginType;
-
 	internal void configure_plugin_engine (GLib.Application app) {
 		var application = (Application) app;
 		application.extensions = new ExtensionSet(
 			Engine.get_default (),
-			PluginType,
+			typeof (Plugin),
 			"application", application, null
 			);
 		application.extensions.extension_added.connect((info,
@@ -141,7 +138,7 @@ namespace Sagittarius {
 			}
 
 			var extension = Engine.get_default ().create_extension(selected,
-				PEAS_GTK_TYPE_CONFIGURABLE);
+				typeof (PeasGtk.Configurable));
 
 			if (extension == null) {
 				properties_button.sensitive = false;
@@ -172,7 +169,7 @@ namespace Sagittarius {
 			content_stack.add_named(((PeasGtk.Configurable)Engine.get_default ()
 									  .create_extension(manager.
 										  get_selected_plugin (),
-										 PEAS_GTK_TYPE_CONFIGURABLE))
+										 typeof (PeasGtk.Configurable)))
 				 .create_configure_widget (), "properties");
 
 			update_title(selected.get_name (), _("Configuration"));
