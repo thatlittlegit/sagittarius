@@ -50,6 +50,13 @@ namespace Sagittarius {
 		renderers.remove(mime);
 	}
 
+	public void remove_all_renderers_of_type (Type type) {
+		renderers.foreach_remove((entry) => {
+			var obj = renderers.lookup(entry).@get ();
+			return obj == null || obj.get_type () == type;
+		});
+	}
+
 	public async RenderingOutcome render_content (HashTable<string,
 															Object ? > state,
 		NavigateFunc nav,

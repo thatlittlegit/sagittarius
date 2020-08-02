@@ -65,6 +65,13 @@ namespace Sagittarius {
 		loaders.remove(scheme);
 	}
 
+	public void remove_all_loaders_of_type (Type type) {
+		loaders.foreach_remove((entry) => {
+			var obj = loaders.lookup(entry).@get ();
+			return obj == null || obj.get_type () == type;
+		});
+	}
+
 	public async Content fetch_uri (HashTable<string, Object ? > state,
 		Upg.Uri uri) throws Error {
 		var loader = loaders.lookup(uri.scheme);
