@@ -21,19 +21,28 @@
 using Sagittarius;
 
 namespace Sagittarius.Text {
-	public class TextPlugin : Plugin, Renderer {
+	public class TextPlugin : Plugin, PeasGtk.Configurable, Renderer {
+		private Settings settings;
+
 		[CCode(cname = "peas_register_types")]
 		public static void peas_register_types (Peas.ObjectModule module) {
 			module.register_extension_type(
 				PluginType,
 				new TextPlugin ().get_type ()
 				);
+			module.register_extension_type(
+				PEAS_GTK_TYPE_CONFIGURABLE,
+				new TextPlugin ().get_type ()
+				);
 		}
 
 		construct {
-			add_renderer("text/plain", this);
-			add_renderer("text/x-perl", this);
+			settings = new Settings(this);
 			Gtk.Sourceinit ();
+		}
+
+		public Gtk.Widget create_configure_widget () {
+			return settings;
 		}
 
 		public async RenderingOutcome render (HashTable<string,

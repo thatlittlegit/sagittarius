@@ -1,7 +1,12 @@
 shared_library('text',
   [
     '../config.vapi',
+    'settings.vala',
     'text.vala',
+    import('gnome').compile_resources('text-resources',
+      'text.gresource.xml',
+      c_name: 'text',
+    )
   ],
   install: true,
   install_dir: join_paths(get_option('datadir'), 'sagittarius'),
@@ -17,3 +22,7 @@ install_data(configure_file(
   output: 'text.plugin',
   configuration: version_conf,
 ))
+
+install_data('text.gschema.xml',
+  install_dir: join_paths(get_option('datadir'), 'glib-2.0/schemas')
+)
