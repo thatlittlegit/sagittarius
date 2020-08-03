@@ -59,19 +59,17 @@ namespace Sagittarius {
 		private ulong last_handler = 0;
 
 		public void set_message_for_response (NavigateFunc navigate,
-			Content response) {
+			int code, string meta, Upg.Uri uri) {
 			prebutton_box.hide ();
 			button_one.hide ();
 			button_one.sensitive = true;
 			site_says_text.show ();
 
-			string meta = bytes_to_string(response.data);
-
 			if (last_handler != 0) {
 				SignalHandler.disconnect(button_one, last_handler);
 			}
 
-			switch (response.outcome) {
+			switch (code) {
 			case UriLoadOutcome.TEXT_INPUT_WANTED:
 				set_message(PASSWORD_ICON, _("Input wanted"), null, meta);
 				button_one.show ();
@@ -79,9 +77,9 @@ namespace Sagittarius {
 				Gtk.Entry text_entry = new Gtk.Entry ();
 				set_prebutton_widget(text_entry);
 				last_handler = button_one.clicked.connect(() => {
-					response.original_uri.query_str = text_entry.text;
+					uri.query_str = text_entry.text;
 					button_one.sensitive = false;
-					navigate(response.original_uri);
+					navigate(uri);
 				});
 				break;
 			case UriLoadOutcome.SUCCESS:
@@ -91,18 +89,16 @@ namespace Sagittarius {
 				break;
 			case UriLoadOutcome.PERMANENT_REDIRECT:
 			case UriLoadOutcome.TEMPORARY_REDIRECT:
-				string reference = bytes_to_string(response.data);
 				set_message(QUESTION_ICON,
 					_("You are being redirected"),
 					_(
 						"The website is trying to send you to %s. Would you like to go there?").printf(
-						reference),
+						meta),
 					meta);
 
 				Upg.Uri destination;
 				try {
-					destination = response.original_uri.apply_reference(
-						reference);
+					destination = uri.apply_reference(meta);
 				} catch (Error err) {
 					internal_error(err.message);
 					return;
@@ -142,8 +138,7 @@ namespace Sagittarius {
 				button_one.sensitive = false;
 				button_one.label = _("Go");
 				last_handler =
-					button_one.clicked.connect(() => navigate(response.
-						 original_uri));
+					button_one.clicked.connect(() => navigate(uri));
 
 				Timeout.add(5000, () => {
 					button_one.sensitive = true;
@@ -190,8 +185,8 @@ namespace Sagittarius {
 				button_one.show ();
 				button_one.label = _("Launch");
 				last_handler = button_one.clicked.connect(() =>
-					AppInfo.launch_default_for_uri_async.begin(response.
-						 original_uri.to_string_ign(Upg.UriFatalRanking.
+					AppInfo.launch_default_for_uri_async.begin(
+						uri.to_string_ign(Upg.UriFatalRanking.
 							 NONFATAL_NULLABLE), null));
 				break;
 			}
