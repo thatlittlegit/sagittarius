@@ -132,7 +132,7 @@ namespace Sagittarius.Gemini {
 				return ret;
 			}
 
-			if (status == 21 || (status >= 60 && status <= 65)) {
+			if ((status >= 60 && status <= 62)) {
 				ret.outcome = UriLoadOutcome.SUCCESS;
 				ret.content_type = new GMime.ContentType("application",
 					"x-gemini-certificate-response");
