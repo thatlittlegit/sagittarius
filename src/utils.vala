@@ -52,6 +52,27 @@ namespace Sagittarius {
 		return content;
 	}
 
+	public ByteArray slurp (InputStream data) throws IOError {
+		var bytearray = new ByteArray ();
+		while (true) {
+			Bytes chunk;
+
+			try {
+				chunk = data.read_bytes(65535);
+			} catch (Error err) {
+				throw new IOError.FAILED("(%p) %s", (void *) err, err.message);
+			}
+
+			if (chunk.length == 0) {
+				break;
+			}
+
+			bytearray.append(Bytes.unref_to_data(chunk));
+		}
+
+		return bytearray;
+	}
+
 	public class FeebleRef<T> {
 		private WeakRef<T> wr;
 

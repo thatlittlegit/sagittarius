@@ -73,27 +73,7 @@ namespace Sagittarius.Gemini {
 
 			info("sent request [%ld bytes]".printf((ssize_t) size));
 
-			var bytearray = new ByteArray ();
-			while (true) {
-				Bytes chunk;
-				try {
-					chunk = yield conn.input_stream.read_bytes_async (65535);
-				} catch (TlsError err) {
-					if (err.code != 6) {
-						throw err;
-					}
-					chunk = new Bytes({});
-				}
-
-				if (chunk.length == 0) {
-					break;
-				}
-
-				bytearray.append(Bytes.unref_to_data(chunk));
-			}
-
-			conn.close_async.begin ();
-			return bytearray;
+			return yield slurp (conn.input_stream);
 		}
 
 		private int find_status (ByteArray bytearray) {
