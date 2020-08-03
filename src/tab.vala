@@ -176,7 +176,8 @@ namespace Sagittarius {
 
 		public void navigate (Upg.Uri uri) {
 			label.spinning = true;
-			this.uri = uri.to_string_ign (Upg.UriFatalRanking.NONFATAL_NEVERNULL);
+			this.uri =
+				uri.to_string_ign(Upg.UriFatalRanking.NONFATAL_NEVERNULL);
 			history.navigate(uri);
 
 			fetch_and_view(uri);

@@ -68,7 +68,8 @@ namespace Sagittarius.Gemini {
 				filechooser.file_set.connect(() => {
 					((Wrapped<HashTable<string, string> >)
 					 state.lookup("$gemini$")).unwrap ().insert(content.
-						 original_uri.to_string_ign (Upg.UriFatalRanking.NONFATAL_NULLABLE), filechooser.get_uri ());
+						 original_uri.to_string_ign(Upg.UriFatalRanking.
+							 NONFATAL_NULLABLE), filechooser.get_uri ());
 					nav(content.original_uri);
 				});
 				break;

@@ -46,7 +46,8 @@ namespace Sagittarius.Gemini {
 				string path;
 				string file = null;
 				while (iter.next(out path, out file)) {
-					if (uri.to_string_ign (Upg.UriFatalRanking.NONFATAL_NULLABLE).has_prefix(path)) {
+					if (uri.to_string_ign(Upg.UriFatalRanking.NONFATAL_NULLABLE)
+						 .has_prefix(path)) {
 						break;
 					}
 				}

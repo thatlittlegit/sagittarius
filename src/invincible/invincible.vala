@@ -45,7 +45,7 @@ namespace Sagittarius.Invincible {
 		public async RenderingOutcome render (HashTable<string,
 														Object ? > state,
 			NavigateFunc ? nav,
-			Content content) {
+			Content content) throws Error {
 			var stream = new MemoryInputStream.from_bytes(content.data);
 			var document = Evince.DocumentFactory.get_document_for_stream(
 				stream, content.content_type.get_mime_type ());
