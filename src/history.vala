@@ -26,7 +26,7 @@ namespace Sagittarius {
 		public HistoryEntry (DateTime ? a, Upg.Uri b, string ? c) {
 			date = a ?? new DateTime.from_unix_utc(0);
 			uri = b;
-			title = c ?? b.to_string ();
+			title = c ?? b.to_string_ign (Upg.UriFatalRanking.NONFATAL_NEVERNULL);
 		}
 	}
 
@@ -104,11 +104,11 @@ namespace Sagittarius {
 		}
 
 		public void record (DateTime now, Upg.Uri full_uri,
-			string title) throws IOError {
+			string title) throws Error {
 			record_entry(new HistoryEntry(now, full_uri, title));
 		}
 
-		public void record_entry (HistoryEntry entry) throws IOError {
+		public void record_entry (HistoryEntry entry) throws Error {
 			if (parent != null) {
 				parent.record_entry(entry);
 				return;
@@ -207,7 +207,7 @@ namespace Sagittarius {
 				var levenshtein = Dazzle.levenshtein(query, entry.title);
 				var suggestion = new Dazzle.Suggestion ();
 				suggestion.title = entry.title;
-				suggestion.subtitle = entry.uri.to_string ();
+				suggestion.subtitle = entry.uri.to_string_ign (Upg.UriFatalRanking.NONFATAL_NULLABLE) ?? "???";
 				suggestion.set_data<int>("weight", levenshtein);
 				suggestion.set_data<Upg.Uri>("uri", entry.uri);
 				filtering.prepend(suggestion);

@@ -24,7 +24,7 @@ namespace Sagittarius.Gemini {
 		public async RenderingOutcome render (HashTable<string,
 														Object ? > state,
 			NavigateFunc ? nav,
-			Content content) {
+			Content content) throws Error {
 			var markup = yield parse_markup (content.original_uri,
 				content.data);
 

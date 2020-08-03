@@ -191,7 +191,7 @@ namespace Sagittarius {
 				button_one.label = _("Launch");
 				last_handler = button_one.clicked.connect(() =>
 					AppInfo.launch_default_for_uri_async.begin(response.
-						 original_uri.to_string (), null));
+						 original_uri.to_string_ign (Upg.UriFatalRanking.NONFATAL_NULLABLE), null));
 				break;
 			}
 		}
