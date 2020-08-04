@@ -30,42 +30,24 @@ namespace Sagittarius.Gemini {
 														Object ? > state,
 			NavigateFunc ? nav,
 			Content content) throws Error {
-			var converted = new ConverterInputStream(content.data,
+			content.data = new ConverterInputStream(content.data,
 				new CharsetConverter(content.content_type.get_parameter(
 					"charset") ?? "utf-8", "utf-8"));
-			var markup = yield parse_markup (content.original_uri, converted);
 
-			var widget = yield display_markup (markup, nav);
+			var view = make_new_textview ();
+			display_markup.begin(content, view, nav, (_, ctx) => {
+				try {
+					display_markup.end(ctx);
+				} catch (IOError err) {
+					warning("%s", err.message);
+				}
+			});
 
 			RenderingOutcome ret = {};
-			ret.title = markup.title ?? content.original_uri.to_string ();
-			ret.widget = widget;
+			ret.title = content.original_uri.to_string (); // FIXME
+			ret.widget = view;
 			return ret;
 		}
-	}
-
-	enum TagType {
-		TEXT,
-		H1,
-		H2,
-		H3,
-		PREFORMATTED,
-		LIST_ITEM,
-		LINK,
-		BROKEN_LINK,
-		BLOCKQUOTE,
-	}
-
-	struct Tag {
-		TagType type;
-		string contents;
-		Upg.Uri ? target;
-		string ? auxillary;
-	}
-
-	class Document {
-		public string ? title;
-		public List<Tag ? > tags;
 	}
 
 	Gtk.TextView make_new_textview () {
@@ -99,122 +81,74 @@ namespace Sagittarius.Gemini {
 		return iter;
 	}
 
-	async Gtk.TextView display_markup (Document markup, NavigateFunc nav) {
-		var view = make_new_textview ();
-		var preformatted = view.buffer.tag_table.lookup("pre");
-		var h1 = view.buffer.tag_table.lookup("h1");
-		var h2 = view.buffer.tag_table.lookup("h2");
-		var h3 = view.buffer.tag_table.lookup("h3");
-		var ul = view.buffer.tag_table.lookup("ul");
-		var blockquote = view.buffer.tag_table.lookup("blockquote");
-
-		bool first = true;
-		foreach (var tag in markup.tags) {
-			var iter = get_iter(view.buffer);
-
-			if (!first) {
-				view.buffer.insert(ref iter, "\n", -1);
-				iter = get_iter(view.buffer);
-			} else {
-				first = false;
-			}
-
-			switch (tag.type) {
-			case TagType.TEXT:
-				view.buffer.insert(ref iter, tag.contents, -1);
-				break;
-			case TagType.PREFORMATTED:
-				view.buffer.insert_with_tags(ref iter, tag.contents, -1,
-					preformatted);
-				break;
-			case TagType.H1:
-				view.buffer.insert_with_tags(ref iter, tag.contents, -1, h1);
-				break;
-			case TagType.H2:
-				view.buffer.insert_with_tags(ref iter, tag.contents, -1, h2);
-				break;
-			case TagType.H3:
-				view.buffer.insert_with_tags(ref iter, tag.contents, -1, h3);
-				break;
-			case TagType.LIST_ITEM:
-				view.buffer.insert_with_tags(ref iter,
-					"\t\u2022\t%s".printf(tag.contents), -1, ul);
-				break;
-			case TagType.LINK:
-			case TagType.BROKEN_LINK:
-				var btn = new Gtk.LinkButton.with_label(tag.contents,
-					tag.auxillary);
-				btn.activate_link.connect((button) => {
-					nav(tag.target);
-					return true;
-				});
-
-				if (tag.type == TagType.BROKEN_LINK) {
-					btn.sensitive = false;
-				}
-
-				view.add_child_at_anchor(btn,
-					view.buffer.create_child_anchor(iter));
-				btn.show ();
-				break;
-			case TagType.BLOCKQUOTE:
-				view.buffer.insert_with_tags(ref iter, tag.contents, -1,
-					blockquote);
-				break;
-			}
-		}
-
-		return view;
-	}
-
-	async Document parse_markup (Upg.Uri original_uri,
-		InputStream _markup) throws IOError {
-		Document output = new Document ();
-		var markup = new DataInputStream(_markup);
+	private async void display_markup (Content markup, Gtk.TextView view,
+		NavigateFunc nav) throws IOError {
+		var buffer = view.buffer;
+		var preformatted = buffer.tag_table.lookup("pre");
+		var h1 = buffer.tag_table.lookup("h1");
+		var h2 = buffer.tag_table.lookup("h2");
+		var h3 = buffer.tag_table.lookup("h3");
+		var ul = buffer.tag_table.lookup("ul");
+		var blockquote = buffer.tag_table.lookup("blockquote");
 
 		bool preformatting = false;
+		var stream = new DataInputStream(markup.data);
 		string line;
-		while ((line = markup.read_line ()) != null) {
-			line = line.strip ();
+		while ((line = yield stream.read_line_utf8_async ()) != null) {
+			var iter = get_iter(buffer);
 
 			if (line.has_prefix("```")) {
 				preformatting = !preformatting;
 			} else if (preformatting) {
-				output.tags.prepend({ TagType.PREFORMATTED, line, null });
+				buffer.insert_with_tags(ref iter, line, -1,
+					preformatted);
 			} else if (line.has_prefix("=>")) {
-				var line_parts = line.split("=>", 2)[1].strip ().split_set(
-					" \t", 2);
-
-				try {
-					var destination =
-						original_uri.apply_reference(line_parts[0]);
-					output.tags.prepend({ TagType.LINK, "", destination,
-										  line_parts[1] ?? line_parts[0] });
-				} catch (Error err) {
-					output.tags.prepend({ TagType.BROKEN_LINK, "", null,
-										  line_parts[1] });
-				}
+				output_link(ref iter, line, view, markup.original_uri, nav);
 			} else if (line.has_prefix("# ")) {
-				if (output.title == null) {
-					output.title = line.substring(2);
-				}
-				output.tags.prepend({ TagType.H1, line.substring(2) });
+				buffer.insert_with_tags(ref iter, line.substring(2), -1, h1);
 			} else if (line.has_prefix("## ")) {
-				output.tags.prepend({ TagType.H2, line.substring(3) });
+				buffer.insert_with_tags(ref iter, line.substring(3), -1, h2);
 			} else if (line.has_prefix("###")) {
-				output.tags.prepend({ TagType.H3, line.substring(4) });
+				buffer.insert_with_tags(ref iter, line.substring(4), -1, h3);
 			} else if (line.has_prefix("*")) {
-				output.tags.prepend({ TagType.LIST_ITEM, line.substring(
-					1).strip () });
+				buffer.insert_with_tags(ref iter,
+					"\t\u2022\t%s".printf(line.substring(1).strip ()), -1, ul);
 			} else if (line.has_prefix(">")) {
-				output.tags.prepend({ TagType.BLOCKQUOTE, line.substring(
-					1).strip () });
+				buffer.insert_with_tags(ref iter, line.substring(
+					1).strip (), -1,
+					blockquote);
 			} else {
-				output.tags.prepend({ TagType.TEXT, line });
+				buffer.insert(ref iter, line, -1);
 			}
-		}
-		output.tags.reverse ();
 
-		return output;
+			iter = get_iter(buffer);
+			buffer.insert(ref iter, "\n", -1);
+		}
+	}
+
+	private void output_link (ref Gtk.TextIter iter, string line,
+		Gtk.TextView view, Upg.Uri uri,
+		NavigateFunc nav) {
+		var line_parts = line.split("=>", 2)[1].strip ().split_set(
+			" \t", 2);
+
+		var btn = new Gtk.LinkButton.with_label(line_parts[1] ?? line_parts[0],
+			line_parts[0]);
+
+		try {
+			var destination =
+				uri.apply_reference(line_parts[0]);
+
+			btn.activate_link.connect((button) => {
+				nav(destination);
+				return true;
+			});
+		} catch (Error err) {
+			btn.sensitive = false;
+		}
+
+		view.add_child_at_anchor(btn,
+			view.buffer.create_child_anchor(iter));
+		btn.show ();
 	}
 }
