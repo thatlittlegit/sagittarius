@@ -54,8 +54,14 @@ namespace Sagittarius.Text {
 			buffer.language =
 				Gtk.SourceLanguageManager.get_default ().guess_language(null,
 					content.content_type.get_mime_type ());
-			buffer.set_text(bytes_to_string(ByteArray.free_to_bytes(slurp(
-				content.data))));
+
+			stream_into_buffer.begin(content, buffer, (_, ctx) => {
+				try {
+					stream_into_buffer.end(ctx);
+				} catch (IOError err) {
+					warning("%s", err.message);
+				}
+			});
 
 			var widget = new Gtk.SourceView.with_buffer(buffer);
 			widget.monospace = true;
@@ -68,6 +74,18 @@ namespace Sagittarius.Text {
 					   null,
 					   widget,
 			};
+		}
+
+		private async void stream_into_buffer (Content content,
+			Gtk.TextBuffer buffer) throws
+		IOError {
+			var stream = new DataInputStream(content.data);
+			string line;
+			while ((line = yield stream.read_line_utf8_async ()) != null) {
+				Gtk.TextIter iter;
+				buffer.get_end_iter(out iter);
+				buffer.insert(ref iter, "%s\n".printf(line), -1);
+			}
 		}
 	}
 }
