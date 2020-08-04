@@ -30,8 +30,10 @@ namespace Sagittarius.Gemini {
 														Object ? > state,
 			NavigateFunc ? nav,
 			Content content) throws Error {
-			var markup = yield parse_markup (content.original_uri,
-				ensure_utf8(content.content_type, content.data));
+			var converted = new ConverterInputStream(content.data,
+				new CharsetConverter(content.content_type.get_parameter(
+					"charset") ?? "utf-8", "utf-8"));
+			var markup = yield parse_markup (content.original_uri, converted);
 
 			var widget = yield display_markup (markup, nav);
 
@@ -165,7 +167,8 @@ namespace Sagittarius.Gemini {
 		return view;
 	}
 
-	async Document parse_markup (Upg.Uri original_uri, InputStream _markup) {
+	async Document parse_markup (Upg.Uri original_uri,
+		InputStream _markup) throws IOError {
 		Document output = new Document ();
 		var markup = new DataInputStream(_markup);
 
