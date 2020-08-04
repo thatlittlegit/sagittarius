@@ -27,7 +27,8 @@ namespace Sagittarius {
 		UriLoadOutcome outcome;
 		Upg.Uri original_uri;
 		GMime.ContentType content_type;
-		Bytes data;
+		InputStream data;
+		IOStream ? __holder;
 	}
 
 	public enum UriLoadOutcome {
@@ -79,6 +80,7 @@ namespace Sagittarius {
 			return yield loader.@get ().fetch(state, uri);
 		}
 
-		return { UriLoadOutcome.UNKNOWN_SCHEME, uri, null, new Bytes({}) };
+		return { UriLoadOutcome.UNKNOWN_SCHEME, uri, null,
+				 new MemoryInputStream.from_data({}) };
 	}
 }

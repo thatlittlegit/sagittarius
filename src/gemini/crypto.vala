@@ -56,7 +56,7 @@ namespace Sagittarius.Gemini {
 					_("Certificate wanted"),
 					_(
 						"The server is requesting you provide a certificate. You can choose one from the box below."),
-					bytes_to_string(content.data));
+					bytes_to_string(yield content.data.read_bytes_async(1024)));
 
 				var filechooser =
 					new Gtk.FileChooserButton(_(

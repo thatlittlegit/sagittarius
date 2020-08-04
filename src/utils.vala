@@ -30,26 +30,30 @@ namespace Sagittarius {
 		return builder.str;
 	}
 
-	public Content ensure_utf8 (Content content) throws ConvertError {
-		if (content.content_type.type != "text" || content.data.length == 0) {
+	public InputStream ensure_utf8 (GMime.ContentType type,
+		InputStream content) throws IOError, ConvertError {
+		if (type.type != "text") {
 			return content;
 		}
 
-		var text = bytes_to_string(content.data);
+		var text = bytes_to_string(ByteArray.free_to_bytes(slurp(content)));
 
-		var charset = content.content_type.get_parameter("charset");
+		if (text.length == 0) {
+			return new MemoryInputStream.from_data(text.data);
+		}
+
+		var charset = type.get_parameter("charset");
 		if (charset == null || charset == "utf-8") {
 			if (text.validate(text.length)) {
-				return content;
+				return new MemoryInputStream.from_data(text.data);
 			}
 
 			throw new ConvertError.ILLEGAL_SEQUENCE(
 				"text claims to be UTF-8, but isnt?");
 		}
 
-		content.data =
-			new Bytes.take(convert(text, text.length, "utf-8", charset).data);
-		return content;
+		return new MemoryInputStream.from_bytes(
+			new Bytes.take(convert(text, text.length, "utf-8", charset).data));
 	}
 
 	public ByteArray slurp (InputStream data) throws IOError {

@@ -195,7 +195,8 @@ namespace Sagittarius {
 
 				yield view (uri, document);
 			} catch (Error err) {
-				internal_error(err.message);
+				internal_error("%s: (%d) %s".printf(err.domain.to_string (),
+					err.code, err.message));
 			} finally {
 				on_navigate(this);
 			}
@@ -204,9 +205,7 @@ namespace Sagittarius {
 		private async void view (Upg.Uri uri, Content document) throws Error {
 			string title;
 			if (document.outcome == UriLoadOutcome.SUCCESS) {
-				var corrected = ensure_utf8(document);
-				var rendered = yield render_content (state, navigate,
-					corrected);
+				var rendered = yield render_content (state, navigate, document);
 
 				if (scrolled_text_view.get_child () != null) {
 					scrolled_text_view.remove(scrolled_text_view.get_child ());
@@ -218,7 +217,7 @@ namespace Sagittarius {
 
 				title = rendered.title ?? uri.to_string ();
 			} else {
-				var meta = bytes_to_string(document.data);
+				var meta = bytes_to_string(document.data.read_bytes(1024));
 				if (document.outcome == UriLoadOutcome.PERMANENT_REDIRECT ||
 					document.outcome == UriLoadOutcome.TEMPORARY_REDIRECT) {
 					try {

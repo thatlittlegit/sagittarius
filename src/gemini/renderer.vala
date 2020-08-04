@@ -19,6 +19,11 @@
 
 using Sagittarius;
 
+[CCode(cname = "helpme")]
+public void helpme (int a, string b) {
+	message("%d: %s", a, b);
+}
+
 namespace Sagittarius.Gemini {
 	public class Renderer : Object, Sagittarius.Renderer {
 		public async RenderingOutcome render (HashTable<string,
@@ -26,7 +31,7 @@ namespace Sagittarius.Gemini {
 			NavigateFunc ? nav,
 			Content content) throws Error {
 			var markup = yield parse_markup (content.original_uri,
-				content.data);
+				ensure_utf8(content.content_type, content.data));
 
 			var widget = yield display_markup (markup, nav);
 
@@ -160,14 +165,14 @@ namespace Sagittarius.Gemini {
 		return view;
 	}
 
-	async Document parse_markup (Upg.Uri original_uri, Bytes _markup) {
+	async Document parse_markup (Upg.Uri original_uri, InputStream _markup) {
 		Document output = new Document ();
-		var markup = bytes_to_string(_markup);
-		var lines = markup.split("\n");
+		var markup = new DataInputStream(_markup);
 
 		bool preformatting = false;
-		foreach (var _line in lines) {
-			var line = _line.strip ();
+		string line;
+		while ((line = markup.read_line ()) != null) {
+			line = line.strip ();
 
 			if (line.has_prefix("```")) {
 				preformatting = !preformatting;

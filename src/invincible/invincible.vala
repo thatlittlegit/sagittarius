@@ -46,7 +46,11 @@ namespace Sagittarius.Invincible {
 														Object ? > state,
 			NavigateFunc ? nav,
 			Content content) throws Error {
-			var stream = new MemoryInputStream.from_bytes(content.data);
+			// FIXME this should have been the easiest to do, but the stream
+			//       has to be seekable
+			var stream =
+				new MemoryInputStream.from_bytes(ByteArray.free_to_bytes(slurp(
+					content.data)));
 			var document = Evince.DocumentFactory.get_document_for_stream(
 				stream, content.content_type.get_mime_type ());
 

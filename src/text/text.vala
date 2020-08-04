@@ -54,7 +54,8 @@ namespace Sagittarius.Text {
 			buffer.language =
 				Gtk.SourceLanguageManager.get_default ().guess_language(null,
 					content.content_type.get_mime_type ());
-			buffer.set_text(bytes_to_string(content.data));
+			buffer.set_text(bytes_to_string(ByteArray.free_to_bytes(slurp(
+				content.data))));
 
 			var widget = new Gtk.SourceView.with_buffer(buffer);
 			widget.monospace = true;

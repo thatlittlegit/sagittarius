@@ -28,19 +28,25 @@ namespace Sagittarius.Gemini {
 	}
 
 	public class Protocol : Object, UriLoader {
-		async ByteArray send_request (Upg.Uri uri, Wrapped<HashTable<string,
-																	 string> > ? cert)
+		async IOStream send_request (Upg.Uri uri, Wrapped<HashTable<string,
+																	string> > ? cert)
 		throws Error {
 			var client = new SocketClient ();
 			client.set_tls(true);
 			client.set_tls_validation_flags(0);
 
 			client.event.connect((event, __, rconn) => {
-				if (event != SocketClientEvent.TLS_HANDSHAKING || cert == null) {
+				if (event != SocketClientEvent.TLS_HANDSHAKING) {
 					return;
 				}
 
 				var conn = rconn as TlsConnection;
+				conn.require_close_notify = false;
+
+				if (cert == null) {
+					return;
+				}
+
 				var iter = HashTableIter<string, string>(
 					cert.unwrap ());
 				string path;
@@ -73,38 +79,7 @@ namespace Sagittarius.Gemini {
 
 			info("sent request [%ld bytes]".printf((ssize_t) size));
 
-			return yield slurp (conn.input_stream);
-		}
-
-		private int find_status (ByteArray bytearray) {
-			var ret = ((bytearray.data[0] - 0x30) * 10)
-					  + (bytearray.data[1] - 0x30);
-			bytearray.remove_range(0, 2);
-			return ret;
-		}
-
-		private string find_meta (ByteArray bytearray) {
-			int i;
-			StringBuilder meta =
-				new StringBuilder.sized(bytearray.len.clamp(0, 1024));
-			for (i = 0; i < bytearray.len && i < 1024; i++) {
-				char current = (char) bytearray.data[i];
-
-				if (current == '\r') {
-					i++;
-					break;
-				}
-
-				if (current == '\n') {
-					// invalid, but we'll let it slide 'cause it's a lot better
-					break;
-				}
-
-				meta.append_c(current);
-			}
-			bytearray.remove_range(0, i + 1);
-
-			return meta.str.strip ();
+			return conn;
 		}
 
 		public async Content fetch (HashTable<string, Object ? > state,
@@ -112,36 +87,34 @@ namespace Sagittarius.Gemini {
 			Content ret = {};
 			ret.original_uri = uri;
 
-			var array = yield send_request (uri, (Wrapped<HashTable<string, string> >) state.lookup(
+			var ios = yield send_request (uri, (Wrapped<HashTable<string, string> >) state.lookup(
 				"$gemini$"));
 
-			if (array.len < 2) {
+			var dis = new DataInputStream(ios.input_stream);
+
+			var metaline = dis.read_line ();
+			if (metaline.length < 2) {
 				throw new IOError.INVALID_DATA("Invalid response (too small)");
 			}
-			info("recieved %ld bytes of content".printf(array.len));
+			ret.data = (BufferedInputStream) dis;
+			ret.__holder = ios;
 
-			var status = find_status(array);
-			ret.outcome = (UriLoadOutcome) status;
-			var meta = find_meta(array);
-			array.append({ 0 });
+			metaline.substring(0, 2).scanf("%d", &ret.outcome);
+			string meta = metaline.substring(3);
 
-			if (status == 20) {
+			if (ret.outcome == 20) {
 				ret.content_type = GMime.ContentType.parse(
 					new GMime.ParserOptions (), meta);
-				ret.data = ByteArray.free_to_bytes(array);
-				return ret;
-			}
-
-			if ((status >= 60 && status <= 62)) {
+			} else if ((ret.outcome >= 60 && ret.outcome <= 62)) {
 				ret.outcome = UriLoadOutcome.SUCCESS;
 				ret.content_type = new GMime.ContentType("application",
 					"x-gemini-certificate-response");
-				ret.content_type.set_parameter("code", status.to_string ());
+				ret.content_type.set_parameter("code",
+					ret.outcome.to_string ());
 			} else {
 				ret.content_type = new GMime.ContentType("text", "gemini");
 			}
 
-			ret.data = new Bytes.take(meta.data);
 			return ret;
 		}
 	}

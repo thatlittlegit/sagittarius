@@ -42,14 +42,16 @@ namespace Sagittarius.AboutProtocol {
 
 			switch (uri.host) {
 			case "blank":
-				ret.data = new Bytes({});
+				ret.data = new MemoryInputStream.from_data({});
 				break;
 			case "home":
 				if (uri.query_str == null) {
 					uri.query_str = "Home";
 				}
 
-				ret.data = new Bytes(Uri.unescape_string(uri.query_str).data);
+				ret.data =
+					new MemoryInputStream.from_data(Uri.unescape_string(uri.
+						 query_str).data);
 				ret.content_type = new GMime.ContentType("application",
 					"x-sagittarius-welcome");
 				break;
@@ -61,8 +63,9 @@ namespace Sagittarius.AboutProtocol {
 					});
 				}
 
-				ret.data = new Bytes.take("# %s\n%s\n=> ?dlg %s %s"
-					 .printf(_("Sagittarius"),
+				ret.data = new MemoryInputStream.from_data("# %s\n%s\n=> ?dlg %s %s"
+					 .printf(_(
+						"Sagittarius"),
 						_("A browser for the Gemini protocol"),
 						_("_About").substring(1),
 						_("Sagittarius")).data);
@@ -70,7 +73,7 @@ namespace Sagittarius.AboutProtocol {
 			default:
 				ret.outcome = UriLoadOutcome.NOT_FOUND;
 				ret.data =
-					new Bytes(_(
+					new MemoryInputStream.from_data(_(
 						"The page you looked up isn't a valid about: URI.").data);
 				break;
 			}
@@ -97,11 +100,12 @@ namespace Sagittarius.AboutProtocol {
 		public async RenderingOutcome render (HashTable<string,
 														Object ? > state,
 			NavigateFunc ? nav,
-			Content content) {
+			Content content) throws Error {
 			var widget = new Dazzle.EmptyState ();
 			widget.title = _("Welcome to Sagittarius!");
 			widget.subtitle = _("Start by typing a URL in the address bar.");
-			return { bytes_to_string(content.data), widget };
+			return { bytes_to_string(yield content.data.read_bytes_async(100)),
+					 widget };
 		}
 	}
 }

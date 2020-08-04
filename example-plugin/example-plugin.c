@@ -107,7 +107,9 @@ static void example_plugin_fetch_finish (SagittariusUriLoader * self,
 	char * payload = g_strdup_printf("# Counter! :D\n%d", EXAMPLE_PLUGIN(
 		self)->counter);
 	SagittariusContent content;
-	content.data = g_bytes_new_take(payload, strlen(payload));
+	content.data = g_memory_input_stream_new_from_bytes(
+		g_bytes_new_take(payload, strlen(payload))
+		);
 	content.original_uri = (UpgUri *) uri;
 	content.content_type = g_mime_content_type_new("text", "gemini");
 	content.outcome = SAGITTARIUS_URI_LOAD_OUTCOME_SUCCESS;
