@@ -111,7 +111,7 @@ static void example_plugin_fetch_finish (SagittariusUriLoader * self,
 		g_bytes_new_take(payload, strlen(payload))
 		);
 	content.original_uri = (UpgUri *) uri;
-	content.content_type = g_mime_content_type_new("text", "gemini");
+	content.content_type = sagittarius_content_type_new("text", "gemini");
 	content.outcome = SAGITTARIUS_URI_LOAD_OUTCOME_SUCCESS;
 	*outcome = content;
 	g_object_unref(uri);

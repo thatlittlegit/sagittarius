@@ -52,7 +52,7 @@ namespace Sagittarius.Invincible {
 				new MemoryInputStream.from_bytes(ByteArray.free_to_bytes(slurp(
 					content.data)));
 			var document = Evince.DocumentFactory.get_document_for_stream(
-				stream, content.content_type.get_mime_type ());
+				stream, content.content_type.to_simple_string ());
 
 			var view = new Evince.View ();
 			view.set_model(new Evince.DocumentModel.with_document(document));

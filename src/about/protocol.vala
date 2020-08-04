@@ -37,7 +37,7 @@ namespace Sagittarius.AboutProtocol {
 		public async Content fetch (HashTable<string, Object ? > state,
 			Upg.Uri _uri) {
 			var uri = shift_uri(_uri);
-			Content ret = { UriLoadOutcome.SUCCESS, _uri, new GMime.ContentType(
+			Content ret = { UriLoadOutcome.SUCCESS, _uri, new ContentType(
 				"text", "gemini") };
 
 			switch (uri.host) {
@@ -52,7 +52,7 @@ namespace Sagittarius.AboutProtocol {
 				ret.data =
 					new MemoryInputStream.from_data(Uri.unescape_string(uri.
 						 query_str).data);
-				ret.content_type = new GMime.ContentType("application",
+				ret.content_type = new ContentType("application",
 					"x-sagittarius-welcome");
 				break;
 			case "":

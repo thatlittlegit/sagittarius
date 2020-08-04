@@ -42,7 +42,8 @@ namespace Sagittarius.Gemini {
 			outcome.title = null;
 
 			int code = 0;
-			content.content_type.get_parameter("code").scanf("%d", ref code);
+			content.content_type.properties.lookup("code").scanf("%d",
+				ref code);
 
 			if (state.lookup("$gemini$") == null) {
 				state.insert("$gemini$", new Wrapped<HashTable<string, string> >(

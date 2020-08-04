@@ -31,8 +31,8 @@ namespace Sagittarius.Gemini {
 			NavigateFunc ? nav,
 			Content content) throws Error {
 			content.data = new ConverterInputStream(content.data,
-				new CharsetConverter(content.content_type.get_parameter(
-					"charset") ?? "utf-8", "utf-8"));
+				new CharsetConverter(content.content_type.charset ?? "utf-8",
+					"utf-8"));
 
 			var view = make_new_textview ();
 			display_markup.begin(content, view, nav, (_, ctx) => {

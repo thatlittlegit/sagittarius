@@ -10,12 +10,12 @@ src = files(
   'plugins.vala',
   'renderer.vala',
   'utils.vala',
+  'contenttype.vala',
 )
 
 sagittarius_deps = [
   dependency('gio-2.0', version: '>= 2.50'),
   dependency('gtk+-3.0', version: '>= 3.22'),
-  dependency('gmime-3.0', version: '>= 3'),
   dependency('liburiparser-gobject-0'),
   dependency('libdazzle-1.0'),
   dependency('libpeas-1.0'),

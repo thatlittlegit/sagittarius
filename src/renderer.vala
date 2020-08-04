@@ -61,17 +61,14 @@ namespace Sagittarius {
 															Object ? > state,
 		NavigateFunc nav,
 		Content content) throws Error {
-		var type = stringify_mime_type(content.content_type);
+		var type = content.content_type.to_simple_string ();
 		var renderer = renderers.lookup(type);
+		message(type);
 		if (renderer != null && renderer.@get () != null) {
 			return yield renderer.@get ().render(state, nav, content);
 		}
 
 		return open_user_default(content);
-	}
-
-	string stringify_mime_type (GMime.ContentType type) {
-		return "%s/%s".printf(type.type, type.subtype);
 	}
 
 	errordomain RenderingError {

@@ -53,7 +53,7 @@ namespace Sagittarius.Text {
 			buffer.highlight_syntax = true;
 			buffer.language =
 				Gtk.SourceLanguageManager.get_default ().guess_language(null,
-					content.content_type.get_mime_type ());
+					content.content_type.to_simple_string ());
 
 			stream_into_buffer.begin(content, buffer, (_, ctx) => {
 				try {

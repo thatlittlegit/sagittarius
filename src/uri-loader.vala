@@ -26,7 +26,7 @@ namespace Sagittarius {
 	public struct Content {
 		UriLoadOutcome outcome;
 		Upg.Uri original_uri;
-		GMime.ContentType content_type;
+		ContentType content_type;
 		InputStream data;
 		IOStream ? __holder;
 	}

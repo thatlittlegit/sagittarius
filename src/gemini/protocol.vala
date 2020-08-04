@@ -104,16 +104,15 @@ namespace Sagittarius.Gemini {
 			string meta = metaline.substring(3);
 
 			if (ret.outcome == 20) {
-				ret.content_type = GMime.ContentType.parse(
-					new GMime.ParserOptions (), meta);
+				ret.content_type = new ContentType.parse(meta);
 			} else if ((ret.outcome >= 60 && ret.outcome <= 62)) {
 				ret.outcome = UriLoadOutcome.SUCCESS;
-				ret.content_type = new GMime.ContentType("application",
+				ret.content_type = new ContentType("application",
 					"x-gemini-certificate-response");
-				ret.content_type.set_parameter("code",
+				ret.content_type.properties.insert("code",
 					ret.outcome.to_string ());
 			} else {
-				ret.content_type = new GMime.ContentType("text", "gemini");
+				ret.content_type = new ContentType("text", "gemini");
 			}
 
 			return ret;

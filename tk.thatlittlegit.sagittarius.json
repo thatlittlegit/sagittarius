@@ -71,18 +71,6 @@
             ]
         },
         {
-            "name": "gmime",
-            "builddir": true,
-            "buildsystem": "autotools",
-            "sources": [
-                {
-                    "type": "git",
-                    "url": "https://gitlab.gnome.org/GNOME/gmime",
-                    "commit": "9749a44bae4bacbb59c06d9a62e5e87cb8be3081"
-                }
-            ]
-        },
-        {
             "name": "libpeas",
             "buildsystem": "meson",
             "sources": [
