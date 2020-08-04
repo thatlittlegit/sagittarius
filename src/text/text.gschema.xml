@@ -3,6 +3,7 @@
   <schema id="tk.thatlittlegit.sagittarius.text" path="/tk/thatlittlegit/sagittarius/text/">
     <key name="mime-types" type="as">
       <default>[
+        'text/plain',
         'text/x-actionscript',
         'text/x-ada',
         'text/x-adasrc',
