@@ -12,7 +12,7 @@ src = files(
   'utils.vala',
 )
 
-_sagittarius_deps = [
+sagittarius_deps = [
   dependency('gio-2.0', version: '>= 2.50'),
   dependency('gtk+-3.0', version: '>= 3.22'),
   dependency('gmime-3.0', version: '>= 3'),
@@ -20,10 +20,6 @@ _sagittarius_deps = [
   dependency('libdazzle-1.0'),
   dependency('libpeas-1.0'),
   dependency('libpeas-gtk-1.0'),
-]
-sagittarius_deps = [
-  _sagittarius_deps,
-  meson.get_compiler('c').find_library('uriparser'),
 ]
 
 gnome = import('gnome')
@@ -63,7 +59,7 @@ import('pkgconfig').generate(lib,
   name: 'sagittarius',
   description: 'A browser for the Gemini protocol.',
   # FIXME only depend on libpeas/gobject
-  requires: _sagittarius_deps,
+  requires: sagittarius_deps,
 )
 
 exe = executable('sagittarius', [],
