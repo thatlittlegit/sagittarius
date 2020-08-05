@@ -114,6 +114,7 @@ namespace Sagittarius.Gemini {
 					ret.outcome.to_string ());
 			} else {
 				ret.content_type = new ContentType("text", "gemini");
+				ret.data = new MemoryInputStream.from_data(meta.data);
 			}
 
 			return ret;
