@@ -107,6 +107,8 @@ namespace Sagittarius {
 
 		private Window window;
 
+		private Cancellable cancel;
+
 		internal HashTable<string, Object ? > state { internal get; private set;
 		}
 
@@ -174,8 +176,12 @@ namespace Sagittarius {
 			fetch_and_view(history.top ().uri);
 		}
 
+		public void stop () {
+			cancel.cancel ();
+			cancel = null;
+		}
+
 		public void navigate (Upg.Uri uri) {
-			label.spinning = true;
 			this.uri =
 				uri.to_string_ign(Upg.UriFatalRanking.NONFATAL_NEVERNULL);
 			history.navigate(uri);
@@ -191,13 +197,21 @@ namespace Sagittarius {
 
 		private async void fetch_and_view_async (Upg.Uri uri) {
 			try {
-				var document = yield fetch_uri (state, uri);
+				if (cancel != null) {
+					cancel.cancel ();
+				}
+
+				cancel = new Cancellable ();
+				label.spinning = true;
+				on_navigate(this);
+				var document = yield fetch_uri (state, uri, cancel);
 
 				yield view (uri, document);
 			} catch (Error err) {
 				internal_error("%s: (%d) %s".printf(err.domain.to_string (),
 					err.code, err.message));
 			} finally {
+				cancel = null;
 				on_navigate(this);
 			}
 		}
@@ -205,7 +219,8 @@ namespace Sagittarius {
 		private async void view (Upg.Uri uri, Content document) throws Error {
 			string title;
 			if (document.outcome == UriLoadOutcome.SUCCESS) {
-				var rendered = yield render_content (state, navigate, document);
+				var rendered = yield render_content (state, navigate, document,
+					cancel);
 
 				if (scrolled_text_view.get_child () != null) {
 					scrolled_text_view.remove(scrolled_text_view.get_child ());

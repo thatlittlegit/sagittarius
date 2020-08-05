@@ -48,14 +48,15 @@ namespace Sagittarius.Text {
 		public async RenderingOutcome render (HashTable<string,
 														Object ? > state,
 			NavigateFunc ? nav,
-			Content content) {
+			Content content,
+			Cancellable ? cancel) {
 			var buffer = new Gtk.SourceBuffer(null);
 			buffer.highlight_syntax = true;
 			buffer.language =
 				Gtk.SourceLanguageManager.get_default ().guess_language(null,
 					content.content_type.to_simple_string ());
 
-			stream_into_buffer.begin(content, buffer, (_, ctx) => {
+			stream_into_buffer.begin(content, buffer, cancel, (_, ctx) => {
 				try {
 					stream_into_buffer.end(ctx);
 				} catch (IOError err) {
@@ -77,11 +78,13 @@ namespace Sagittarius.Text {
 		}
 
 		private async void stream_into_buffer (Content content,
-			Gtk.TextBuffer buffer) throws
+			Gtk.TextBuffer buffer, Cancellable cancel) throws
 		IOError {
 			var stream = new DataInputStream(content.data);
 			string line;
-			while ((line = yield stream.read_line_utf8_async ()) != null) {
+			while ((line =
+						yield stream.read_line_utf8_async(100,
+							cancel)) != null && !cancel.is_cancelled ()) {
 				Gtk.TextIter iter;
 				buffer.get_end_iter(out iter);
 				buffer.insert(ref iter, "%s\n".printf(line), -1);

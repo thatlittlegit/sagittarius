@@ -28,7 +28,8 @@ namespace Sagittarius {
 		public abstract async RenderingOutcome render (HashTable<string,
 																 Object ? > state,
 			NavigateFunc ? nav,
-			Content content) throws
+			Content content,
+			Cancellable ? cancel = null) throws
 		Error;
 	}
 
@@ -60,12 +61,12 @@ namespace Sagittarius {
 	public async RenderingOutcome render_content (HashTable<string,
 															Object ? > state,
 		NavigateFunc nav,
-		Content content) throws Error {
+		Content content, Cancellable ? cancel = null) throws Error {
 		var type = content.content_type.to_simple_string ();
 		var renderer = renderers.lookup(type);
 		message(type);
 		if (renderer != null && renderer.@get () != null) {
-			return yield renderer.@get ().render(state, nav, content);
+			return yield renderer.@get ().render(state, nav, content, cancel);
 		}
 
 		return open_user_default(content);

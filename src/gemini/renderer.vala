@@ -29,13 +29,13 @@ namespace Sagittarius.Gemini {
 		public async RenderingOutcome render (HashTable<string,
 														Object ? > state,
 			NavigateFunc ? nav,
-			Content content) throws Error {
+			Content content, Cancellable ? cancel) throws Error {
 			content.data = new ConverterInputStream(content.data,
 				new CharsetConverter(content.content_type.charset ?? "utf-8",
 					"utf-8"));
 
 			var view = make_new_textview ();
-			display_markup.begin(content, view, nav, (_, ctx) => {
+			display_markup.begin(content, view, nav, cancel, (_, ctx) => {
 				try {
 					display_markup.end(ctx);
 				} catch (IOError err) {
@@ -82,7 +82,7 @@ namespace Sagittarius.Gemini {
 	}
 
 	private async void display_markup (Content markup, Gtk.TextView view,
-		NavigateFunc nav) throws IOError {
+		NavigateFunc nav, Cancellable cancel) throws IOError {
 		var buffer = view.buffer;
 		var preformatted = buffer.tag_table.lookup("pre");
 		var h1 = buffer.tag_table.lookup("h1");
@@ -94,7 +94,9 @@ namespace Sagittarius.Gemini {
 		bool preformatting = false;
 		var stream = new DataInputStream(markup.data);
 		string line;
-		while ((line = yield stream.read_line_utf8_async ()) != null) {
+		while ((line =
+					yield stream.read_line_utf8_async(100,
+						cancel)) != null && !cancel.is_cancelled ()) {
 			var iter = get_iter(buffer);
 
 			if (line.has_prefix("```")) {

@@ -35,7 +35,7 @@ namespace Sagittarius.Gemini {
 		public async RenderingOutcome render (HashTable<string,
 														Object ? > state,
 			NavigateFunc ? nav,
-			Content content) throws Error {
+			Content content, Cancellable ? cancel) throws Error {
 			RenderingOutcome outcome = {};
 			ErrorMessage message = new ErrorMessage ();
 			outcome.widget = message;
@@ -57,7 +57,8 @@ namespace Sagittarius.Gemini {
 					_("Certificate wanted"),
 					_(
 						"The server is requesting you provide a certificate. You can choose one from the box below."),
-					bytes_to_string(yield content.data.read_bytes_async(1024)));
+					bytes_to_string(yield content.data.read_bytes_async(1024,
+						100, cancel)));
 
 				var filechooser =
 					new Gtk.FileChooserButton(_(

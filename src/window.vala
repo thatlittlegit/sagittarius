@@ -31,6 +31,8 @@ namespace Sagittarius {
 		Gtk.Button back_button;
 		[GtkChild]
 		Gtk.Button forward_button;
+		[GtkChild]
+		Gtk.ToggleButton reload_button;
 
 		private History history;
 		private HistorySuggestionModel history_model;
@@ -90,7 +92,7 @@ namespace Sagittarius {
 
 			notebook = new Gtk.Notebook ();
 			notebook.switch_page.connect((newfound) => {
-				on_navigate_cb(newfound as Tab);
+				on_navigate_cb(newfound as Tab, true);
 			});
 			notebook.page_removed.connect(rethink_tab_visibility);
 			notebook.page_added.connect(rethink_tab_visibility);
@@ -99,6 +101,17 @@ namespace Sagittarius {
 			create_tab ();
 			add(notebook);
 			notebook.show ();
+
+			// FIXME a better solution is needed
+			Timeout.add(100, () => {
+				if (current.label.spinning) {
+					url_bar.progress_pulse ();
+				} else {
+					url_bar.progress_fraction = 0;
+				}
+
+				return true;
+			});
 		}
 
 		private void rethink_tab_visibility () {
@@ -108,7 +121,7 @@ namespace Sagittarius {
 		public Tab create_tab (string ? uri = null) {
 			var tab = new Tab(this, history);
 			notebook.set_current_page(notebook.append_page(tab, tab.label));
-			tab.on_navigate.connect(on_navigate_cb);
+			tab.on_navigate.connect((tab) => on_navigate_cb(tab));
 			tab.close.connect((page) => notebook.remove_page(notebook.page_num(
 				page)));
 
@@ -128,10 +141,19 @@ namespace Sagittarius {
 			url_bar.has_focus = true;
 		}
 
-		private void on_navigate_cb (Tab tab) {
-			if (tab == current) {
+		private void on_navigate_cb (Tab tab, bool force = false) {
+			if (tab == current || force) {
 				forward_button.sensitive = tab.can_go_forward;
 				back_button.sensitive = tab.can_go_back;
+
+				toggle_ign = true;
+				if (tab.label.spinning) {
+					reload_button.active = true;
+				} else {
+					url_bar.progress_fraction = 0;
+					reload_button.active = false;
+				}
+				toggle_ign = false;
 
 				ignore_changes = true;
 				if (tab.uri ==
@@ -162,9 +184,25 @@ namespace Sagittarius {
 			}
 		}
 
+		private bool toggle_ign = false;
 		[GtkCallback]
-		private void reload (Gtk.Button unused) {
-			current.reload ();
+		private void reload (Gtk.ToggleButton btn) {
+			if (toggle_ign) {
+				return;
+			}
+
+			toggle_ign = true;
+			// counterintuitive. when it is ACTIVE, it has just been pressed;
+			// it was not active before. when it is NOT ACTIVE, it has just
+			// been... uh... depressed? oh no
+			if (btn.active) {
+				current.reload ();
+				btn.active = true;
+			} else {
+				current.stop ();
+				btn.active = false;
+			}
+			toggle_ign = false;
 		}
 
 		[GtkCallback]

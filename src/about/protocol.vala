@@ -35,7 +35,7 @@ namespace Sagittarius.AboutProtocol {
 		}
 
 		public async Content fetch (HashTable<string, Object ? > state,
-			Upg.Uri _uri) {
+			Upg.Uri _uri, Cancellable ? cancel) {
 			var uri = shift_uri(_uri);
 			Content ret = { UriLoadOutcome.SUCCESS, _uri, new ContentType(
 				"text", "gemini") };
@@ -100,11 +100,13 @@ namespace Sagittarius.AboutProtocol {
 		public async RenderingOutcome render (HashTable<string,
 														Object ? > state,
 			NavigateFunc ? nav,
-			Content content) throws Error {
+			Content content,
+			Cancellable ? cancel) throws Error {
 			var widget = new Dazzle.EmptyState ();
 			widget.title = _("Welcome to Sagittarius!");
 			widget.subtitle = _("Start by typing a URL in the address bar.");
-			return { bytes_to_string(yield content.data.read_bytes_async(100)),
+			return { bytes_to_string(yield content.data.read_bytes_async(100,
+				100, cancel)),
 					 widget };
 		}
 	}

@@ -29,7 +29,8 @@ namespace Sagittarius.Gemini {
 
 	public class Protocol : Object, UriLoader {
 		async IOStream send_request (Upg.Uri uri, Wrapped<HashTable<string,
-																	string> > ? cert)
+																	string> > ? cert,
+			Cancellable ? cancel)
 		throws Error {
 			var client = new SocketClient ();
 			client.set_tls(true);
@@ -71,11 +72,11 @@ namespace Sagittarius.Gemini {
 			});
 
 			var struri = uri.to_string ();
-			var conn = yield client.connect_to_uri_async (struri, 1965);
+			var conn = yield client.connect_to_uri_async (struri, 1965, cancel);
 
 			size_t size;
 			yield conn.output_stream.write_all_async (
-				"%s\r\n".printf(struri).data, 0, null, out size);
+				"%s\r\n".printf(struri).data, 0, cancel, out size);
 
 			info("sent request [%ld bytes]".printf((ssize_t) size));
 
@@ -83,16 +84,16 @@ namespace Sagittarius.Gemini {
 		}
 
 		public async Content fetch (HashTable<string, Object ? > state,
-			Upg.Uri uri) throws Error {
+			Upg.Uri uri, Cancellable ? cancel) throws Error {
 			Content ret = {};
 			ret.original_uri = uri;
 
 			var ios = yield send_request (uri, (Wrapped<HashTable<string, string> >) state.lookup(
-				"$gemini$"));
+				"$gemini$"), cancel);
 
 			var dis = new DataInputStream(ios.input_stream);
 
-			var metaline = yield dis.read_line_utf8_async ();
+			var metaline = yield dis.read_line_utf8_async (100, cancel);
 
 			if (metaline.length < 2) {
 				throw new IOError.INVALID_DATA("Invalid response (too small)");

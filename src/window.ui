@@ -100,11 +100,11 @@
           </object>
         </child>
         <child>
-          <object class="GtkButton">
+          <object class="GtkToggleButton" id="reload_button">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <signal name="clicked" handler="reload" swapped="no"/>
+            <signal name="toggled" handler="reload" swapped="no"/>
             <child>
               <object class="GtkImage">
                 <property name="visible">True</property>
