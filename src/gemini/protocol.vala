@@ -93,9 +93,11 @@ namespace Sagittarius.Gemini {
 
 			var dis = new DataInputStream(ios.input_stream);
 
-			var metaline = yield dis.read_line_utf8_async (100, cancel);
+			size_t size;
+			var metaline = yield dis.read_line_utf8_async (100, cancel,
+				out size);
 
-			if (metaline.length < 2) {
+			if (size < 2) {
 				throw new IOError.INVALID_DATA("Invalid response (too small)");
 			}
 			ret.data = (BufferedInputStream) dis;
