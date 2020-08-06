@@ -22,6 +22,7 @@ public delegate void NavigateFunc (Upg.Uri uri);
 namespace Sagittarius {
 	internal class TabLabel : Gtk.Box {
 		private Gtk.Label label;
+		private Gtk.Revealer revealer;
 		private Gtk.Spinner spinner;
 		private Gtk.Button close_button;
 
@@ -30,6 +31,7 @@ namespace Sagittarius {
 				return spinner.active;
 			}
 			set {
+				revealer.reveal_child = value;
 				spinner.active = value;
 			}
 		}
@@ -45,7 +47,9 @@ namespace Sagittarius {
 
 		construct {
 			label = new Gtk.Label("");
+			revealer = new Gtk.Revealer ();
 			spinner = new Gtk.Spinner ();
+			revealer.add(spinner);
 			close_button =
 				new Gtk.Button.from_icon_name("window-close-symbolic");
 
@@ -56,7 +60,7 @@ namespace Sagittarius {
 			close_button.clicked.connect(() => close ());
 
 			set_orientation(Gtk.Orientation.HORIZONTAL);
-			pack_start(spinner, false, false, 4);
+			pack_start(revealer, false, false, 4);
 			pack_end(close_button, false, false, 4);
 			pack_end(label, false, false, 4);
 		}
