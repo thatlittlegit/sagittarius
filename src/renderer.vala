@@ -19,17 +19,17 @@
  */
 
 namespace Sagittarius {
-	public struct RenderingOutcome {
-		string ? title;
-		Gtk.Widget widget;
+	public class LoadingTrigger : Object {
+		public signal void trigger (string ? title = null);
 	}
 
 	public interface Renderer : Object {
-		public abstract async RenderingOutcome render (HashTable<string,
-																 Object ? > state,
+		public abstract async Gtk.Widget render (HashTable<string,
+														   Object ? > state,
 			NavigateFunc ? nav,
 			Content content,
-			Cancellable ? cancel = null) throws
+			Cancellable ? cancel = null,
+			LoadingTrigger ? loading_trigger = null) throws
 		Error;
 	}
 
@@ -58,15 +58,18 @@ namespace Sagittarius {
 		});
 	}
 
-	public async RenderingOutcome render_content (HashTable<string,
-															Object ? > state,
+	public async Gtk.Widget render_content (HashTable<string,
+													  Object ? > state,
 		NavigateFunc nav,
-		Content content, Cancellable ? cancel = null) throws Error {
+		Content content, Cancellable ? cancel = null,
+		LoadingTrigger ? trigger =
+			null) throws Error {
 		var type = content.content_type.to_simple_string ();
 		var renderer = renderers.lookup(type);
 		message(type);
 		if (renderer != null && renderer.@get () != null) {
-			return yield renderer.@get ().render(state, nav, content, cancel);
+			return yield renderer.@get ().render(state, nav, content, cancel,
+				trigger);
 		}
 
 		return open_user_default(content);
@@ -76,7 +79,7 @@ namespace Sagittarius {
 		NO_MIME_TYPE,
 	}
 
-	RenderingOutcome open_user_default (Content content) throws Error {
+	Gtk.Widget open_user_default (Content content) throws Error {
 		// TODO we need to support writing to a file first
 		throw new RenderingError.NO_MIME_TYPE(_(
 			"You don't have a plugin for handling this type of file."));

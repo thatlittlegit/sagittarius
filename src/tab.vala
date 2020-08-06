@@ -217,20 +217,28 @@ namespace Sagittarius {
 		}
 
 		private async void view (Upg.Uri uri, Content document) throws Error {
-			string title;
 			if (document.outcome == UriLoadOutcome.SUCCESS) {
+				var loading_trigger = new LoadingTrigger ();
+
+				loading_trigger.trigger.connect((title) => {
+					label.spinning = false;
+					label.text = title ??
+								 uri.to_string_ign(
+						Upg.UriFatalRanking.NONFATAL_NULLABLE) ?? "???";
+					record_in_history(uri, label.text);
+					on_navigate(this);
+				});
+
 				var rendered = yield render_content (state, navigate, document,
-					cancel);
+					cancel, loading_trigger);
 
 				if (scrolled_text_view.get_child () != null) {
 					scrolled_text_view.remove(scrolled_text_view.get_child ());
 				}
-				scrolled_text_view.add(rendered.widget);
-				rendered.widget.show_all ();
+				scrolled_text_view.add(rendered);
+				rendered.show_all ();
 
 				stack.visible_child = scrolled_text_view;
-
-				title = rendered.title ?? uri.to_string ();
 			} else {
 				var meta = bytes_to_string(document.data.read_bytes(1024));
 				if (document.outcome == UriLoadOutcome.PERMANENT_REDIRECT ||
@@ -254,16 +262,18 @@ namespace Sagittarius {
 				errorview.set_message_for_response(navigate, document.outcome,
 					meta, document.original_uri);
 				stack.visible_child = errorview;
-				title = uri.to_string ();
+				label.text = uri.to_string ();
+				label.spinning = false;
+				record_in_history(uri, uri.to_string ());
 			}
-			label.spinning = false;
-			label.text = title;
+		}
 
+		private void record_in_history (Upg.Uri uri, string title) {
 			try {
 				var date = new DateTime.now_utc ();
 				history.set_top(new HistoryEntry(date, uri, title));
 				history.record(date, uri, title);
-			} catch (IOError err) {
+			} catch (Error err) {
 				warning_bar_label.label = _(
 					"We couldn't record this site in your history.");
 				warning_bar.set_revealed(true);

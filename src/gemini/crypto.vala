@@ -32,14 +32,12 @@ namespace Sagittarius.Gemini {
 	}
 
 	public class CryptographyMessageViewer : Object, Sagittarius.Renderer {
-		public async RenderingOutcome render (HashTable<string,
-														Object ? > state,
+		public async Gtk.Widget render (HashTable<string,
+												  Object ? > state,
 			NavigateFunc ? nav,
-			Content content, Cancellable ? cancel) throws Error {
-			RenderingOutcome outcome = {};
+			Content content, Cancellable ? cancel,
+			LoadingTrigger ? trigger) throws Error {
 			ErrorMessage message = new ErrorMessage ();
-			outcome.widget = message;
-			outcome.title = null;
 
 			int code = 0;
 			content.content_type.properties.lookup("code").scanf("%d",
@@ -86,7 +84,8 @@ namespace Sagittarius.Gemini {
 					content.outcome);
 			}
 
-			return outcome;
+			trigger.trigger ();
+			return message;
 		}
 	}
 }

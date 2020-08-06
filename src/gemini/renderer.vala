@@ -26,27 +26,26 @@ public void helpme (int a, string b) {
 
 namespace Sagittarius.Gemini {
 	public class Renderer : Object, Sagittarius.Renderer {
-		public async RenderingOutcome render (HashTable<string,
-														Object ? > state,
+		public async Gtk.Widget render (HashTable<string,
+												  Object ? > state,
 			NavigateFunc ? nav,
-			Content content, Cancellable ? cancel) throws Error {
+			Content content, Cancellable ? cancel,
+			LoadingTrigger ? trigger) throws Error {
 			content.data = new ConverterInputStream(content.data,
 				new CharsetConverter(content.content_type.charset ?? "utf-8",
 					"utf-8"));
 
 			var view = make_new_textview ();
-			display_markup.begin(content, view, nav, cancel, (_, ctx) => {
+			display_markup.begin(content, view, nav, cancel, trigger, (_, ctx) => {
 				try {
-					display_markup.end(ctx);
+					display_markup.end(
+						ctx);
 				} catch (IOError err) {
 					warning("%s", err.message);
 				}
 			});
 
-			RenderingOutcome ret = {};
-			ret.title = content.original_uri.to_string (); // FIXME
-			ret.widget = view;
-			return ret;
+			return view;
 		}
 	}
 
@@ -82,7 +81,8 @@ namespace Sagittarius.Gemini {
 	}
 
 	private async void display_markup (Content markup, Gtk.TextView view,
-		NavigateFunc nav, Cancellable cancel) throws IOError {
+		NavigateFunc nav, Cancellable cancel,
+		LoadingTrigger trigger) throws IOError {
 		var buffer = view.buffer;
 		var preformatted = buffer.tag_table.lookup("pre");
 		var h1 = buffer.tag_table.lookup("h1");
@@ -90,6 +90,8 @@ namespace Sagittarius.Gemini {
 		var h3 = buffer.tag_table.lookup("h3");
 		var ul = buffer.tag_table.lookup("ul");
 		var blockquote = buffer.tag_table.lookup("blockquote");
+
+		string title = null;
 
 		bool preformatting = false;
 		var stream = new DataInputStream(markup.data);
@@ -107,6 +109,9 @@ namespace Sagittarius.Gemini {
 			} else if (line.has_prefix("=>")) {
 				output_link(ref iter, line, view, markup.original_uri, nav);
 			} else if (line.has_prefix("# ")) {
+				if (title == null) {
+					title = line.substring(2);
+				}
 				buffer.insert_with_tags(ref iter, line.substring(2), -1, h1);
 			} else if (line.has_prefix("## ")) {
 				buffer.insert_with_tags(ref iter, line.substring(3), -1, h2);
@@ -126,6 +131,8 @@ namespace Sagittarius.Gemini {
 			iter = get_iter(buffer);
 			buffer.insert(ref iter, "\n", -1);
 		}
+
+		trigger.trigger(title);
 	}
 
 	private void output_link (ref Gtk.TextIter iter, string line,

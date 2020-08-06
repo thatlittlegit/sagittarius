@@ -42,11 +42,11 @@ namespace Sagittarius.Invincible {
 			Evince.shutdown ();
 		}
 
-		public async RenderingOutcome render (HashTable<string,
-														Object ? > state,
+		public async Gtk.Widget render (HashTable<string,
+												  Object ? > state,
 			NavigateFunc ? nav,
 			Content content,
-			Cancellable ? cancel) throws Error {
+			Cancellable ? cancel, LoadingTrigger ? trigger) throws Error {
 			// FIXME this should have been the easiest to do, but the stream
 			//       has to be seekable
 			var stream =
@@ -57,7 +57,8 @@ namespace Sagittarius.Invincible {
 
 			var view = new Evince.View ();
 			view.set_model(new Evince.DocumentModel.with_document(document));
-			return { document.get_title (), view };
+			trigger.trigger(document.get_title ());
+			return view;
 		}
 	}
 }

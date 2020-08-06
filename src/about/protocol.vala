@@ -97,17 +97,18 @@ namespace Sagittarius.AboutProtocol {
 			return uri;
 		}
 
-		public async RenderingOutcome render (HashTable<string,
-														Object ? > state,
+		public async Gtk.Widget render (HashTable<string,
+												  Object ? > state,
 			NavigateFunc ? nav,
 			Content content,
-			Cancellable ? cancel) throws Error {
+			Cancellable ? cancel, LoadingTrigger ? trigger) throws Error {
 			var widget = new Dazzle.EmptyState ();
 			widget.title = _("Welcome to Sagittarius!");
 			widget.subtitle = _("Start by typing a URL in the address bar.");
-			return { bytes_to_string(yield content.data.read_bytes_async(100,
-				100, cancel)),
-					 widget };
+			trigger.trigger(bytes_to_string(yield content.data.read_bytes_async(
+				100,
+				100, cancel)));
+			return widget;
 		}
 	}
 }

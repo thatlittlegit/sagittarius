@@ -45,11 +45,11 @@ namespace Sagittarius.Text {
 			return settings;
 		}
 
-		public async RenderingOutcome render (HashTable<string,
-														Object ? > state,
+		public async Gtk.Widget render (HashTable<string,
+												  Object ? > state,
 			NavigateFunc ? nav,
 			Content content,
-			Cancellable ? cancel) {
+			Cancellable ? cancel, LoadingTrigger ? trigger) {
 			var buffer = new Gtk.SourceBuffer(null);
 			buffer.highlight_syntax = true;
 			buffer.language =
@@ -59,6 +59,7 @@ namespace Sagittarius.Text {
 			stream_into_buffer.begin(content, buffer, cancel, (_, ctx) => {
 				try {
 					stream_into_buffer.end(ctx);
+					trigger.trigger ();
 				} catch (IOError err) {
 					warning("%s", err.message);
 				}
@@ -71,10 +72,7 @@ namespace Sagittarius.Text {
 				widget.bottom_margin = 16;
 			widget.cursor_visible = false;
 
-			return {
-					   null,
-					   widget,
-			};
+			return widget;
 		}
 
 		private async void stream_into_buffer (Content content,
