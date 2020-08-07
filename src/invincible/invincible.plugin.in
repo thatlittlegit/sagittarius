@@ -2,7 +2,7 @@
 Module=invincible
 Depends=
 Loader=C
-Icon=evince
+Icon=document-viewer
 Name=Invincible
 Description=Shows PDF and other types of documents.
 Authors=thatlittlegit <personal@thatlittlegit.tk>
