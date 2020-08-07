@@ -35,7 +35,7 @@ namespace Sagittarius.AboutProtocol {
 		}
 
 		public async Content fetch (HashTable<string, Object ? > state,
-			Upg.Uri _uri, Cancellable ? cancel) {
+			Upg.Uri _uri, Cancellable ? cancel) throws Error {
 			var uri = shift_uri(_uri);
 			Content ret = { UriLoadOutcome.SUCCESS, _uri, new ContentType(
 				"text", "gemini") };
@@ -69,6 +69,12 @@ namespace Sagittarius.AboutProtocol {
 						_("A browser for the Gemini protocol"),
 						_("_About").substring(1),
 						_("Sagittarius")).data);
+				break;
+			case "gpl":
+				ret.data = resources_open_stream(
+					"/tk/thatlittlegit/sagittarius/about/gpl.txt",
+					ResourceLookupFlags.NONE);
+				ret.content_type = new ContentType("text", "plain");
 				break;
 			default:
 				ret.outcome = UriLoadOutcome.NOT_FOUND;
