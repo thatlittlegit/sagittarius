@@ -1,0 +1,14 @@
+[Plugin]
+Module=file
+Depends=
+Loader=C
+Icon=system-file-manager
+Name=Files
+Name[fr]=Fichiers
+Description=Shows you files on your filesystem.
+Authors=thatlittlegit <personal@thatlittlegit.tk>
+Copyright=Copyright © 2020 thatlittlegit
+Website=https://github.com/thatlittlegit/sagittarius
+Version=@VERSION@ (built-in)
+X-License=GPL-3.0-or-later
+X-Default=true

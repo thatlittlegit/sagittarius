@@ -69,6 +69,7 @@ exe = executable('sagittarius', [],
 )
 
 subdir('about')
+subdir('file')
 subdir('gemini')
 subdir('invincible')
 subdir('text')

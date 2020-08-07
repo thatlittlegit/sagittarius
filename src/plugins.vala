@@ -52,6 +52,8 @@ namespace Sagittarius {
 			Engine.get_default ().add_search_path(Path.build_path("/",
 				BUILT_PLUGINDIR, "about"), null);
 			Engine.get_default ().add_search_path(Path.build_path("/",
+				BUILT_PLUGINDIR, "file"), null);
+			Engine.get_default ().add_search_path(Path.build_path("/",
 				BUILT_PLUGINDIR, "gemini"), null);
 			Engine.get_default ().add_search_path(Path.build_path("/",
 				BUILT_PLUGINDIR, "invincible"), null);
