@@ -48,6 +48,8 @@ namespace Sagittarius {
 			}
 		}
 
+		uint entry_updater;
+
 		internal Window (Sagittarius.Application app, History history) {
 			Object(application: app);
 			icon_name = "tk.thatlittlegit.sagittarius.gnome";
@@ -103,7 +105,7 @@ namespace Sagittarius {
 			notebook.show ();
 
 			// FIXME a better solution is needed
-			Timeout.add(100, () => {
+			entry_updater = Timeout.add(100, () => {
 				if (current.label.spinning) {
 					url_bar.progress_pulse ();
 				} else {
@@ -111,6 +113,9 @@ namespace Sagittarius {
 				}
 
 				return true;
+			});
+			destroy.connect(() => {
+				Source.remove(entry_updater);
 			});
 		}
 
