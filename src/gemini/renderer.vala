@@ -141,8 +141,8 @@ namespace Sagittarius.Gemini {
 		var line_parts = line.split("=>", 2)[1].strip ().split_set(
 			" \t", 2);
 
-		var btn = new Gtk.LinkButton.with_label(line_parts[1] ?? line_parts[0],
-			line_parts[0]);
+		var btn = new Gtk.LinkButton.with_label(line_parts[0],
+			line_parts[1] ?? line_parts[0]);
 
 		try {
 			var destination =
