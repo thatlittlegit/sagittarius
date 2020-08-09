@@ -21,39 +21,38 @@
 using Sagittarius;
 
 namespace Sagittarius.Gemini {
-	public class GeminiPlugin : Plugin {
-		/* This one is a bit complicated, since Protocol and Renderer are
-		 * separate classes. We can't rely on normal refcounting; the objects
-		 * would be invalidated too early.
-		 */
-		internal static Protocol proto;
-		internal static Renderer renderer;
-		internal static CryptographyMessageViewer certrender;
+	public class GeminiPlugin : Plugin, UriLoader, Sagittarius.Renderer {
+		internal Protocol protocol;
+		internal Renderer renderer;
+		internal CryptographyMessageViewer cmv;
 
-		public override void activate () {
-			if (proto == null) {
-				proto = new Protocol ();
-			}
+		construct {
+			add_loader("gemini", this);
+			add_renderer("text/gemini", this);
+			add_renderer("application/x-sagittarius-certificate-response",
+				this);
 
-			if (renderer == null) {
-				renderer = new Renderer ();
-			}
-
-			if (certrender == null) {
-				certrender = new CryptographyMessageViewer ();
-			}
-
-			add_loader("gemini", proto);
-			add_renderer("text/gemini", renderer);
-			add_renderer("application/x-gemini-certificate-response",
-				certrender);
+			protocol = new Protocol ();
+			renderer = new Renderer ();
+			cmv = new CryptographyMessageViewer ();
 		}
 
-		public override void deactivate () {
-			remove_loader("gemini", proto);
-			remove_renderer("text/gemini", renderer);
-			remove_renderer("application/x-gemini-certificate-response",
-				certrender);
+		public async Content fetch (HashTable<string, Object ? > state,
+			Upg.Uri uri,
+			Cancellable ? cancel) throws Error {
+			return yield protocol.fetch (state, uri, cancel);
+		}
+
+		public async Gtk.Widget render (HashTable<string, Object ? > state,
+			NavigateFunc ? nav, Content content,
+			Cancellable ? cancel,
+			LoadingTrigger ? trigger) throws Error {
+			if (content.content_type.subtype ==
+				"x-sagittarius-certificate-response") {
+				return yield cmv.render (state, nav, content, cancel, trigger);
+			}
+
+			return yield renderer.render (state, nav, content, cancel, trigger);
 		}
 
 		[CCode(cname = "peas_register_types")]
