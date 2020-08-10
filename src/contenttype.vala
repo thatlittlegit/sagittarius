@@ -156,5 +156,17 @@ namespace Sagittarius {
 
 			return ret.str;
 		}
+
+		public bool matches (ContentType other) {
+			if (primary != "*" && primary != other.primary) {
+				return false;
+			}
+
+			if (subtype != "*" && subtype != other.subtype) {
+				return false;
+			}
+
+			return true;
+		}
 	}
 }

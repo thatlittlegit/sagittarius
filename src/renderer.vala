@@ -64,12 +64,19 @@ namespace Sagittarius {
 		Content content, Cancellable ? cancel = null,
 		LoadingTrigger ? trigger =
 			null) throws Error {
-		var type = content.content_type.to_simple_string ();
-		var renderer = renderers.lookup(type);
-		message(type);
-		if (renderer != null && renderer.@get () != null) {
-			return yield renderer.@get ().render(state, nav, content, cancel,
-				trigger);
+
+		var iter = HashTableIter<string, FeebleRef<Renderer> >(renderers);
+		string type;
+		FeebleRef<Renderer> renderer;
+		while (iter.next(out type, out renderer)) {
+			if (renderer.@get () == null) {
+				continue;
+			}
+
+			if (new ContentType.parse(type).matches(content.content_type)) {
+				return yield renderer.@get ().render(state, nav, content,
+					cancel, trigger);
+			}
 		}
 
 		return open_user_default(content);
