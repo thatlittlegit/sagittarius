@@ -109,11 +109,11 @@ namespace Sagittarius.Gemini {
 			if (ret.outcome == 20) {
 				ret.content_type = new ContentType.parse(meta);
 			} else if ((ret.outcome >= 60 && ret.outcome <= 62)) {
-				ret.outcome = UriLoadOutcome.SUCCESS;
 				ret.content_type = new ContentType("application",
 					"x-gemini-certificate-response");
 				ret.content_type.properties.insert("code",
-					ret.outcome.to_string ());
+					((uint) ret.outcome).to_string ());
+				ret.outcome = UriLoadOutcome.SUCCESS;
 			} else {
 				ret.content_type = new ContentType("text", "gemini");
 				ret.data = new MemoryInputStream.from_data(meta.data);
