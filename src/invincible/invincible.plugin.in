@@ -11,3 +11,5 @@ Website=https://github.com/thatlittlegit/sagittarius
 Version=@VERSION@ (built with Sagittarius)
 X-License=GPL-3.0-or-later
 # NOT a default plugin
+
+X-ContentTypes=application/pdf

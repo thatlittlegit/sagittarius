@@ -28,9 +28,6 @@ namespace Sagittarius.Gemini {
 
 		construct {
 			add_loader("gemini", this);
-			add_renderer("text/gemini", this);
-			add_renderer("application/x-sagittarius-certificate-response",
-				this);
 
 			protocol = new Protocol ();
 			renderer = new Renderer ();
@@ -48,7 +45,7 @@ namespace Sagittarius.Gemini {
 			Cancellable ? cancel,
 			LoadingTrigger ? trigger) throws Error {
 			if (content.content_type.subtype ==
-				"x-sagittarius-certificate-response") {
+				"x-gemini-certificate-response") {
 				return yield cmv.render (state, nav, content, cancel, trigger);
 			}
 

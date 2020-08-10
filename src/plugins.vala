@@ -32,7 +32,10 @@ namespace Sagittarius {
 		}
 	}
 
+	private HashTable<string, Plugin> active_plugins;
+
 	internal void configure_plugin_engine (GLib.Application app) {
+		active_plugins = new HashTable<string, Plugin>(str_hash, str_equal);
 		var application = (Application) app;
 		application.extensions = new ExtensionSet(
 			Engine.get_default (),
@@ -40,12 +43,49 @@ namespace Sagittarius {
 			"application", application, null
 			);
 		application.extensions.extension_added.connect((info,
-														activatable) => ((Plugin)
-																		 activatable).activate ());
+														activatable) => {
+
+			var settings =
+				new Settings.with_path("tk.thatlittlegit.sagittarius.plugin",
+					"/tk/thatlittlegit/sagittarius/%s/".printf(info.
+						 get_module_name ()));
+
+			if (activatable is Renderer) {
+				foreach (var item in (info.get_external_data(
+					"InternalContentTypes") ?? "").split(",")) {
+					add_renderer(item.strip (), (Renderer) activatable);
+				}
+
+				if (settings.get_value(
+					"content-types").get_strv ().length == 0) {
+					var newval = new Array<string>();
+
+					foreach (var item in ((info.get_external_data("ContentTypes")
+										   ?? "").split(","))) {
+						newval.append_val(item.strip ());
+					}
+
+					if (newval.length > 0) {
+						settings.set_value("content-types", newval.data);
+					}
+				}
+
+				foreach (var item in settings.get_value("content-types").
+						  get_strv ()) {
+					add_renderer(item.strip (), (Renderer) activatable);
+				}
+			}
+
+			((Plugin) activatable).activate ();
+			active_plugins.insert(
+				info.get_module_name (), (Plugin) activatable);
+		});
 		application.extensions.extension_removed.connect((info,
-														  activatable) => ((
-																			   Plugin)
-																		   activatable).deactivate ());
+														  activatable) => {
+			remove_all_renderers_of_type(activatable.get_type ());
+			((Plugin) activatable).deactivate ();
+			active_plugins.remove(info.get_module_name ());
+		});
 
 		if (DEBUG == "true") {
 			message("DEBUG is enabled (%s)", BUILT_PLUGINDIR);
@@ -89,7 +129,11 @@ namespace Sagittarius {
 		[GtkChild]
 		Gtk.Button about_button;
 		[GtkChild]
+		Gtk.Button mime_button;
+		[GtkChild]
 		Gtk.Revealer back_button_revealer;
+		[GtkChild]
+		Gtk.Revealer forward_button_revealer;
 
 		PluginManagerView manager;
 
@@ -136,6 +180,7 @@ namespace Sagittarius {
 
 			if (!selected.is_loaded ()) {
 				properties_button.sensitive = false;
+				mime_button.sensitive = false;
 				return;
 			}
 
@@ -147,6 +192,8 @@ namespace Sagittarius {
 			} else {
 				properties_button.sensitive = true;
 			}
+
+			mime_button.sensitive = true;
 		}
 
 		[GtkCallback]
@@ -160,6 +207,19 @@ namespace Sagittarius {
 			Timeout.add(300, () => {
 				content_stack.remove(content_stack.get_child_by_name(
 					"properties"));
+				return false;
+			});
+		}
+
+		[GtkCallback]
+		private void forward_cb () {
+			content_stack.transition_type = Gtk.StackTransitionType.SLIDE_LEFT;
+			content_stack.visible_child_name = "manager";
+			forward_button_revealer.reveal_child = false;
+			update_title(null);
+
+			Timeout.add(300, () => {
+				content_stack.remove(content_stack.get_child_by_name("mime"));
 				return false;
 			});
 		}
@@ -201,6 +261,132 @@ namespace Sagittarius {
 
 			dialog.run ();
 			dialog.destroy ();
+		}
+
+		[GtkCallback]
+		private void open_mime_cb () {
+			var plugin = manager.get_selected_plugin ();
+			var settings =
+				new Settings.with_path("tk.thatlittlegit.sagittarius.plugin",
+					"/tk/thatlittlegit/sagittarius/%s/".printf(plugin.
+						 get_module_name ()));
+			content_stack.add_named(new MimeSetter(plugin, settings), "mime");
+
+			content_stack.transition_type = Gtk.StackTransitionType.SLIDE_RIGHT;
+			content_stack.visible_child_name = "mime";
+			forward_button_revealer.reveal_child = true;
+			update_title(plugin.get_name (), _("MIME Types"));
+		}
+	}
+
+	private class ConfigurationEntry : Gtk.ListBoxRow {
+		public string text { get; construct; }
+
+		public signal void deleted ();
+
+		public ConfigurationEntry (string text) {
+			Object(text: text);
+		}
+
+		construct {
+			var boxchild = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
+			var label = new Gtk.Label(text);
+			var delbtn = new Gtk.Button.from_icon_name("list-remove-symbolic");
+			delbtn.relief = Gtk.ReliefStyle.NONE;
+
+			boxchild.pack_start(label, true, true);
+			boxchild.pack_end(delbtn, false, false);
+			add(boxchild);
+			show_all ();
+			hide (); // consistency TODO GTK4
+
+			delbtn.clicked.connect(() => {
+				deleted ();
+			});
+		}
+	}
+
+	[GtkTemplate(ui =
+			"/tk/thatlittlegit/sagittarius/mime-types-configuration.ui")]
+	private class MimeSetter : Gtk.Bin {
+		private Array<string> types;
+		public PluginInfo info { get; construct; }
+		public Settings settings { get; construct; }
+		private bool settings_lock = false;
+
+		[GtkChild]
+		private Gtk.ListBox listbox;
+		[GtkChild]
+		private Gtk.Entry add_entry;
+
+		public MimeSetter (PluginInfo info, Settings settings) {
+			Object(info: info, settings: settings);
+		}
+
+		construct {
+			settings.changed.connect((name) => {
+				if (name == "content-types" && !settings_lock) {
+					synchronise_with_gsettings ();
+				}
+			});
+			synchronise_with_gsettings ();
+		}
+
+		private Gtk.ListBoxRow create_config_entry (string text) {
+			var entry = new ConfigurationEntry(text);
+			entry.deleted.connect(() => remove_content_type(entry, text));
+			entry.show_all ();
+			return entry;
+		}
+
+		private void synchronise_with_gsettings () {
+			var obj = active_plugins.lookup(info.get_module_name ());
+			if (obj == null) {
+				return;
+			}
+			remove_all_renderers_of_type(obj.get_type ());
+
+			var strv = settings.get_value("content-types").get_strv ();
+
+			listbox.foreach ((widget) => { listbox.remove(widget); });
+			types = new Array<string>.sized (true, true, sizeof (string),
+				strv.length);
+
+			foreach (var item in strv) {
+				types.append_val(item);
+				add_renderer(item, (Renderer) obj);
+				listbox.add(create_config_entry(item));
+			}
+		}
+
+		[GtkCallback]
+		public void add_cb (Gtk.Button _btn) {
+			add_content_type(add_entry.text);
+			add_entry.text = "";
+		}
+
+		public void add_content_type (string type) {
+			types.append_val(type);
+			listbox.add(create_config_entry(type));
+
+			settings_lock = true;
+			settings.set_value("content-types", types.data);
+			settings_lock = false;
+		}
+
+		public void remove_content_type (ConfigurationEntry entry,
+			string type) {
+			// TODO upon GLib 2.62 -> Array.binary_search
+			for (var i = 0; i < types.length; i++) {
+				if (types.data[i] == type) {
+					types.remove_index(i);
+					settings_lock = true;
+					settings.set_value("content-types", types.data);
+					settings_lock = false;
+					listbox.remove(entry);
+					break;
+				}
+			}
 		}
 	}
 

@@ -24,7 +24,6 @@ namespace Sagittarius.AboutProtocol {
 	public class AboutProtocol : Plugin, UriLoader, Renderer {
 		construct {
 			add_loader("about", this);
-			add_renderer("application/x-sagittarius-welcome", this);
 		}
 
 		[CCode(cname = "peas_register_types")]

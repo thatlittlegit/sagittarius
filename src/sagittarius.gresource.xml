@@ -4,5 +4,6 @@
     <file>window.ui</file>
     <file>error.ui</file>
     <file>plugins.ui</file>
+    <file>mime-types-configuration.ui</file>
   </gresource>
 </gresources>

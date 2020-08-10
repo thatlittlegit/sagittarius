@@ -2,4 +2,16 @@
 <schemalist gettext-domain="sagittarius">
   <schema id="tk.thatlittlegit.sagittarius" path="/tk/thatlittlegit/sagittarius/">
   </schema>
+  <schema id="tk.thatlittlegit.sagittarius.plugin">
+    <key name="content-types" type="as">
+      <default>[]</default>
+      <summary>The content types this plugin can handle.</summary>
+      <description>
+        A list of content types the user has configured. If this is set at all,
+        then the defaults won't be written; in a major update, it might be
+        necessary to reset them. (In this case, perhaps the developer should
+        change the name of the plugin.)
+      </description>
+    </key>
+  </schema>
 </schemalist>
