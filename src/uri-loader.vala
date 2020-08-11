@@ -33,6 +33,7 @@ namespace Sagittarius {
 
 	public enum UriLoadOutcome {
 		TEXT_INPUT_WANTED = 10,
+		SENSITIVE_INPUT_WANTED = 11,
 		SUCCESS = 20,
 		TEMPORARY_REDIRECT = 30,
 		PERMANENT_REDIRECT = 31,

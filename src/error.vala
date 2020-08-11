@@ -65,10 +65,15 @@ namespace Sagittarius {
 
 			switch (code) {
 			case UriLoadOutcome.TEXT_INPUT_WANTED:
+			case UriLoadOutcome.SENSITIVE_INPUT_WANTED:
 				set_message(PASSWORD_ICON, _("Input wanted"), null, meta);
 				button.show ();
 				button.label = _("Go");
 				Gtk.Entry text_entry = new Gtk.Entry ();
+				if (code == UriLoadOutcome.SENSITIVE_INPUT_WANTED) {
+					text_entry.visibility = false;
+					text_entry.input_purpose = Gtk.InputPurpose.PASSWORD;
+				}
 				set_prebutton_widget(text_entry);
 				last_handler = button.clicked.connect(() => {
 					uri.query_str = text_entry.text;
