@@ -19,11 +19,6 @@
 
 using Sagittarius;
 
-[CCode(cname = "helpme")]
-public void helpme (int a, string b) {
-	message("%d: %s", a, b);
-}
-
 namespace Sagittarius.Gemini {
 	public class Renderer : Object, Sagittarius.Renderer {
 		public async Gtk.Widget render (HashTable<string,
