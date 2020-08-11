@@ -42,6 +42,8 @@ namespace Sagittarius {
 			typeof (Plugin),
 			"application", application, null
 			);
+
+		bool starting_up = true;
 		application.extensions.extension_added.connect((info,
 														activatable) => {
 
@@ -79,12 +81,29 @@ namespace Sagittarius {
 			((Plugin) activatable).activate ();
 			active_plugins.insert(
 				info.get_module_name (), (Plugin) activatable);
+
+			if (!starting_up) {
+				application.settings.set_strv(
+					"enabled-plugins",
+					array_plus(application.settings.get_value("enabled-plugins")
+						 .dup_strv (), info.get_module_name ())
+					);
+			}
 		});
 		application.extensions.extension_removed.connect((info,
 														  activatable) => {
 			remove_all_renderers_of_type(activatable.get_type ());
 			((Plugin) activatable).deactivate ();
 			active_plugins.remove(info.get_module_name ());
+
+			// this is more for consistency, we don't disable plugins at startup
+			if (!starting_up) {
+				application.settings.set_strv(
+					"enabled-plugins",
+					array_sans(application.settings.get_value("enabled-plugins")
+						 .dup_strv (), info.get_module_name ())
+					);
+			}
 		});
 
 		if (DEBUG == "true") {
@@ -109,11 +128,18 @@ namespace Sagittarius {
 
 		Engine.get_default ().rescan_plugins ();
 
+		var enabled =
+			application.settings.get_value("enabled-plugins").dup_strv ();
 		foreach (var plugin in Engine.get_default ().get_plugin_list ()) {
-			if (plugin.get_external_data("Default") != null) {
-				Engine.get_default ().load_plugin(plugin);
+			foreach (var enable in enabled) {
+				if (enable == plugin.get_module_name ()) {
+					Engine.get_default ().load_plugin(plugin);
+					break;
+				}
 			}
 		}
+
+		starting_up = false;
 	}
 
 	[GtkTemplate(ui = "/tk/thatlittlegit/sagittarius/plugins.ui")]

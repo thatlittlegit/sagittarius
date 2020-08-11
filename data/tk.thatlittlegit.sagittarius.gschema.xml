@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="sagittarius">
   <schema id="tk.thatlittlegit.sagittarius" path="/tk/thatlittlegit/sagittarius/">
+    <key name="enabled-plugins" type="as">
+      <default>['about', 'file', 'gemini', 'text']</default>
+      <summary>The plugins that should be enabled on startup.</summary>
+      <description>
+        The plugins that should be enabled by Sagittarius on startup. By
+        default, all of the built-in plugins (about, file, Gemini, text). Note
+        that the user needs to activate any plugins they install. Also note that
+        this key may change over time, given the lack of support for differing
+        directories (it can't tell the difference between
+        /usr/share/sagittarius/libabout and
+        ~/.local/share/sagittarius/plugins/libabout).
+      </description>
+    </key>
   </schema>
   <schema id="tk.thatlittlegit.sagittarius.plugin">
     <key name="content-types" type="as">

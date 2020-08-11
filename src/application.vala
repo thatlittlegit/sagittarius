@@ -28,6 +28,7 @@ namespace Sagittarius {
 		private History history;
 
 		internal Peas.ExtensionSet extensions;
+		internal Settings settings;
 
 		internal Application () {
 			Object(application_id: "tk.thatlittlegit.sagittarius",
@@ -36,6 +37,10 @@ namespace Sagittarius {
 
 		construct {
 			add_action_entries(actions, this);
+
+			startup.connect(() => {
+				settings = new Settings("tk.thatlittlegit.sagittarius");
+			});
 
 			startup.connect(initialize_history);
 			startup.connect(init_loaders);

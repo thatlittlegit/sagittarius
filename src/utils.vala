@@ -97,4 +97,29 @@ namespace Sagittarius {
 			wrapped = subject;
 		}
 	}
+
+	public string[] array_plus (string[] arr, string val) {
+		var output = new Array<string>.sized (true, true, sizeof (string),
+			arr.length + 1);
+
+		foreach (var i in arr) {
+			output.append_val(i);
+		}
+		output.append_val(val);
+
+		return output.data;
+	}
+
+	public string[] array_sans (string[] arr, string val) {
+		var output = new Array<string>.sized (true, true, sizeof (string),
+			arr.length - 1);
+
+		foreach (var i in arr) {
+			if (i != val) {
+				output.append_val(i);
+			}
+		}
+
+		return output.data;
+	}
 }
