@@ -89,6 +89,7 @@ namespace Sagittarius {
 	Gtk.Widget open_user_default (Content content) throws Error {
 		// TODO we need to support writing to a file first
 		throw new RenderingError.NO_MIME_TYPE(_(
-			"You don't have a plugin for handling this type of file."));
+			"You don't have a plugin for handling '%s'.").printf(content.
+				 content_type.to_simple_string ()));
 	}
 }
