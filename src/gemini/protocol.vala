@@ -92,6 +92,7 @@ namespace Sagittarius.Gemini {
 				"$gemini$"), cancel);
 
 			var dis = new DataInputStream(ios.input_stream);
+			dis.newline_type = DataStreamNewlineType.ANY;
 
 			size_t size;
 			var metaline = yield dis.read_line_utf8_async (100, cancel,
