@@ -99,21 +99,10 @@
       </packing>
     </child>
     <child>
-      <object class="GtkBox">
+      <object class="GtkButton" id="button_one">
+        <property name="label">Button</property>
         <property name="can_focus">False</property>
-        <property name="halign">end</property>
-        <child>
-          <object class="GtkButton" id="button_one">
-            <property name="label">Button</property>
-            <property name="can_focus">False</property>
-            <property name="receives_default">False</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
+        <property name="receives_default">False</property>
       </object>
       <packing>
         <property name="left_attach">1</property>
