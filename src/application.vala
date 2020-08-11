@@ -32,6 +32,9 @@ namespace Sagittarius {
 		internal Application () {
 			Object(application_id: "tk.thatlittlegit.sagittarius",
 				flags : ApplicationFlags.HANDLES_OPEN);
+		}
+
+		construct {
 			add_action_entries(actions, this);
 
 			startup.connect(initialize_history);
