@@ -43,15 +43,9 @@ namespace Sagittarius {
 		[GtkChild]
 		private Gtk.Label site_says;
 		[GtkChild]
-		private Gtk.Button button_one;
+		private Gtk.Button button { get; private set; }
 		[GtkChild]
 		private Gtk.Box prebutton_box;
-
-		public Gtk.Button button {
-			get {
-				return button_one;
-			}
-		}
 
 		public ErrorMessage () {
 		}
@@ -61,24 +55,24 @@ namespace Sagittarius {
 		public void set_message_for_response (NavigateFunc navigate,
 			int code, string meta, Upg.Uri uri) {
 			prebutton_box.hide ();
-			button_one.hide ();
-			button_one.sensitive = true;
+			button.hide ();
+			button.sensitive = true;
 			site_says_text.show ();
 
 			if (last_handler != 0) {
-				SignalHandler.disconnect(button_one, last_handler);
+				SignalHandler.disconnect(button, last_handler);
 			}
 
 			switch (code) {
 			case UriLoadOutcome.TEXT_INPUT_WANTED:
 				set_message(PASSWORD_ICON, _("Input wanted"), null, meta);
-				button_one.show ();
-				button_one.label = _("Go");
+				button.show ();
+				button.label = _("Go");
 				Gtk.Entry text_entry = new Gtk.Entry ();
 				set_prebutton_widget(text_entry);
-				last_handler = button_one.clicked.connect(() => {
+				last_handler = button.clicked.connect(() => {
 					uri.query_str = text_entry.text;
-					button_one.sensitive = false;
+					button.sensitive = false;
 					navigate(uri);
 				});
 				break;
@@ -104,10 +98,10 @@ namespace Sagittarius {
 					return;
 				}
 
-				button_one.show ();
-				button_one.label = _("Redirect");
+				button.show ();
+				button.label = _("Redirect");
 				last_handler =
-					button_one.clicked.connect(() => navigate(destination));
+					button.clicked.connect(() => navigate(destination));
 				return;
 			case UriLoadOutcome.TEMPORARY_ERROR:
 				set_message(WARNING_ICON, _("Temporary failure"),
@@ -134,14 +128,14 @@ namespace Sagittarius {
 			case UriLoadOutcome.SLOW_DOWN:
 				set_message(ALARM_ICON, _("Slow down!"),
 					_("You're sending requests too fast."), meta);
-				button_one.show ();
-				button_one.sensitive = false;
-				button_one.label = _("Go");
+				button.show ();
+				button.sensitive = false;
+				button.label = _("Go");
 				last_handler =
-					button_one.clicked.connect(() => navigate(uri));
+					button.clicked.connect(() => navigate(uri));
 
 				Timeout.add(5000, () => {
-					button_one.sensitive = true;
+					button.sensitive = true;
 					return false;
 				});
 				break;
@@ -181,9 +175,9 @@ namespace Sagittarius {
 				set_message(INFO_ICON, _("Huh?"),
 					_(
 						"We don't know how to open this URI, but you can try opening it with something else."));
-				button_one.show ();
-				button_one.label = _("Launch");
-				last_handler = button_one.clicked.connect(() =>
+				button.show ();
+				button.label = _("Launch");
+				last_handler = button.clicked.connect(() =>
 					AppInfo.launch_default_for_uri_async.begin(
 						uri.to_string_ign(Upg.UriFatalRanking.
 							 NONFATAL_NULLABLE), null));
@@ -193,7 +187,7 @@ namespace Sagittarius {
 
 		public void internal_error (string message) {
 			prebutton_box.hide ();
-			button_one.hide ();
+			button.hide ();
 			set_message(ERROR_ICON,
 				_("Uh-oh!"),
 				_("Something went wrong when displaying this page."));
