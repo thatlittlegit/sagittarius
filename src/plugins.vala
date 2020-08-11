@@ -184,10 +184,8 @@ namespace Sagittarius {
 				return;
 			}
 
-			var extension = Engine.get_default ().create_extension(selected,
-				typeof (PeasGtk.Configurable));
-
-			if (extension == null) {
+			if (Engine.get_default ().provides_extension(selected,
+				typeof (PeasGtk.Configurable))) {
 				properties_button.sensitive = false;
 			} else {
 				properties_button.sensitive = true;
