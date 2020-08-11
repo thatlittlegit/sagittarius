@@ -180,8 +180,7 @@ namespace Sagittarius {
 				// TODO in future, might be nice to have a proper app chooser
 				set_message(INFO_ICON, _("Huh?"),
 					_(
-						"We don't know how to open this URI, but you can try opening it with something else."),
-					meta);
+						"We don't know how to open this URI, but you can try opening it with something else."));
 				button_one.show ();
 				button_one.label = _("Launch");
 				last_handler = button_one.clicked.connect(() =>
