@@ -70,9 +70,9 @@ namespace Sagittarius {
 					}
 				}
 
-				foreach (var item in settings.get_value("content-types").
-						  get_strv ()) {
-					add_renderer(item.strip (), (Renderer) activatable);
+				var types = settings.get_value("content-types").dup_strv ();
+				foreach (var item in types) {
+					add_renderer(item, (Renderer) activatable);
 				}
 			}
 
