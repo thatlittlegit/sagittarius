@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sagittarius\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-18 23:01-0400\n"
+"POT-Creation-Date: 2020-08-12 18:29-0400\n"
 "PO-Revision-Date: 2020-05-23 13:46-0400\n"
 "Last-Translator: thatlittlegit <personal@thatlittlegit.tk>\n"
 "Language-Team: none\n"
@@ -17,9 +17,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: data/tk.thatlittlegit.sagittarius.desktop.in:3
-#: data/tk.thatlittlegit.sagittarius.appdata.xml.in:9 src/window.vala:143
-#: src/application.vala:85 src/parts/proto-about.vala:79
-#: src/parts/proto-about.vala:82
+#: data/tk.thatlittlegit.sagittarius.appdata.xml.in:9 src/application.vala:98
+#: src/window.vala:172 src/about/protocol.vala:67 src/about/protocol.vala:70
 msgid "Sagittarius"
 msgstr "Sagittaire"
 
@@ -40,7 +39,7 @@ msgid "thatlittlegit"
 msgstr "thatlittlegit"
 
 #: data/tk.thatlittlegit.sagittarius.appdata.xml.in:10
-#: src/parts/proto-about.vala:80
+#: src/about/protocol.vala:68
 msgid "A browser for the Gemini protocol"
 msgstr "Un navigateur for le protocole Gemini"
 
@@ -61,73 +60,95 @@ msgid "Gemini Universal Search as one of multiple tabs"
 msgstr ""
 "Le moteur de Recherche Universel Gemini, qui est un de un tas des onglets"
 
-#: src/window.vala:62
-msgid "_Settings"
-msgstr "_Paramètres"
+#: data/tk.thatlittlegit.sagittarius.gschema.xml:6
+msgid "The plugins that should be enabled on startup."
+msgstr ""
 
-#: src/window.vala:63
-msgid "_Plugins"
-msgstr "_Modules"
+#: data/tk.thatlittlegit.sagittarius.gschema.xml:7
+msgid ""
+"The plugins that should be enabled by Sagittarius on startup. By default, "
+"all of the built-in plugins (about, file, Gemini, text). Note that the user "
+"needs to activate any plugins they install. Also note that this key may "
+"change over time, given the lack of support for differing directories (it "
+"can't tell the difference between /usr/share/sagittarius/libabout and ~/."
+"local/share/sagittarius/plugins/libabout)."
+msgstr ""
 
-#: src/window.vala:66 src/parts/proto-about.vala:81
-msgid "_About"
-msgstr "À _propos"
+#: data/tk.thatlittlegit.sagittarius.gschema.xml:21
+msgid "The content types this plugin can handle."
+msgstr ""
 
-#: src/window.vala:67
-msgid "Quit"
-msgstr "Sortir"
+#: data/tk.thatlittlegit.sagittarius.gschema.xml:22
+msgid ""
+"A list of content types the user has configured. If this is set at all, then "
+"the defaults won't be written; in a major update, it might be necessary to "
+"reset them. (In this case, perhaps the developer should change the name of "
+"the plugin.)"
+msgstr ""
 
-#: src/window.vala:135
-msgid "New Tab"
-msgstr "Nouveau Onglet"
+#: src/application.vala:65
+msgid "history.csv: history file for Sagittarius"
+msgstr "history.csv: fichier historique pour Sagittaire"
 
-#: src/error.vala:66
+#: src/application.vala:67
+msgid "This file stores the history from your Sagittarius browsing."
+msgstr "Cette fichier garder votre historique de navigation Sagittaire."
+
+#: src/application.vala:68
+msgid "DATE                  URI\t\tTITLE"
+msgstr "JOUR                  URI\t\tTITRE"
+
+#: src/application.vala:94
+msgid "A browser for Gemini"
+msgstr "Un navigateur for le protocole Gemini"
+
+#: src/error.vala:69
 msgid "Input wanted"
 msgstr "Votre donnée est voulu"
 
-#: src/error.vala:68 src/error.vala:117
+#: src/error.vala:71 src/error.vala:138
 msgid "Go"
 msgstr "Aller"
 
-#: src/error.vala:76
+#: src/error.vala:85
 msgid "Success!"
 msgstr "Succès!"
 
-#: src/error.vala:76
+#: src/error.vala:87
 msgid ""
 "Everything worked, except the programmer's brain when they were writing this."
 msgstr ""
 "Tout a travaillé, mais pas la cervelle du programmeur quand il à m'écrive."
 
-#: src/error.vala:82
+#: src/error.vala:92
 msgid "You are being redirected"
 msgstr "Le site est en train de vous réorienter"
 
-#: src/error.vala:83
+#: src/error.vala:94
 #, c-format
 msgid "The website is trying to send you to %s. Would you like to go there?"
 msgstr ""
 "Le site du Gemini est en train de essayer vous envoyer á %s. Voulez-vous y "
 "aller?%s"
 
-#: src/error.vala:94
+#: src/error.vala:107
 msgid "Redirect"
 msgstr "Réorienter"
 
-#: src/error.vala:98
+#: src/error.vala:112
 msgid "Temporary failure"
 msgstr "Erreur temporaire"
 
-#: src/error.vala:98
+#: src/error.vala:114
 msgid "Something went wrong with the website. Try again later."
 msgstr ""
 "Quelque chose a fait un erreur sur la site. Esseyez encore à plus tard."
 
-#: src/error.vala:101
+#: src/error.vala:118
 msgid "Server unavailable"
 msgstr "Serveur est indisponsible"
 
-#: src/error.vala:102
+#: src/error.vala:120
 msgid ""
 "The server is unavailable due to overload, maintenance, or some other "
 "problem. Try again later."
@@ -135,43 +156,43 @@ msgstr ""
 "Le serveur est indisponsible parce que il est surchargé, il a la "
 "maintenance, ou quelque autre problem. Esseyez encore à plus tard."
 
-#: src/error.vala:105
+#: src/error.vala:124
 msgid "Server script error"
 msgstr "Script du serveur a eu un erreur"
 
-#: src/error.vala:106
+#: src/error.vala:126
 msgid "The server encountered an error when processing your request."
 msgstr "Le serveur a vu un erreur quand il était répondre à votre requête."
 
-#: src/error.vala:109
+#: src/error.vala:130
 msgid "Proxy error"
 msgstr "Erreur avec le serveur proxy"
 
-#: src/error.vala:110
+#: src/error.vala:131
 msgid "The server wasn't able to proxy your request."
 msgstr "Le serveur ne pouvait pas relayer votre requête."
 
-#: src/error.vala:113
+#: src/error.vala:134
 msgid "Slow down!"
 msgstr "Ralentissez!"
 
-#: src/error.vala:114
+#: src/error.vala:135
 msgid "You're sending requests too fast."
 msgstr "Vous êtes en train de eux donne un beaucoup des requêtes maintenant."
 
-#: src/error.vala:126
+#: src/error.vala:148
 msgid "Permanent error"
 msgstr "Erreur permanent"
 
-#: src/error.vala:127
+#: src/error.vala:150
 msgid "Something went wrong, and it will never work again. :("
 msgstr "Quelque chose a fait un erreur, et il sera le faire pour toujours. :("
 
-#: src/error.vala:131
+#: src/error.vala:155
 msgid "File not found"
 msgstr "Fichier non trouvé"
 
-#: src/error.vala:132
+#: src/error.vala:157
 msgid ""
 "We searched far and wide\n"
 "But it we could not find.\n"
@@ -181,11 +202,11 @@ msgstr ""
 "Mais il, il n'etait pas là.\n"
 "Ç'est introuvable."
 
-#: src/error.vala:135
+#: src/error.vala:161
 msgid "G O N E"
 msgstr "D I S P A R U"
 
-#: src/error.vala:136
+#: src/error.vala:163
 msgid ""
 "The file is gone.\n"
 "It will never be back.\n"
@@ -197,48 +218,133 @@ msgstr ""
 "Était-il là déjà?\n"
 "Est la vie mais un rêve?"
 
-#: src/error.vala:139
+#: src/error.vala:167
 msgid "Proxy request refused"
 msgstr "Le serveur a refusé votre demande proxy"
 
-#: src/error.vala:140
+#: src/error.vala:169
 msgid ""
 "You asked the server to proxy a request for you, but the server won't do "
 "that."
 msgstr "Vous l'a demandé relayer un demande, et il ne se passera pas."
 
-#: src/error.vala:143
+#: src/error.vala:173
 msgid "Bad request"
 msgstr "Requête mal"
 
-#: src/error.vala:144
+#: src/error.vala:175
 msgid "Something went wrong, and the request was invalid?"
 msgstr "Quelque chose a fait un erreur, et le requête était erroné?"
 
-#: src/error.vala:160
+#. TODO in future, might be nice to have a proper app chooser
+#: src/error.vala:180
+msgid "Huh?"
+msgstr "Quoi?"
+
+#: src/error.vala:182
+msgid ""
+"We don't know how to open this URI, but you can try opening it with "
+"something else."
+msgstr ""
+"Nous ne savons pas comment nous devons ouvrir le URI, mais vous le pouvez"
+"essayer avec quelque autre chose."
+
+#: src/error.vala:184
+msgid "Launch"
+msgstr "Lancer"
+
+#: src/error.vala:197
 msgid "Uh-oh!"
 msgstr "Ah non!"
 
-#: src/error.vala:161
+#: src/error.vala:198
 msgid "Something went wrong when displaying this page."
 msgstr "Quelque chose a fait un erreur quand nous avons visité la site."
 
-#: src/application.vala:54
-msgid "history.csv: history file for Sagittarius"
-msgstr "history.csv: fichier historique pour Sagittaire"
+#: src/plugins.vala:183
+msgid "Plugins"
+msgstr "_Modules"
 
-#: src/application.vala:55
-msgid "This file stores the history from your Sagittarius browsing."
-msgstr "Cette fichier garder votre historique de navigation Sagittaire."
+#: src/plugins.vala:186
+#, c-format
+msgid "One plugin installed"
+msgid_plural "%u plugins installed"
+msgstr[0] "Un plugin installé"
+msgstr[1] "%u plugins installé"
 
-#: src/application.vala:56
-msgid "DATE                  URI\t\tTITLE"
-msgstr "JOUR                  URI\t\tTITRE"
+#: src/plugins.vala:261
+msgid "Configuration"
+msgstr "Configuration"
 
-#: src/application.vala:81
-msgid "A browser for Gemini"
-msgstr "Un navigateur for le protocole Gemini"
+#: src/plugins.vala:302
+msgid "MIME Types"
+msgstr "Types MIME"
 
-#: src/parts/proto-about.vala:86
+#. TODO we need to support writing to a file first
+#: src/renderer.vala:92
+#, c-format
+msgid "You don't have a plugin for handling '%s'."
+msgstr "Vous n'avez pas un plugin pour '%s'."
+
+#: src/tab.vala:127
+msgid "Text currently unset."
+msgstr "Je suis vide."
+
+#: src/tab.vala:148 src/tab.vala:156 src/window.vala:165
+msgid "New Tab"
+msgstr "Nouveau Onglet"
+
+#: src/tab.vala:282
+msgid "We couldn't record this site in your history."
+msgstr "Nous ne pouvons pas ce dans votre historique."
+
+#: src/window.vala:66
+msgid "_Settings"
+msgstr "_Paramètres"
+
+#: src/window.vala:67
+msgid "_Plugins"
+msgstr "_Modules"
+
+#: src/window.vala:70 src/about/protocol.vala:69
+msgid "_About"
+msgstr "À _propos"
+
+#: src/window.vala:71
+msgid "Quit"
+msgstr "Sortir"
+
+#: src/about/protocol.vala:82
 msgid "The page you looked up isn't a valid about: URI."
 msgstr "Le page vous avez cherchez n'est pas un URI about: valide."
+
+#: src/about/protocol.vala:111
+msgid "Welcome to Sagittarius!"
+msgstr "Bienvenue à Sagittaire!"
+
+#: src/about/protocol.vala:112
+msgid "Start by typing a URL in the address bar."
+msgstr "Commencez par écrive un URL au-dessus."
+
+#: src/gemini/crypto.vala:55
+msgid "Certificate wanted"
+msgstr "Certificate a voulé"
+
+#: src/gemini/crypto.vala:57
+msgid ""
+"The server is requesting you provide a certificate. You can choose one from "
+"the box below."
+msgstr ""
+"Le serveur veut un certificat. Vous pouvez en donner un de le boîte sous."
+
+#: src/gemini/crypto.vala:63
+msgid "Choose a certificate..."
+msgstr "Choisir un certificat..."
+
+#: src/gemini/crypto.vala:78
+msgid "Invalid certificate"
+msgstr "Certificat invalid"
+
+#: src/gemini/crypto.vala:79
+msgid "The certificate you gave isn't valid."
+msgstr "Le certificate vous avez donné n'est pas valid."
