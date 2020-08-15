@@ -370,7 +370,7 @@ namespace Sagittarius {
 			}
 			remove_all_renderers_of_type(obj.get_type ());
 
-			var strv = settings.get_value("content-types").get_strv ();
+			var strv = settings.get_value("content-types").dup_strv ();
 
 			listbox.foreach ((widget) => { listbox.remove(widget); });
 			types = new Array<string>.sized (true, true, sizeof (string),
