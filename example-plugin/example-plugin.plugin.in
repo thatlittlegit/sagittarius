@@ -30,6 +30,10 @@ Authors=Everyone <everyone@example.edu>
 Website=https://github.com/thatlittlegit/sagittarius/tree/master/example-plugin
 Version=@VERSION@
 
+# You also need to tell which URI schemes and content types you will use.
+X-UriSchemes=example
+# X-ContentTypes=...
+
 # You should replace CUSTOM with the correct SPDX identifier; see plugins.vala
 # for the supported ones.
 Copyright=

@@ -50,16 +50,8 @@ static void example_plugin_class_init (ExamplePluginClass * klass) {
 	objklass->finalize = example_plugin_finalize;
 }
 
-/* This function does the task performed by 'construct {}' in Vala, even though
- * it's implemented quite differently and *is* quite different. However, in Vala
- * we use it as a glorified constructor, meaning this is actually the better
- * function.
- *
- * We simply tell Sagittarius to load us for example: URIs.
- */
+/* A generic GObject `init' function. */
 static void example_plugin_init (ExamplePlugin * plugin) {
-	EXAMPLE_PLUGIN(plugin)->counter = 0;
-	sagittarius_add_loader("example", SAGITTARIUS_URI_LOADER(plugin));
 }
 
 /* Boring carry-up functions. See example_plugin_class_init() */
