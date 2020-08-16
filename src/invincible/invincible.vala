@@ -22,10 +22,6 @@ using Sagittarius;
 
 namespace Sagittarius.Invincible {
 	public class InvinciblePlugin : Plugin, Renderer {
-		construct {
-			add_renderer("application/pdf", this);
-		}
-
 		[CCode(cname = "peas_register_types")]
 		public static void peas_register_types (Peas.ObjectModule module) {
 			module.register_extension_type(
