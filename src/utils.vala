@@ -122,4 +122,12 @@ namespace Sagittarius {
 
 		return output.data;
 	}
+
+	public Action create_action (string name, ActionCallback cb) {
+		var action = new SimpleAction(name, null);
+		action.activate.connect(() => cb ());
+		return action;
+	}
+
+	public delegate void ActionCallback ();
 }

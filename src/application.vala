@@ -42,6 +42,7 @@ namespace Sagittarius {
 				settings = new Settings("tk.thatlittlegit.sagittarius");
 			});
 
+			startup.connect(keyboard_shortcuts);
 			startup.connect(initialize_history);
 			startup.connect(init_loaders);
 			startup.connect(init_renderers);
@@ -51,6 +52,20 @@ namespace Sagittarius {
 				new Window(this, history).present ();
 			});
 			open.connect(open_file);
+		}
+
+		private void keyboard_shortcuts () {
+			set_accels_for_action("app.about", { "<Control><Shift>A" });
+			set_accels_for_action("app.plugins", { "<Control><Shift>L" });
+			set_accels_for_action("app.quit", { "<Alt>F4" });
+
+			set_accels_for_action("tab.back", { "<Control>Left" });
+			set_accels_for_action("tab.close", { "<Control>W" });
+			set_accels_for_action("tab.forward", { "<Control>Right" });
+			set_accels_for_action("tab.reload", { "<Control>R" });
+
+			set_accels_for_action("win.new-tab", { "<Control>T" });
+			set_accels_for_action("win.enter-uri", { "<Control>L" });
 		}
 
 		private void initialize_history () {

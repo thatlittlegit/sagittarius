@@ -28,10 +28,6 @@ namespace Sagittarius {
 		[GtkChild]
 		Gtk.MenuButton menu_button;
 		[GtkChild]
-		Gtk.Button back_button;
-		[GtkChild]
-		Gtk.Button forward_button;
-		[GtkChild]
 		Gtk.ToggleButton reload_button;
 
 		private History history;
@@ -56,9 +52,9 @@ namespace Sagittarius {
 
 			this.history = history;
 
-			var newTabAction = new SimpleAction("new-tab", null);
-			newTabAction.activate.connect(() => this.create_tab ());
-			add_action(newTabAction);
+			add_action(create_action("enter-uri",
+				() => this.select_address_bar ()));
+			add_action(create_action("new-tab", () => this.create_tab ()));
 
 			var menu = new Menu ();
 			var menu1 = new Menu ();
@@ -148,8 +144,7 @@ namespace Sagittarius {
 
 		private void on_navigate_cb (Tab tab, bool force = false) {
 			if (tab == current || force) {
-				forward_button.sensitive = tab.can_go_forward;
-				back_button.sensitive = tab.can_go_back;
+				insert_action_group("tab", tab.action_group);
 
 				toggle_ign = true;
 				if (tab.label.spinning) {
@@ -211,23 +206,13 @@ namespace Sagittarius {
 		}
 
 		[GtkCallback]
-		public void back (Gtk.Button unused) {
-			current.back ();
-		}
-
-		[GtkCallback]
-		private void forward (Gtk.Button unused) {
-			current.forward ();
-		}
-
-		[GtkCallback]
 		private bool show_history_menu (Gtk.Widget relative_to,
 			Gdk.EventButton button) {
 			if (button.button != 3) return false;
 
 			history_menu_box.forall(item => history_menu_box.remove(item));
 
-			if (!current.can_go_back && !current.can_go_forward) {
+			if (current.history_uris.length () == 0) {
 				return false;
 			}
 

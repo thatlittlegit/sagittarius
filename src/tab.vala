@@ -84,15 +84,9 @@ namespace Sagittarius {
 			}
 		}
 
-		public bool can_go_back {
+		internal ActionGroup action_group {
 			get {
-				return history.can_go_back;
-			}
-		}
-
-		public bool can_go_forward {
-			get {
-				return history.can_go_forward;
+				return get_action_group("tab");
 			}
 		}
 
@@ -159,6 +153,27 @@ namespace Sagittarius {
 					"this is impossible! failed to parse fixed homepage uri, file a bug please (%s)",
 					err.message);
 			}
+
+			on_navigate.connect(() => {
+				var group = (ActionMap) get_action_group("tab");
+				((SimpleAction) group.lookup_action("back")).set_enabled(history
+					 .can_go_back);
+				((SimpleAction) group.lookup_action("forward")).set_enabled(
+					history.can_go_forward);
+			});
+
+			insert_action_group("tab", prepare_actions ());
+		}
+
+		private ActionGroup prepare_actions () {
+			var actions = new SimpleActionGroup ();
+
+			actions.add_action(create_action("back", () => this.back ()));
+			actions.add_action(create_action("forward", () => this.forward ()));
+			actions.add_action(create_action("close", () => this.close(this)));
+			actions.add_action(create_action("reload", () => this.reload ()));
+
+			return actions;
 		}
 
 		public void go_to_history_pos (int pos) {
