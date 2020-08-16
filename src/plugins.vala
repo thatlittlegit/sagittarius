@@ -78,6 +78,32 @@ namespace Sagittarius {
 				}
 			}
 
+			if (activatable is UriLoader) {
+				foreach (var item in (info.get_external_data(
+					"InternalUriSchemes") ?? "").split(",")) {
+					add_loader(item.strip (), (UriLoader) activatable);
+				}
+
+				if (settings.get_value(
+					"uri-schemes").get_strv ().length == 0) {
+					var newval = new Array<string>();
+
+					foreach (var item in ((info.get_external_data("UriSchemes")
+										   ?? "").split(","))) {
+						newval.append_val(item.strip ());
+					}
+
+					if (newval.length > 0) {
+						settings.set_value("uri-schemes", newval.data);
+					}
+				}
+
+				var schemes = settings.get_value("uri-schemes").dup_strv ();
+				foreach (var item in schemes) {
+					add_loader(item, (UriLoader) activatable);
+				}
+			}
+
 			((Plugin) activatable).activate ();
 			active_plugins.insert(
 				info.get_module_name (), (Plugin) activatable);
@@ -333,15 +359,20 @@ namespace Sagittarius {
 	[GtkTemplate(ui =
 			"/tk/thatlittlegit/sagittarius/mime-types-configuration.ui")]
 	private class MimeSetter : Gtk.Bin {
+		private Array<string> schemes;
 		private Array<string> types;
 		public PluginInfo info { get; construct; }
 		public Settings settings { get; construct; }
 		private bool settings_lock = false;
 
 		[GtkChild]
-		private Gtk.ListBox listbox;
+		private Gtk.ListBox mime_type_listbox;
+		[GtkChild]
+		private Gtk.ListBox uri_scheme_listbox;
 		[GtkChild]
 		private Gtk.Entry add_entry;
+		[GtkChild]
+		private Gtk.Notebook notebook;
 
 		public MimeSetter (PluginInfo info, Settings settings) {
 			Object(info: info, settings: settings);
@@ -349,14 +380,22 @@ namespace Sagittarius {
 
 		construct {
 			settings.changed.connect((name) => {
-				if (name == "content-types" && !settings_lock) {
+				if (name == "content-types" || name == "uri-schemes" &&
+					!settings_lock) {
 					synchronise_with_gsettings ();
 				}
 			});
 			synchronise_with_gsettings ();
 		}
 
-		private Gtk.ListBoxRow create_config_entry (string text) {
+		private Gtk.ListBoxRow create_config_entry_uri (string text) {
+			var entry = new ConfigurationEntry(text);
+			entry.deleted.connect(() => remove_uri_scheme(entry, text));
+			entry.show_all ();
+			return entry;
+		}
+
+		private Gtk.ListBoxRow create_config_entry_mime (string text) {
 			var entry = new ConfigurationEntry(text);
 			entry.deleted.connect(() => remove_content_type(entry, text));
 			entry.show_all ();
@@ -368,34 +407,86 @@ namespace Sagittarius {
 			if (obj == null) {
 				return;
 			}
+
+			sync_uri_schemes((Plugin) obj);
+			sync_content_types((Plugin) obj);
+		}
+
+		private void sync_uri_schemes (Plugin obj) {
+			remove_all_loaders_of_type(obj.get_type ());
+
+			var strv = settings.get_value("uri-schemes").dup_strv ();
+
+			uri_scheme_listbox.foreach ((widget) => { uri_scheme_listbox.remove(
+				widget); });
+			schemes = new Array<string>.sized (true, true, sizeof (string),
+				strv.length);
+
+			foreach (var item in strv) {
+				schemes.append_val(item);
+				add_loader(item, (UriLoader) obj);
+				uri_scheme_listbox.add(create_config_entry_uri(item));
+			}
+		}
+
+		private void sync_content_types (Plugin obj) {
 			remove_all_renderers_of_type(obj.get_type ());
 
 			var strv = settings.get_value("content-types").dup_strv ();
 
-			listbox.foreach ((widget) => { listbox.remove(widget); });
+			mime_type_listbox.foreach ((widget) => { mime_type_listbox.remove(
+				widget); });
 			types = new Array<string>.sized (true, true, sizeof (string),
 				strv.length);
 
 			foreach (var item in strv) {
 				types.append_val(item);
 				add_renderer(item, (Renderer) obj);
-				listbox.add(create_config_entry(item));
+				mime_type_listbox.add(create_config_entry_mime(item));
 			}
 		}
 
 		[GtkCallback]
 		public void add_cb (Gtk.Button _btn) {
-			add_content_type(add_entry.text);
+			if (notebook.page == 0) {
+				add_uri_scheme(add_entry.text);
+			} else {
+				add_content_type(add_entry.text);
+			}
 			add_entry.text = "";
+		}
+
+		public void add_uri_scheme (string scheme) {
+			schemes.append_val(scheme);
+			uri_scheme_listbox.add(create_config_entry_uri(scheme));
+
+			settings_lock = true;
+			settings.set_value("uri-schemes", schemes.data);
+			settings_lock = false;
 		}
 
 		public void add_content_type (string type) {
 			types.append_val(type);
-			listbox.add(create_config_entry(type));
+			mime_type_listbox.add(create_config_entry_mime(type));
 
 			settings_lock = true;
 			settings.set_value("content-types", types.data);
 			settings_lock = false;
+		}
+
+		public void remove_uri_scheme (ConfigurationEntry entry,
+			string type) {
+			// TODO upon GLib 2.62 -> Array.binary_search
+			for (var i = 0; i < schemes.length; i++) {
+				if (schemes.data[i] == type) {
+					schemes.remove_index(i);
+					settings_lock = true;
+					settings.set_value("uri-schemes", schemes.data);
+					settings_lock = false;
+					uri_scheme_listbox.remove(entry);
+					break;
+				}
+			}
 		}
 
 		public void remove_content_type (ConfigurationEntry entry,
@@ -407,7 +498,7 @@ namespace Sagittarius {
 					settings_lock = true;
 					settings.set_value("content-types", types.data);
 					settings_lock = false;
-					listbox.remove(entry);
+					mime_type_listbox.remove(entry);
 					break;
 				}
 			}

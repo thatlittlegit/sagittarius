@@ -26,5 +26,15 @@
         change the name of the plugin.)
       </description>
     </key>
+    <key name="uri-schemes" type="as">
+      <default>[]</default>
+      <summary>The URI schemes that this plugin should be responsible for.</summary>
+      <description>
+        The URI schemes that the user has configured. If this is set at all,
+        then the defaults won't be written; in a major update, it might be
+        necessary to reset them. (In this case, perhaps the developer should
+        change the name of the plugin.)
+      </description>
+    </key>
   </schema>
 </schemalist>

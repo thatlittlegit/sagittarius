@@ -12,3 +12,5 @@ Website=https://github.com/thatlittlegit/sagittarius
 Version=@VERSION@ (built-in)
 X-License=GPL-3.0-or-later
 X-Default=true
+
+X-UriSchemes=file

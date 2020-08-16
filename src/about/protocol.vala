@@ -22,10 +22,6 @@ using Sagittarius;
 
 namespace Sagittarius.AboutProtocol {
 	public class AboutProtocol : Plugin, UriLoader, Renderer {
-		construct {
-			add_loader("about", this);
-		}
-
 		[CCode(cname = "peas_register_types")]
 		public static void peas_register_types (Peas.ObjectModule module) {
 			module.register_extension_type(

@@ -27,8 +27,6 @@ namespace Sagittarius.Gemini {
 		internal CryptographyMessageViewer cmv;
 
 		construct {
-			add_loader("gemini", this);
-
 			protocol = new Protocol ();
 			renderer = new Renderer ();
 			cmv = new CryptographyMessageViewer ();

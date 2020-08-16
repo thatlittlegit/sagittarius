@@ -14,4 +14,5 @@ Version=@VERSION@ (built-in)
 X-License=GPL-3.0-or-later
 X-Default=true
 
+X-UriSchemes=about
 X-InternalContentTypes=application/x-sagittarius-welcome
