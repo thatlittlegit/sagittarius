@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sagittarius\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-12 18:29-0400\n"
-"PO-Revision-Date: 2020-08-16 21:25-0400\n"
+"POT-Creation-Date: 2020-08-16 21:27-0400\n"
+"PO-Revision-Date: 2020-08-16 21:27-0400\n"
 "Last-Translator: thatlittlegit <personal@thatlittlegit.tk>\n"
 "Language-Team: none\n"
 "Language: fr\n"
@@ -17,8 +17,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: data/tk.thatlittlegit.sagittarius.desktop.in:3
-#: data/tk.thatlittlegit.sagittarius.appdata.xml.in:9 src/application.vala:98
-#: src/window.vala:172 src/about/protocol.vala:67 src/about/protocol.vala:70
+#: data/tk.thatlittlegit.sagittarius.appdata.xml.in:9 src/application.vala:113
+#: src/window.vala:167 src/about/protocol.vala:63 src/about/protocol.vala:66
 msgid "Sagittarius"
 msgstr "Sagittaire"
 
@@ -39,7 +39,7 @@ msgid "thatlittlegit"
 msgstr "thatlittlegit"
 
 #: data/tk.thatlittlegit.sagittarius.appdata.xml.in:10
-#: src/about/protocol.vala:68
+#: src/about/protocol.vala:64
 msgid "A browser for the Gemini protocol"
 msgstr "Un navigateur for le protocole Gemini"
 
@@ -62,7 +62,7 @@ msgstr ""
 
 #: data/tk.thatlittlegit.sagittarius.gschema.xml:6
 msgid "The plugins that should be enabled on startup."
-msgstr ""
+msgstr "Les plugins il doit activer."
 
 #: data/tk.thatlittlegit.sagittarius.gschema.xml:7
 msgid ""
@@ -73,10 +73,15 @@ msgid ""
 "can't tell the difference between /usr/share/sagittarius/libabout and ~/."
 "local/share/sagittarius/plugins/libabout)."
 msgstr ""
+"Les plugins Sagittariare doit activer sur démarrage. Par défaut, tout "
+"des plugins intégré ('about', 'file', 'Gemini', 'text'). N'oublie pas que "
+"l'utilisateur doit activer tout les plugins il a installé. Aussi n'oublie pas "
+"que cette clé peut changer: il ne peut pas voir le différence de /usr"
+"/share/sagittarius/libabout et ~/.local/share/sagittarius/plugins/libabout."
 
 #: data/tk.thatlittlegit.sagittarius.gschema.xml:21
 msgid "The content types this plugin can handle."
-msgstr ""
+msgstr "Les types MIME le plugin doit aider avec."
 
 #: data/tk.thatlittlegit.sagittarius.gschema.xml:22
 msgid ""
@@ -85,20 +90,38 @@ msgid ""
 "reset them. (In this case, perhaps the developer should change the name of "
 "the plugin.)"
 msgstr ""
+"Les types MIME l'utilisateur a configuré. Si il a quelque chose, le contenu "
+"par défaut ne y'écrivera pas; aprés une version grande, le développeur peut "
+"changer le nom du plugin."
 
-#: src/application.vala:65
+#: data/tk.thatlittlegit.sagittarius.gschema.xml:31
+msgid "The URI schemes that this plugin should be responsible for."
+msgstr "Les protocoles le plugin doit aider avec."
+
+#: data/tk.thatlittlegit.sagittarius.gschema.xml:32
+msgid ""
+"The URI schemes that the user has configured. If this is set at all, then "
+"the defaults won't be written; in a major update, it might be necessary to "
+"reset them. (In this case, perhaps the developer should change the name of "
+"the plugin.)"
+msgstr ""
+"Les protocoles l'utilisateur a configuré. Si il a quelque chose, le contenu "
+"par défaut ne y'écrivera pas; aprés une version grande, le développeur peut "
+"changer le nom du plugin."
+
+#: src/application.vala:80
 msgid "history.csv: history file for Sagittarius"
 msgstr "history.csv: fichier historique pour Sagittaire"
 
-#: src/application.vala:67
+#: src/application.vala:82
 msgid "This file stores the history from your Sagittarius browsing."
 msgstr "Cette fichier garder votre historique de navigation Sagittaire."
 
-#: src/application.vala:68
+#: src/application.vala:83
 msgid "DATE                  URI\t\tTITLE"
 msgstr "JOUR                  URI\t\tTITRE"
 
-#: src/application.vala:94
+#: src/application.vala:109
 msgid "A browser for Gemini"
 msgstr "Un navigateur for le protocole Gemini"
 
@@ -246,8 +269,8 @@ msgid ""
 "We don't know how to open this URI, but you can try opening it with "
 "something else."
 msgstr ""
-"Nous ne savons pas comment nous devons ouvrir le URI, mais vous le pouvez"
-"essayer avec quelque autre chose."
+"Nous ne savons pas comment nous devons ouvrir le URI, mais vous le "
+"pouvezessayer avec quelque autre chose."
 
 #: src/error.vala:184
 msgid "Launch"
@@ -261,18 +284,18 @@ msgstr "Ah non!"
 msgid "Something went wrong when displaying this page."
 msgstr "Quelque chose a fait un erreur quand nous avons visité la site."
 
-#: src/plugins.vala:183
+#: src/plugins.vala:209
 msgid "Plugins"
 msgstr "_Modules"
 
-#: src/plugins.vala:186
+#: src/plugins.vala:212
 #, c-format
 msgid "One plugin installed"
 msgid_plural "%u plugins installed"
 msgstr[0] "Un plugin installé"
 msgstr[1] "%u plugins installé"
 
-#: src/plugins.vala:261
+#: src/plugins.vala:287 src/plugins.vala:329
 msgid "Configuration"
 msgstr "Configuration"
 
@@ -282,43 +305,43 @@ msgstr "Configuration"
 msgid "You don't have a plugin for handling '%s'."
 msgstr "Vous n'avez pas un plugin pour '%s'."
 
-#: src/tab.vala:127
+#: src/tab.vala:121
 msgid "Text currently unset."
 msgstr "Je suis vide."
 
-#: src/tab.vala:148 src/tab.vala:156 src/window.vala:165
+#: src/tab.vala:142 src/tab.vala:150 src/window.vala:160
 msgid "New Tab"
 msgstr "Nouveau Onglet"
 
-#: src/tab.vala:282
+#: src/tab.vala:297
 msgid "We couldn't record this site in your history."
 msgstr "Nous ne pouvons pas ce dans votre historique."
 
-#: src/window.vala:66
+#: src/window.vala:62
 msgid "_Settings"
 msgstr "_Paramètres"
 
-#: src/window.vala:67
+#: src/window.vala:63
 msgid "_Plugins"
 msgstr "_Modules"
 
-#: src/window.vala:70 src/about/protocol.vala:69
+#: src/window.vala:66 src/about/protocol.vala:65
 msgid "_About"
 msgstr "À _propos"
 
-#: src/window.vala:71
+#: src/window.vala:67
 msgid "Quit"
 msgstr "Sortir"
 
-#: src/about/protocol.vala:82
+#: src/about/protocol.vala:78
 msgid "The page you looked up isn't a valid about: URI."
 msgstr "Le page vous avez cherchez n'est pas un URI about: valide."
 
-#: src/about/protocol.vala:111
+#: src/about/protocol.vala:107
 msgid "Welcome to Sagittarius!"
 msgstr "Bienvenue à Sagittaire!"
 
-#: src/about/protocol.vala:112
+#: src/about/protocol.vala:108
 msgid "Start by typing a URL in the address bar."
 msgstr "Commencez par écrive un URL au-dessus."
 

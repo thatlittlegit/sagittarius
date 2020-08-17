@@ -6,6 +6,7 @@ Icon=system-file-manager
 Name=Files
 Name[fr]=Fichiers
 Description=Shows you files on your filesystem.
+Description[fr]=Vous montre les fichiers sur votre système de fichiers.
 Authors=thatlittlegit <personal@thatlittlegit.tk>
 Copyright=Copyright © 2020 thatlittlegit
 Website=https://github.com/thatlittlegit/sagittarius
