@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: sagittarius\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-12 18:29-0400\n"
-"PO-Revision-Date: 2020-05-23 13:46-0400\n"
+"PO-Revision-Date: 2020-08-16 21:25-0400\n"
 "Last-Translator: thatlittlegit <personal@thatlittlegit.tk>\n"
 "Language-Team: none\n"
 "Language: fr\n"
@@ -275,10 +275,6 @@ msgstr[1] "%u plugins installé"
 #: src/plugins.vala:261
 msgid "Configuration"
 msgstr "Configuration"
-
-#: src/plugins.vala:302
-msgid "MIME Types"
-msgstr "Types MIME"
 
 #. TODO we need to support writing to a file first
 #: src/renderer.vala:92

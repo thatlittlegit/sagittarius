@@ -320,12 +320,13 @@ namespace Sagittarius {
 				new Settings.with_path("tk.thatlittlegit.sagittarius.plugin",
 					"/tk/thatlittlegit/sagittarius/%s/".printf(plugin.
 						 get_module_name ()));
-			content_stack.add_named(new MimeSetter(plugin, settings), "mime");
+			content_stack.add_named(new PluginConfiguration(plugin,
+				settings), "mime");
 
 			content_stack.transition_type = Gtk.StackTransitionType.SLIDE_RIGHT;
 			content_stack.visible_child_name = "mime";
 			forward_button_revealer.reveal_child = true;
-			update_title(plugin.get_name (), _("MIME Types"));
+			update_title(plugin.get_name (), _("Configuration"));
 		}
 	}
 
@@ -357,8 +358,8 @@ namespace Sagittarius {
 	}
 
 	[GtkTemplate(ui =
-			"/tk/thatlittlegit/sagittarius/mime-types-configuration.ui")]
-	private class MimeSetter : Gtk.Bin {
+			"/tk/thatlittlegit/sagittarius/plugin-configuration.ui")]
+	private class PluginConfiguration : Gtk.Bin {
 		private Array<string> schemes;
 		private Array<string> types;
 		public PluginInfo info { get; construct; }
@@ -374,7 +375,7 @@ namespace Sagittarius {
 		[GtkChild]
 		private Gtk.Notebook notebook;
 
-		public MimeSetter (PluginInfo info, Settings settings) {
+		public PluginConfiguration (PluginInfo info, Settings settings) {
 			Object(info: info, settings: settings);
 		}
 
