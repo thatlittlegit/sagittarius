@@ -36,7 +36,7 @@ namespace Sagittarius.Gemini {
 					display_markup.end(
 						ctx);
 				} catch (IOError err) {
-					trigger.warning("%s", err.message);
+					trigger.warning(err.message);
 				}
 			});
 
