@@ -146,6 +146,9 @@ namespace Sagittarius {
 			var delbtn = new Gtk.Button.from_icon_name("list-remove-symbolic");
 			delbtn.relief = Gtk.ReliefStyle.NONE;
 
+			label.halign = Gtk.Align.START;
+			label.margin_start = 8;
+
 			boxchild.pack_start(label, true, true);
 			boxchild.pack_end(delbtn, false, false);
 			add(boxchild);
