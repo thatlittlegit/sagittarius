@@ -50,7 +50,7 @@ namespace Sagittarius.Text {
 					stream_into_buffer.end(ctx);
 					trigger.trigger ();
 				} catch (IOError err) {
-					warning("%s", err.message);
+					trigger.warning(err.message);
 				}
 			});
 

@@ -21,6 +21,8 @@
 namespace Sagittarius {
 	public class LoadingTrigger : Object {
 		public signal void trigger (string ? title = null);
+
+		public signal void warning (string contents);
 	}
 
 	public interface Renderer : Object {

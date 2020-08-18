@@ -248,6 +248,14 @@ namespace Sagittarius {
 					on_navigate(this);
 				});
 
+				loading_trigger.warning.connect((message) => {
+					warning("warning when rendering: %s", message);
+					warning_bar_label.label = message;
+					warning_bar.show_all ();
+					warning_bar.revealed = true;
+					loading_trigger.trigger(null);
+				});
+
 				var rendered = yield render_content (state, navigate, document,
 					cancel, loading_trigger);
 
