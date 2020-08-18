@@ -330,33 +330,6 @@ namespace Sagittarius {
 		}
 	}
 
-	private class ConfigurationEntry : Gtk.ListBoxRow {
-		public string text { get; construct; }
-
-		public signal void deleted ();
-
-		public ConfigurationEntry (string text) {
-			Object(text: text);
-		}
-
-		construct {
-			var boxchild = new Gtk.Box(Gtk.Orientation.HORIZONTAL, 0);
-			var label = new Gtk.Label(text);
-			var delbtn = new Gtk.Button.from_icon_name("list-remove-symbolic");
-			delbtn.relief = Gtk.ReliefStyle.NONE;
-
-			boxchild.pack_start(label, true, true);
-			boxchild.pack_end(delbtn, false, false);
-			add(boxchild);
-			show_all ();
-			hide (); // consistency TODO GTK4
-
-			delbtn.clicked.connect(() => {
-				deleted ();
-			});
-		}
-	}
-
 	[GtkTemplate(ui =
 			"/tk/thatlittlegit/sagittarius/plugin-configuration.ui")]
 	private class PluginConfiguration : Gtk.Bin {
