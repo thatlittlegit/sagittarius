@@ -279,7 +279,8 @@ namespace Sagittarius {
 				listbox.remove(child);
 			}
 
-			foreach (var entry in history.history.last ().nth_prev(100)) {
+			foreach (var entry in history.history.last ().nth_prev(uint.min(
+				history.history.length () - 1, 100))) {
 				var widget =
 					new ConfigurationEntry(entry.uri.to_string_ign(Upg.
 						 UriFatalRanking
