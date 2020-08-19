@@ -297,9 +297,9 @@ namespace Sagittarius {
 
 		private void record_in_history (Upg.Uri uri, string title) {
 			try {
-				var date = new DateTime.now_utc ();
-				history.set_top(new HistoryEntry(date, uri, title));
-				history.record(date, uri, title);
+				var entry = new HistoryEntry(null, uri, title);
+				history.set_top(entry);
+				history.record_entry(entry);
 			} catch (Error err) {
 				warning_bar_label.label = _(
 					"We couldn't record this site in your history.");

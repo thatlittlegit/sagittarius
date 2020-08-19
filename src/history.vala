@@ -105,8 +105,7 @@ namespace Sagittarius {
 		public void navigate (Upg.Uri full_uri) {
 			remove_all_after(current);
 			current++;
-			queue.append(new HistoryEntry(new DateTime.now_utc (), full_uri,
-				null));
+			queue.append(new HistoryEntry(new DateTime.now (), full_uri, null));
 
 			if (parent != null) {
 				parent.navigate(full_uri);
@@ -181,7 +180,7 @@ namespace Sagittarius {
 				var parts = line.split("\t", 3);
 				try {
 					queue.prepend(new HistoryEntry(new DateTime.from_iso8601(
-						parts[0], new TimeZone.utc ()),
+						parts[0], null),
 						new Upg.Uri(parts[1]),
 						parts[2]));
 				} catch (Error err) {
@@ -331,7 +330,7 @@ namespace Sagittarius {
 			info_grid.sensitive = true;
 			uri.text = entry.uri.to_string_ign(
 				Upg.UriFatalRanking.NONFATAL_NULLABLE);
-			visited_date.label = entry.date.format("%x %X");
+			visited_date.label = entry.date.format("%x %X%:z");
 		}
 	}
 }
