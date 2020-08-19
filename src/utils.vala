@@ -148,6 +148,7 @@ namespace Sagittarius {
 
 			label.halign = Gtk.Align.START;
 			label.margin_start = 8;
+			label.ellipsize = Pango.EllipsizeMode.END;
 
 			boxchild.pack_start(label, true, true);
 			boxchild.pack_end(delbtn, false, false);
