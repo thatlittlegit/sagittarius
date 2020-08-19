@@ -117,7 +117,7 @@ namespace Sagittarius {
 
 			if (file != null) {
 				var line = "%s\t%s\t%s\n".printf(
-					new DateTime.now_utc ().format("%FT%TZ"),
+					entry.date.format("%FT%TZ"),
 					entry.uri.to_string (),
 					entry.title
 					);
