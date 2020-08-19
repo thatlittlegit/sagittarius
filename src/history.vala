@@ -176,6 +176,7 @@ namespace Sagittarius {
 			}
 
 			queue.reverse ();
+			current = (int)queue.length ();
 		}
 	}
 
