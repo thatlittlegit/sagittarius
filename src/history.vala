@@ -112,11 +112,6 @@ namespace Sagittarius {
 			}
 		}
 
-		public void record (DateTime now, Upg.Uri full_uri,
-			string title) throws Error {
-			record_entry(new HistoryEntry(now, full_uri, title));
-		}
-
 		public void record_entry (HistoryEntry entry) throws Error {
 			if (parent != null) {
 				parent.record_entry(entry);
