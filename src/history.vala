@@ -105,7 +105,8 @@ namespace Sagittarius {
 		public void navigate (Upg.Uri full_uri) {
 			remove_all_after(current);
 			current++;
-			queue.append(new HistoryEntry(null, full_uri, null));
+			queue.append(new HistoryEntry(new DateTime.now_utc (), full_uri,
+				null));
 
 			if (parent != null) {
 				parent.navigate(full_uri);
