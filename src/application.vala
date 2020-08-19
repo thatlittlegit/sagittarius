@@ -20,9 +20,10 @@
 namespace Sagittarius {
 	public class Application : Gtk.Application {
 		private const ActionEntry[] actions = {
-			{ "quit", quit },
 			{ "about", show_about_dialog },
+			{ "history", show_history_window },
 			{ "plugins", manage_plugins },
+			{ "quit", quit },
 		};
 
 		private History history;
@@ -56,6 +57,7 @@ namespace Sagittarius {
 
 		private void keyboard_shortcuts () {
 			set_accels_for_action("app.about", { "<Control><Shift>A" });
+			set_accels_for_action("app.history", { "<Control><Shift>H" });
 			set_accels_for_action("app.plugins", { "<Control><Shift>L" });
 			set_accels_for_action("app.quit", { "<Alt>F4" });
 
@@ -114,6 +116,10 @@ namespace Sagittarius {
 			dialog.website = "https://github.com/thatlittlegit/sagittarius";
 			dialog.run ();
 			dialog.destroy ();
+		}
+
+		public void show_history_window () {
+			new HistoryWindow(history).present ();
 		}
 
 		private void manage_plugins () {

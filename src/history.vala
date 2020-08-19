@@ -31,7 +31,7 @@ namespace Sagittarius {
 		}
 	}
 
-	internal class History {
+	internal class History : Object {
 		private List<HistoryEntry> queue;
 		private int current = -1;
 		private History ? parent;
@@ -42,6 +42,14 @@ namespace Sagittarius {
 
 		internal History (History ? parent) {
 			this.parent = parent;
+		}
+
+		construct {
+			this.notify.connect((pspec) => {
+				if (pspec.name == "queue") {
+					changed ();
+				}
+			});
 		}
 
 		internal History.with_file (History ? parent, IOStream backed) {
@@ -130,6 +138,12 @@ namespace Sagittarius {
 			}
 		}
 
+		internal void write_out_all () throws Error {
+			foreach (var entry in queue) {
+				record_entry(entry);
+			}
+		}
+
 		public void set_top (HistoryEntry entry) {
 			var top = queue.nth_data(current < 0 ? 0 : current);
 			top.date = entry.date;
@@ -176,8 +190,10 @@ namespace Sagittarius {
 			}
 
 			queue.reverse ();
-			current = (int)queue.length ();
+			current = (int) queue.length ();
 		}
+
+		public signal void changed ();
 	}
 
 	internal class HistorySuggestionModel : Object, ListModel {
@@ -238,6 +254,83 @@ namespace Sagittarius {
 			}
 
 			items_changed(0, original_list_len, visible.length ());
+		}
+	}
+
+	[GtkTemplate(ui = "/tk/thatlittlegit/sagittarius/history.ui")]
+	internal class HistoryWindow : Gtk.Window {
+		public History history { private get; construct; }
+
+		[GtkChild]
+		private Gtk.ListBox listbox;
+		[GtkChild]
+		private Gtk.Grid info_grid;
+		[GtkChild]
+		private Gtk.Entry uri;
+		[GtkChild]
+		private Gtk.Label visited_date;
+
+		public HistoryWindow (History history) {
+			Object(history: history);
+		}
+
+		construct {
+			update ();
+			history.changed.connect(update);
+		}
+
+		private void update () {
+			foreach (var child in listbox.get_children ()) {
+				listbox.remove(child);
+			}
+
+			foreach (var entry in history.history.last ().nth_prev(100)) {
+				var widget =
+					new ConfigurationEntry(entry.uri.to_string_ign(Upg.
+						 UriFatalRanking
+						 .NONFATAL_NEVERNULL));
+
+				var _entry = entry;
+				widget.set_data<HistoryEntry>("entry", _entry);
+
+				widget.deleted.connect(() => {
+					// HACK valac bug, can't do history.history.remove
+					unowned List<HistoryEntry> history_history = history.history;
+					history_history.remove(
+						_entry);
+
+					try {
+						history.write_out_all ();
+					} catch (Error err) {
+						warning("%s", err.message); // TODO
+					}
+					update ();
+				});
+
+				listbox.add(widget);
+				((MainContext) null).iteration(false);
+			}
+
+			listbox.show_all ();
+			selection_changed ();
+		}
+
+		[GtkCallback]
+		private void selection_changed () {
+			var selected_row = listbox.get_selected_row ();
+
+			if (selected_row == null) {
+				info_grid.sensitive = false;
+				uri.text = "";
+				visited_date.label = "";
+				return;
+			}
+
+			var entry = selected_row.get_data<HistoryEntry>("entry");
+			info_grid.sensitive = true;
+			uri.text = entry.uri.to_string_ign(
+				Upg.UriFatalRanking.NONFATAL_NULLABLE);
+			visited_date.label = entry.date.format("%x %X");
 		}
 	}
 }

@@ -59,12 +59,15 @@ namespace Sagittarius {
 			var menu = new Menu ();
 			var menu1 = new Menu ();
 			menu.append_section(null, menu1);
-			menu1.append(_("_Settings"), "app.settings");
-			menu1.append(_("_Plugins"), "app.plugins");
+			menu1.append(_("History"), "app.history");
 			var menu2 = new Menu ();
 			menu.append_section(null, menu2);
-			menu2.append(_("_About"), "app.about");
-			menu2.append(_("Quit"), "app.quit");
+			menu2.append(_("_Settings"), "app.settings");
+			menu2.append(_("_Plugins"), "app.plugins");
+			var menu3 = new Menu ();
+			menu.append_section(null, menu3);
+			menu3.append(_("_About"), "app.about");
+			menu3.append(_("Quit"), "app.quit");
 			menu_button.set_menu_model(menu);
 
 			url_bar = new Dazzle.SuggestionEntry ();
