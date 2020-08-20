@@ -261,6 +261,8 @@ namespace Sagittarius {
 		[GtkChild]
 		private Gtk.Grid info_grid;
 		[GtkChild]
+		private Gtk.Label entry_title;
+		[GtkChild]
 		private Gtk.Entry uri;
 		[GtkChild]
 		private Gtk.Label visited_date;
@@ -317,6 +319,7 @@ namespace Sagittarius {
 
 			if (selected_row == null) {
 				info_grid.sensitive = false;
+				entry_title.label = "";
 				uri.text = "";
 				visited_date.label = "";
 				return;
@@ -324,6 +327,7 @@ namespace Sagittarius {
 
 			var entry = selected_row.get_data<HistoryEntry>("entry");
 			info_grid.sensitive = true;
+			entry_title.label = entry.title;
 			uri.text = entry.uri.to_string_ign(
 				Upg.UriFatalRanking.NONFATAL_NULLABLE);
 			visited_date.label = entry.date.format("%x %X%:z");
