@@ -72,10 +72,20 @@ namespace Sagittarius {
 
 		private void initialize_history () {
 			try {
+				var history_file = File.new_build_filename(
+					Environment.get_user_data_dir (), "sagittarius",
+					"history.csv");
+
+				try {
+					history_file.create(FileCreateFlags.NONE).write("".data);
+				} catch (IOError err) {
+					if (err.code != IOError.EXISTS) {
+						throw err;
+					}
+				}
+
 				history = new History.with_file(null,
-					File.new_build_filename(
-						Environment.get_user_data_dir (), "sagittarius",
-						"history.csv").open_readwrite ());
+					history_file.open_readwrite ());
 			} catch (Error err) {
 				error(err.message);
 			}
