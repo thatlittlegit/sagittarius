@@ -90,7 +90,29 @@ namespace Sagittarius {
 			}
 		}
 
+		internal bool is_bookmarked {
+			get {
+				return app.bookmarks.contains(uri);
+			}
+			set {
+				if (!is_bookmarked) {
+					var entry = new HistoryEntry(
+						new DateTime.now_local (), uri_, label.text);
+					app.bookmarks.navigate(uri_);
+					app.bookmarks.set_top(entry);
+					try {
+						app.bookmarks.record_entry(entry);
+					} catch (Error err) {
+						warning("%s", err.message); // TODO
+					}
+				} else {
+					app.bookmarks.remove_all(uri);
+				}
+			}
+		}
+
 		public string uri { get; private set; }
+		private Upg.Uri uri_;
 		internal TabLabel label;
 
 		private History history;
@@ -103,6 +125,7 @@ namespace Sagittarius {
 		private Gtk.InfoBar warning_bar;
 		private Gtk.Label warning_bar_label;
 
+		private Application app;
 		private Window window;
 
 		private Cancellable cancel;
@@ -113,6 +136,7 @@ namespace Sagittarius {
 		internal Tab (Window _window, History parent_history) {
 			Object(orientation: Gtk.Orientation.VERTICAL);
 			window = _window;
+			app = (Application) window.application;
 			history = new History(parent_history);
 
 			state = new HashTable<string, Object ? >(str_hash, str_equal);
@@ -172,6 +196,8 @@ namespace Sagittarius {
 			actions.add_action(create_action("forward", () => this.forward ()));
 			actions.add_action(create_action("close", () => this.close(this)));
 			actions.add_action(create_action("reload", () => this.reload ()));
+			actions.add_action(new PropertyAction("favourite", this,
+				"is_bookmarked"));
 
 			return actions;
 		}
@@ -201,6 +227,7 @@ namespace Sagittarius {
 		}
 
 		public void navigate (Upg.Uri uri) {
+			uri_ = uri;
 			this.uri =
 				uri.to_string_ign(Upg.UriFatalRanking.NONFATAL_NEVERNULL);
 			history.navigate(uri);
@@ -258,6 +285,10 @@ namespace Sagittarius {
 
 				var rendered = yield render_content (state, navigate, document,
 					cancel, loading_trigger);
+
+				uri_ = document.original_uri;
+				this.uri = uri_.to_string_ign(
+					Upg.UriFatalRanking.NONFATAL_NEVERNULL);
 
 				if (scrolled_text_view.get_child () != null) {
 					scrolled_text_view.remove(scrolled_text_view.get_child ());

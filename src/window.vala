@@ -160,7 +160,7 @@ namespace Sagittarius {
 
 				ignore_changes = true;
 				if (tab.uri ==
-					"about:home?%s".printf(Uri.escape_string(_("New Tab")))) {
+					"about://home?%s".printf(Uri.escape_string(_("New Tab")))) {
 					url_bar.set_text("");
 				} else {
 					url_bar.set_text(tab.uri ?? "");

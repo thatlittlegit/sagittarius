@@ -209,6 +209,27 @@ namespace Sagittarius {
 			current = (int) queue.length ();
 		}
 
+		public bool contains (string uri) {
+			var fatalranking = Upg.UriFatalRanking.NONFATAL_NEVERNULL;
+			foreach (var entry in queue) {
+				if (uri == entry.uri.to_string_ign(fatalranking)) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		public void remove_all (string uri) {
+			var fatalranking = Upg.UriFatalRanking.NONFATAL_NEVERNULL;
+			foreach (var entry in queue) {
+				if (uri == entry.uri.to_string_ign(fatalranking)) {
+					queue.remove(entry);
+				}
+			}
+			changed ();
+		}
+
 		public signal void changed ();
 	}
 
@@ -276,9 +297,10 @@ namespace Sagittarius {
 	[GtkTemplate(ui = "/tk/thatlittlegit/sagittarius/history.ui")]
 	internal class HistoryWindow : Gtk.Window {
 		public History history { private get; construct; }
+		public History bookmarks { private get; construct; }
 
 		[GtkChild]
-		private Gtk.ListBox listbox;
+		private Gtk.Stack listbox_stack;
 		[GtkChild]
 		private Gtk.Grid info_grid;
 		[GtkChild]
@@ -288,56 +310,26 @@ namespace Sagittarius {
 		[GtkChild]
 		private Gtk.Label visited_date;
 
-		public HistoryWindow (History history) {
-			Object(history: history);
+		private UriListBox history_listbox;
+		private UriListBox bookmarks_listbox;
+
+		public HistoryWindow (History history, History bookmarks) {
+			Object(history: history, bookmarks: bookmarks);
 		}
 
 		construct {
-			update ();
-			history.changed.connect(update);
+			history_listbox = new UriListBox(history);
+			listbox_stack.add_titled(history_listbox, "history", _("History"));
+			history_listbox.selection_changed.connect(selection_changed_handler);
+
+			bookmarks_listbox = new UriListBox(bookmarks);
+			listbox_stack.add_titled(bookmarks_listbox, "bookmarks", _(
+				"Bookmarks"));
+			bookmarks_listbox.selection_changed.connect(
+				selection_changed_handler);
 		}
 
-		private void update () {
-			foreach (var child in listbox.get_children ()) {
-				listbox.remove(child);
-			}
-
-			foreach (var entry in history.history.last ().nth_prev(uint.min(
-				history.history.length () - 1, 100))) {
-				var widget =
-					new ConfigurationEntry(entry.uri.to_string_ign(Upg.
-						 UriFatalRanking
-						 .NONFATAL_NEVERNULL));
-
-				var _entry = entry;
-				widget.set_data<HistoryEntry>("entry", _entry);
-
-				widget.deleted.connect(() => {
-					// HACK valac bug, can't do history.history.remove
-					unowned List<HistoryEntry> history_history = history.history;
-					history_history.remove(
-						_entry);
-
-					try {
-						history.write_out_all ();
-					} catch (Error err) {
-						warning("%s", err.message); // TODO
-					}
-					update ();
-				});
-
-				listbox.add(widget);
-				((MainContext) null).iteration(false);
-			}
-
-			listbox.show_all ();
-			selection_changed ();
-		}
-
-		[GtkCallback]
-		private void selection_changed () {
-			var selected_row = listbox.get_selected_row ();
-
+		private void selection_changed_handler (Gtk.ListBoxRow ? selected_row) {
 			if (selected_row == null) {
 				info_grid.sensitive = false;
 				entry_title.label = "";
@@ -353,5 +345,61 @@ namespace Sagittarius {
 				Upg.UriFatalRanking.NONFATAL_NULLABLE);
 			visited_date.label = entry.date.format("%x %X%:z");
 		}
+	}
+
+	private class UriListBox : Gtk.ListBox {
+		public History list { private get; construct; }
+
+		public UriListBox (History list) {
+			Object(list: list);
+		}
+
+		construct {
+			row_selected.connect(() => {
+				selection_changed(get_selected_row ());
+			});
+			update ();
+
+			list.changed.connect(() => update ());
+		}
+
+		public void update () {
+			foreach (var child in get_children ()) {
+				remove(child);
+			}
+
+			foreach (var entry in list.history.last ().nth_prev(uint.min(
+				list.history.length () - 1, 100))) {
+				var widget =
+					new ConfigurationEntry(entry.uri.to_string_ign(Upg.
+						 UriFatalRanking
+						 .NONFATAL_NEVERNULL));
+
+				var _entry = entry;
+				widget.set_data<HistoryEntry>("entry", _entry);
+
+				widget.deleted.connect(() => {
+					// HACK valac bug, can't do list.history.remove
+					unowned List<HistoryEntry> list_history = list.history;
+					list_history.remove(
+						_entry);
+
+					try {
+						list.write_out_all ();
+					} catch (Error err) {
+						warning("%s", err.message); // TODO
+					}
+					update ();
+				});
+
+				add(widget);
+				((MainContext) null).iteration(false);
+			}
+
+			show_all ();
+			selection_changed(get_selected_row ());
+		}
+
+		public signal void selection_changed (Gtk.ListBoxRow ? selected_row);
 	}
 }

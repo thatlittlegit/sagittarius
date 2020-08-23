@@ -27,6 +27,7 @@ namespace Sagittarius {
 		};
 
 		private History history;
+		internal History bookmarks;
 
 		internal Peas.ExtensionSet extensions;
 		internal Settings settings;
@@ -75,6 +76,9 @@ namespace Sagittarius {
 				var history_file = File.new_build_filename(
 					Environment.get_user_data_dir (), "sagittarius",
 					"history.csv");
+				var bookmarks_file = File.new_build_filename(
+					Environment.get_user_data_dir (), "sagittarius",
+					"bookmarks.csv");
 
 				try {
 					history_file.create(FileCreateFlags.NONE).write("".data);
@@ -84,8 +88,16 @@ namespace Sagittarius {
 					}
 				}
 
-				history = new History.with_file(null,
-					history_file.open_readwrite ());
+				try {
+					bookmarks_file.create(FileCreateFlags.NONE).write("".data);
+				} catch (IOError err) {
+					if (err.code != IOError.EXISTS) {
+						throw err;
+					}
+				}
+
+				history = new History.with_file(null, history_file);
+				bookmarks = new History.with_file(null, bookmarks_file);
 			} catch (Error err) {
 				error(err.message);
 			}
@@ -113,7 +125,7 @@ namespace Sagittarius {
 		}
 
 		public void show_history_window () {
-			new HistoryWindow(history).present ();
+			new HistoryWindow(history, bookmarks).present ();
 		}
 
 		private void manage_plugins () {
