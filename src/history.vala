@@ -36,9 +36,7 @@ namespace Sagittarius {
 		private int current = -1;
 		private History ? parent;
 
-		// FIXME we should use an OutputStream, but it gets closed too early
-		// 'cause Vala can't figure out that the OS is a substream of the IOS.
-		private IOStream file;
+		private File file;
 
 		internal History (History ? parent) {
 			this.parent = parent;
@@ -52,11 +50,11 @@ namespace Sagittarius {
 			});
 		}
 
-		internal History.with_file (History ? parent, IOStream backed) {
+		internal History.with_file (History ? parent, File backed) {
 			this.parent = parent;
 			this.file = backed;
 
-			read_from_file(backed.get_input_stream ());
+			read_from_file(backed);
 		}
 
 		public List<HistoryEntry> history {
@@ -112,10 +110,16 @@ namespace Sagittarius {
 			}
 		}
 
-		public void record_entry (HistoryEntry entry) throws Error {
+		public void record_entry (HistoryEntry entry,
+			OutputStream ? _output = null) throws Error {
 			if (parent != null) {
-				parent.record_entry(entry);
+				parent.record_entry(entry, _output);
 				return;
+			}
+
+			var output = _output;
+			if (output == null) {
+				output = file.append_to(0);
 			}
 
 			if (file != null) {
@@ -129,18 +133,28 @@ namespace Sagittarius {
 					warning("data is not valid UTF-8!");
 				}
 
-				file.get_output_stream ().write(line.data);
+				output.write(line.data);
 			}
 		}
 
 		internal void write_out_all () throws Error {
+			if (parent != null) {
+				parent.write_out_all ();
+				return;
+			}
+
+			var append = file.replace(null, false, 0);
 			foreach (var entry in queue) {
-				record_entry(entry);
+				record_entry(entry, append);
 			}
 		}
 
 		public void set_top (HistoryEntry entry) {
-			var top = queue.nth_data(current < 0 ? 0 : current);
+			if (current > queue.length ()) {
+				current = (int) queue.length ();
+			}
+
+			var top = queue.nth_data(current <= 0 ? 0 : current - 1);
 			top.date = entry.date;
 			top.uri = entry.uri;
 			top.title = entry.title;
@@ -152,8 +166,15 @@ namespace Sagittarius {
 			}
 		}
 
-		private void read_from_file (InputStream _stream) {
-			var stream = new DataInputStream(_stream);
+		private void read_from_file (File _stream) {
+			InputStream readstream;
+			try {
+				readstream = _stream.read ();
+			} catch (Error err) {
+				warning("%s", err.message); // TODO
+				return;
+			}
+			var stream = new DataInputStream(readstream);
 
 			while (true) {
 				string line;
