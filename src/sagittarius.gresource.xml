@@ -2,7 +2,7 @@
 <gresources>
   <gresource prefix="/tk/thatlittlegit/sagittarius">
     <file>error.ui</file>
-    <file>history.ui</file>
+    <file>library.ui</file>
     <file>plugins.ui</file>
     <file>plugin-configuration.ui</file>
     <file>window.ui</file>

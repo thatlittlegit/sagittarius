@@ -11,6 +11,7 @@ src = files(
   'renderer.vala',
   'utils.vala',
   'contenttype.vala',
+  'library.vala',
 )
 
 sagittarius_deps = [

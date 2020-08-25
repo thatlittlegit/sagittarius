@@ -125,7 +125,7 @@ namespace Sagittarius {
 		}
 
 		public void show_history_window () {
-			new HistoryWindow(history, bookmarks).present ();
+			new LibraryWindow(history, bookmarks).present ();
 		}
 
 		private void manage_plugins () {
