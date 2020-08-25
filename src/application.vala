@@ -129,8 +129,7 @@ namespace Sagittarius {
 		}
 
 		private void manage_plugins () {
-			var plugin_window = new PluginsWindow ();
-			plugin_window.show ();
+			new PluginsWindow ().present ();
 		}
 	}
 }
