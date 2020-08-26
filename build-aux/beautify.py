@@ -16,7 +16,7 @@ for path, dirs, files in walk(root):
         filepath = ospath.join(path, file)
         ext = file.rsplit('.', 1)[1]
 
-        if ext == 'vala' or ext == 'c':
+        if ext == 'vala' or ext == 'vapi' or ext == 'c':
             run(['uncrustify', '-q', filepath, '-c',
                  config, '--replace', '--no-backup'])
 

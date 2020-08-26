@@ -21,22 +21,25 @@
 /* Evince doesn't seem to give us VAPI files, so this is a small shim for the
  * stuff that we need.
  */
-[CCode (cprefix = "Ev", lower_case_cprefix = "ev_")]
+[CCode(cprefix = "Ev", lower_case_cprefix = "ev_")]
 namespace Evince {
 	[CCode(cname = "ev_init")]
-	public bool init();
+	public bool init ();
 
 	[CCode(cname = "ev_shutdown")]
-	public void shutdown();
+	public void shutdown ();
 
 	[CCode(cname = "EvDocument", cheader_filename = "evince-document.h")]
-	public abstract class Document : GLib.Object {
-		public string get_title();
+	public abstract class Document: GLib.Object {
+		public string get_title ();
 	}
 
-	[CCode (lower_case_cprefix = "ev_document_factory_")]
+	[CCode(lower_case_cprefix = "ev_document_factory_")]
 	namespace DocumentFactory {
-		public Evince.Document get_document_for_stream(GLib.InputStream stream, string mime, DocumentLoadFlags flags = 0, GLib.Cancellable? cancellable = null) throws GLib.Error;
+		public Evince.Document get_document_for_stream (GLib.InputStream stream,
+			string mime,
+			DocumentLoadFlags flags = 0,
+			GLib.Cancellable ? cancellable = null) throws GLib.Error;
 	}
 
 	[CCode(cname = "EvDocumentLoadFlags")]

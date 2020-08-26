@@ -18,16 +18,16 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-[CCode (cprefix = "Ev", lower_case_cprefix = "ev_")]
+[CCode(cprefix = "Ev", lower_case_cprefix = "ev_")]
 namespace Evince {
 	[CCode(cname = "EvView", cheader_filename = "evince-view.h")]
-	public class View : Gtk.Container {
-		public View();
-		public void set_model(DocumentModel model);
+	public class View: Gtk.Container {
+		public View ();
+		public void set_model (DocumentModel model);
 	}
 
 	[CCode(cname = "EvDocumentModel", cheader_filename = "evince-view.h")]
-	public class DocumentModel : GLib.Object {
+	public class DocumentModel: GLib.Object {
 		public DocumentModel.with_document(Evince.Document document);
 	}
 }
