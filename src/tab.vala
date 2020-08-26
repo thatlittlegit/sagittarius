@@ -119,6 +119,7 @@ namespace Sagittarius {
 
 		private ErrorMessage errorview;
 		private Gtk.ScrolledWindow scrolled_text_view;
+		private Gtk.Grid grid;
 
 		private Gtk.Stack stack;
 
@@ -159,7 +160,10 @@ namespace Sagittarius {
 			stack.add_named(errorview, "error");
 
 			scrolled_text_view = new Gtk.ScrolledWindow(null, null);
-			stack.add_named(scrolled_text_view, "content");
+			scrolled_text_view.expand = true;
+			grid = new Gtk.Grid ();
+			grid.attach(scrolled_text_view, 1, 1);
+			stack.add_named(grid, "content");
 			scrolled_text_view.show_all ();
 
 			label = new TabLabel ();
@@ -296,7 +300,7 @@ namespace Sagittarius {
 				scrolled_text_view.add(rendered);
 				rendered.show_all ();
 
-				stack.visible_child = scrolled_text_view;
+				stack.visible_child = grid;
 			} else {
 				var meta = bytes_to_string(document.data.read_bytes(1024));
 				if (document.outcome == UriLoadOutcome.PERMANENT_REDIRECT ||
