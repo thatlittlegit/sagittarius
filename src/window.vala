@@ -99,7 +99,6 @@ namespace Sagittarius {
 			notebook.page_added.connect(rethink_tab_visibility);
 			notebook.show_tabs = false;
 			notebook.scrollable = true;
-			create_tab ();
 			add(notebook);
 			notebook.show ();
 

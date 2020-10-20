@@ -52,6 +52,7 @@ namespace Sagittarius {
 
 			activate.connect(() => {
 				new Window(this, history).present ();
+				((Window) active_window).create_tab ();
 			});
 			open.connect(open_file);
 		}
