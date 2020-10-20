@@ -173,7 +173,7 @@ namespace Sagittarius {
 		[GtkCallback]
 		private void navigate_cb (Gtk.Button unused) {
 			try {
-				var uri = url_bar.get_text ();
+				var uri = url_bar.get_text ().strip ();
 
 				var parsed = new Upg.Uri(uri);
 				if (parsed.scheme != null || parsed.host != null) {
