@@ -146,6 +146,8 @@ namespace Sagittarius {
 
 		private Cancellable cancel;
 
+		private bool going_through_time = false;
+
 		internal HashTable<string, Object ? > state { internal get; private set;
 		}
 
@@ -224,20 +226,24 @@ namespace Sagittarius {
 
 		public void go_to_history_pos (int pos) {
 			history.pos = pos;
+			going_through_time = true;
 			fetch_and_view(history.top ().uri);
 		}
 
 		public void back () {
 			history.back ();
+			going_through_time = true;
 			fetch_and_view(history.top ().uri);
 		}
 
 		public void forward () {
 			history.forward ();
+			going_through_time = true;
 			fetch_and_view(history.top ().uri);
 		}
 
 		public void reload () {
+			going_through_time = true;
 			fetch_and_view(history.top ().uri);
 		}
 
@@ -315,7 +321,11 @@ namespace Sagittarius {
 				rendered.show_all ();
 
 				stack.visible_child = grid;
-				history.navigate(uri);
+
+				if (!going_through_time) {
+					history.navigate(uri);
+				}
+				going_through_time = false;
 			} else {
 				var meta = bytes_to_string(document.data.read_bytes(1024));
 				if (document.outcome == UriLoadOutcome.PERMANENT_REDIRECT ||
@@ -341,7 +351,11 @@ namespace Sagittarius {
 				stack.visible_child = errorview;
 				label.text = uri.to_string ();
 				label.spinning = false;
-				history.navigate(uri);
+
+				if (!going_through_time) {
+					history.navigate(uri);
+				}
+				going_through_time = false;
 			}
 		}
 
