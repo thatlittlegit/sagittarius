@@ -134,7 +134,7 @@ namespace Sagittarius {
 	public class ConfigurationEntry : Gtk.ListBoxRow {
 		public string text { get; construct; }
 
-		public signal void deleted ();
+		public signal void deleted (Gtk.Widget widget);
 
 		public ConfigurationEntry (string text) {
 			Object(text : text);
@@ -157,7 +157,7 @@ namespace Sagittarius {
 			hide (); // consistency TODO GTK4
 
 			delbtn.clicked.connect(() => {
-				deleted ();
+				deleted(this);
 			});
 		}
 	}

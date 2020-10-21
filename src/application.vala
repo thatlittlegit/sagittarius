@@ -26,8 +26,9 @@ namespace Sagittarius {
 			{ "quit", quit },
 		};
 
-		private History history;
-		internal History bookmarks;
+		internal ListStore history;
+		internal File history_file;
+		internal ListStore bookmarks;       internal File bookmarks_file;
 
 		internal Peas.ExtensionSet extensions;
 		internal Settings settings;
@@ -51,7 +52,7 @@ namespace Sagittarius {
 			startup.connect(configure_plugin_engine);
 
 			activate.connect(() => {
-				new Window(this, history).present ();
+				new Window(this, history, history_file).present ();
 				((Window) active_window).create_tab ();
 			});
 			open.connect(open_file);
@@ -74,10 +75,10 @@ namespace Sagittarius {
 
 		private void initialize_history () {
 			try {
-				var history_file = File.new_build_filename(
+				history_file = File.new_build_filename(
 					Environment.get_user_data_dir (), "sagittarius",
 					"history.csv");
-				var bookmarks_file = File.new_build_filename(
+				bookmarks_file = File.new_build_filename(
 					Environment.get_user_data_dir (), "sagittarius",
 					"bookmarks.csv");
 
@@ -97,8 +98,8 @@ namespace Sagittarius {
 					}
 				}
 
-				history = new History.with_file(null, history_file);
-				bookmarks = new History.with_file(null, bookmarks_file);
+				history = History.read_from_file(history_file);
+				bookmarks = History.read_from_file(bookmarks_file);
 			} catch (Error err) {
 				error(err.message);
 			}
@@ -106,7 +107,7 @@ namespace Sagittarius {
 
 		private void open_file (File[] files, string hint) {
 			if (active_window == null) {
-				new Window(this, history).present ();
+				new Window(this, history, history_file).present ();
 			}
 
 			foreach (var file in files) {
@@ -129,7 +130,8 @@ namespace Sagittarius {
 		}
 
 		public void show_history_window () {
-			new LibraryWindow(history, bookmarks).present ();
+			new LibraryWindow(history, history_file, bookmarks,
+				bookmarks_file).present ();
 		}
 
 		private void manage_plugins () {

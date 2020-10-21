@@ -21,8 +21,10 @@
 namespace Sagittarius {
 	[GtkTemplate(ui = "/tk/thatlittlegit/sagittarius/library.ui")]
 	internal class LibraryWindow : Gtk.Window {
-		public History history { private get; construct; }
-		public History bookmarks { private get; construct; }
+		public ListStore history { private get; construct; }
+		public File history_file { private get; construct; }
+		public ListStore bookmarks { private get; construct; }
+		public File bookmarks_file { private get; construct; }
 
 		[GtkChild]
 		private Gtk.Stack listbox_stack;
@@ -38,16 +40,18 @@ namespace Sagittarius {
 		private UriListBox history_listbox;
 		private UriListBox bookmarks_listbox;
 
-		public LibraryWindow (History history, History bookmarks) {
-			Object(history: history, bookmarks: bookmarks);
+		public LibraryWindow (ListStore history, File history_file,
+							  ListStore bookmarks, File bookmarks_file) {
+			Object(history: history, history_file: history_file,
+				bookmarks: bookmarks, bookmarks_file: bookmarks_file);
 		}
 
 		construct {
-			history_listbox = new UriListBox(history);
+			history_listbox = new UriListBox(history, history_file);
 			listbox_stack.add_titled(history_listbox, "history", _("History"));
 			history_listbox.selection_changed.connect(selection_changed_handler);
 
-			bookmarks_listbox = new UriListBox(bookmarks);
+			bookmarks_listbox = new UriListBox(bookmarks, bookmarks_file);
 			listbox_stack.add_titled(bookmarks_listbox, "bookmarks", _(
 				"Bookmarks"));
 			bookmarks_listbox.selection_changed.connect(
@@ -63,7 +67,8 @@ namespace Sagittarius {
 				return;
 			}
 
-			var entry = selected_row.get_data<HistoryEntry>("entry");
+			var entry = (HistoryEntry) history.get_item(selected_row.get_data<int>(
+				"entry"));
 			info_grid.sensitive = true;
 			entry_title.label = entry.title;
 			uri.text = entry.uri.to_string_ign(
@@ -73,10 +78,11 @@ namespace Sagittarius {
 	}
 
 	private class UriListBox : Gtk.ListBox {
-		public History list { private get; construct; }
+		public ListStore list { private get; construct; }
+		public File file { private get; construct; }
 
-		public UriListBox (History list) {
-			Object(list: list);
+		public UriListBox (ListStore list, File file) {
+			Object(list: list, file: file);
 		}
 
 		construct {
@@ -85,7 +91,7 @@ namespace Sagittarius {
 			});
 			update ();
 
-			list.changed.connect(() => update ());
+			list.items_changed.connect(() => update ());
 		}
 
 		public void update () {
@@ -93,27 +99,21 @@ namespace Sagittarius {
 				remove(child);
 			}
 
-			foreach (var entry in list.history.last ().nth_prev(uint.min(
-				list.history.length () - 1, 100))) {
+			for (var i = int.max((int) list.get_n_items () - 100, 0);
+				 i < list.get_n_items (); i++) {
+				var entry = (HistoryEntry) list.get_item(i);
+
 				var widget =
 					new ConfigurationEntry(entry.uri.to_string_ign(Upg.
 						 UriFatalRanking
 						 .NONFATAL_NEVERNULL));
 
 				var _entry = entry;
-				widget.set_data<HistoryEntry>("entry", _entry);
+				widget.set_data<int>("entry", i);
 
-				widget.deleted.connect(() => {
-					// HACK valac bug, can't do list.history.remove
-					unowned List<HistoryEntry> list_history = list.history;
-					list_history.remove(
-						_entry);
-
-					try {
-						list.write_out_all ();
-					} catch (Error err) {
-						warning("%s", err.message); // TODO
-					}
+				widget.deleted.connect((widget) => {
+					list.remove(widget.get_data<int>("entry"));
+					History.write_out_all(list, file);
 					update ();
 				});
 

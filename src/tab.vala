@@ -92,21 +92,36 @@ namespace Sagittarius {
 
 		internal bool is_bookmarked {
 			get {
-				return app.bookmarks.contains(uri);
+				for (var i = 0; i < app.bookmarks.get_n_items (); i++) {
+					if (((HistoryEntry) app.bookmarks.get_item(i)).uri.
+						 to_string_ign(Upg.UriFatalRanking.NONFATAL_NULLABLE) ==
+						uri) {
+						return true;
+					}
+				}
+
+				return false;
 			}
 			set {
 				if (!is_bookmarked) {
 					var entry = new HistoryEntry(
 						new DateTime.now_local (), uri_, label.text);
-					app.bookmarks.navigate(uri_);
-					app.bookmarks.set_top(entry);
+					app.bookmarks.append(entry);
 					try {
-						app.bookmarks.record_entry(entry);
+						History.record_entry(entry, app.bookmarks_file);
 					} catch (Error err) {
 						warning("%s", err.message); // TODO
 					}
 				} else {
-					app.bookmarks.remove_all(uri);
+					for (var i = 0; i < app.bookmarks.get_n_items (); i++) {
+						if (((HistoryEntry) app.bookmarks.get_item(i)).uri.
+							 to_string_ign(Upg.UriFatalRanking.NONFATAL_NULLABLE)
+							==
+							uri) {
+							app.bookmarks.remove(i);
+							break;
+						}
+					}
 				}
 			}
 		}
@@ -134,11 +149,12 @@ namespace Sagittarius {
 		internal HashTable<string, Object ? > state { internal get; private set;
 		}
 
-		internal Tab (Window _window, History parent_history) {
+		internal Tab (Window _window, ListStore global_history,
+					  File history_file) {
 			Object(orientation: Gtk.Orientation.VERTICAL);
 			window = _window;
 			app = (Application) window.application;
-			history = new History(parent_history);
+			history = new History(global_history, history_file);
 
 			state = new HashTable<string, Object ? >(str_hash, str_equal);
 
@@ -234,7 +250,6 @@ namespace Sagittarius {
 			uri_ = uri;
 			this.uri =
 				uri.to_string_ign(Upg.UriFatalRanking.NONFATAL_NEVERNULL);
-			history.navigate(uri);
 
 			fetch_and_view(uri);
 		}
@@ -275,7 +290,6 @@ namespace Sagittarius {
 					label.text = title ??
 								 uri.to_string_ign(
 						Upg.UriFatalRanking.NONFATAL_NULLABLE) ?? "???";
-					record_in_history(uri, label.text);
 					on_navigate(this);
 				});
 
@@ -301,6 +315,7 @@ namespace Sagittarius {
 				rendered.show_all ();
 
 				stack.visible_child = grid;
+				history.navigate(uri);
 			} else {
 				var meta = bytes_to_string(document.data.read_bytes(1024));
 				if (document.outcome == UriLoadOutcome.PERMANENT_REDIRECT ||
@@ -326,19 +341,7 @@ namespace Sagittarius {
 				stack.visible_child = errorview;
 				label.text = uri.to_string ();
 				label.spinning = false;
-				record_in_history(uri, uri.to_string ());
-			}
-		}
-
-		private void record_in_history (Upg.Uri uri, string title) {
-			try {
-				var entry = new HistoryEntry(null, uri, title);
-				history.set_top(entry);
-				history.record_entry(entry);
-			} catch (Error err) {
-				warning_bar_label.label = _(
-					"We couldn't record this site in your history.");
-				warning_bar.set_revealed(true);
+				history.navigate(uri);
 			}
 		}
 

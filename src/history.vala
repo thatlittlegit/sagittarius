@@ -34,12 +34,11 @@ namespace Sagittarius {
 	internal class History : Object {
 		private List<HistoryEntry> queue;
 		private int current = -1;
-		private History ? parent;
 
-		private File file;
-
-		internal History (History ? parent) {
-			this.parent = parent;
+		internal History (ListStore global, File backed) {
+			this._global = global;
+			this._file = backed;
+			read_from_file(backed);
 		}
 
 		construct {
@@ -50,11 +49,18 @@ namespace Sagittarius {
 			});
 		}
 
-		internal History.with_file (History ? parent, File backed) {
-			this.parent = parent;
-			this.file = backed;
+		private ListStore _global;
+		internal ListStore global {
+			get {
+				return _global;
+			}
+		}
 
-			read_from_file(backed);
+		private File _file;
+		internal File file {
+			get {
+				return _file;
+			}
 		}
 
 		public List<HistoryEntry> history {
@@ -100,52 +106,43 @@ namespace Sagittarius {
 			return queue.nth_data(current);
 		}
 
-		public void navigate (Upg.Uri full_uri) {
+		public void navigate (Upg.Uri full_uri) throws Error {
 			remove_all_after(current);
 			current++;
-			queue.append(new HistoryEntry(new DateTime.now (), full_uri, null));
 
-			if (parent != null) {
-				parent.navigate(full_uri);
-			}
+			var entry = new HistoryEntry(new DateTime.now (), full_uri, null);
+			queue.append(entry);
+			global.append(entry);
+
+			record_entry(queue.last ().data, file);
 		}
 
-		public void record_entry (HistoryEntry entry,
-			OutputStream ? _output = null) throws Error {
-			if (parent != null) {
-				parent.record_entry(entry, _output);
-				return;
+		public static void record_entry_to_stream (HistoryEntry entry,
+			OutputStream output) throws
+		Error {
+			var line = "%s\t%s\t%s\n".printf(
+				entry.date.format("%FT%TZ"),
+				entry.uri.to_string (),
+				entry.title
+				);
+
+			if (!line.validate(-1)) {
+				warning("data is not valid UTF-8!");
 			}
 
-			var output = _output;
-			if (output == null) {
-				output = file.append_to(0);
-			}
-
-			if (file != null) {
-				var line = "%s\t%s\t%s\n".printf(
-					entry.date.format("%FT%TZ"),
-					entry.uri.to_string (),
-					entry.title
-					);
-
-				if (!line.validate(-1)) {
-					warning("data is not valid UTF-8!");
-				}
-
-				output.write(line.data);
-			}
+			output.write(line.data);
 		}
 
-		internal void write_out_all () throws Error {
-			if (parent != null) {
-				parent.write_out_all ();
-				return;
-			}
+		public static void record_entry (HistoryEntry entry,
+			File file) throws Error {
+			record_entry_to_stream(entry, file.append_to(0));
+		}
 
+		internal static void write_out_all (ListModel list,
+			File file) throws Error {
 			var append = file.replace(null, false, 0);
-			foreach (var entry in queue) {
-				record_entry(entry, append);
+			for (var i = 0; i < list.get_n_items (); i++) {
+				record_entry_to_stream((HistoryEntry) list.get_item(i), append);
 			}
 		}
 
@@ -166,13 +163,15 @@ namespace Sagittarius {
 			}
 		}
 
-		private void read_from_file (File _stream) {
+		public static ListStore read_from_file (File _stream) {
+			ListStore ret = new ListStore(typeof (HistoryEntry));
+
 			InputStream readstream;
 			try {
 				readstream = _stream.read ();
 			} catch (Error err) {
 				warning("%s", err.message); // TODO
-				return;
+				return new ListStore(typeof (HistoryEntry));
 			}
 			var stream = new DataInputStream(readstream);
 
@@ -195,7 +194,7 @@ namespace Sagittarius {
 
 				var parts = line.split("\t", 3);
 				try {
-					queue.prepend(new HistoryEntry(new DateTime.from_iso8601(
+					ret.append(new HistoryEntry(new DateTime.from_iso8601(
 						parts[0], null),
 						new Upg.Uri(parts[1]),
 						parts[2]));
@@ -205,8 +204,7 @@ namespace Sagittarius {
 				}
 			}
 
-			queue.reverse ();
-			current = (int) queue.length ();
+			return ret;
 		}
 
 		public bool contains (string uri) {
@@ -234,10 +232,10 @@ namespace Sagittarius {
 	}
 
 	internal class HistorySuggestionModel : Object, ListModel {
-		private History associated;
+		private ListModel associated;
 		private List<Dazzle.Suggestion> visible;
 
-		internal HistorySuggestionModel (History assoc) {
+		internal HistorySuggestionModel (ListModel assoc) {
 			associated = assoc;
 			visible = new List<Dazzle.Suggestion>();
 		}
@@ -258,7 +256,9 @@ namespace Sagittarius {
 			var original_list_len = visible.length ();
 			var filtering = new List<Dazzle.Suggestion>();
 
-			foreach (var entry in associated.history) {
+			for (var i = 0; i < associated.get_n_items (); i++) {
+				var entry = (HistoryEntry) associated.get_item(i);
+
 				var levenshtein = Dazzle.levenshtein(query, entry.title);
 				var suggestion = new Dazzle.Suggestion ();
 				suggestion.title = entry.title;
