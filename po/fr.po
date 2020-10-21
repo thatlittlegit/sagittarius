@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sagittarius\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-16 21:27-0400\n"
+"POT-Creation-Date: 2020-10-21 00:31-0400\n"
 "PO-Revision-Date: 2020-08-16 21:27-0400\n"
 "Last-Translator: thatlittlegit <personal@thatlittlegit.tk>\n"
 "Language-Team: none\n"
@@ -17,8 +17,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: data/tk.thatlittlegit.sagittarius.desktop.in:3
-#: data/tk.thatlittlegit.sagittarius.appdata.xml.in:9 src/application.vala:113
-#: src/window.vala:167 src/about/protocol.vala:63 src/about/protocol.vala:66
+#: data/tk.thatlittlegit.sagittarius.appdata.xml.in:9 src/application.vala:126
+#: src/window.vala:172 src/about/protocol.vala:63 src/about/protocol.vala:66
 msgid "Sagittarius"
 msgstr "Sagittaire"
 
@@ -45,17 +45,20 @@ msgstr "Un navigateur for le protocole Gemini"
 
 #: data/tk.thatlittlegit.sagittarius.appdata.xml.in:12
 msgid ""
-"Sagittarius is a browser for the Gemini protocol. It currently displays "
-"Gemini pages as plain-text and crashes a lot."
-msgstr ""
-"Sagittaire est un navigateur pour le protocole Gemini. Maintenant, il montre "
-"des pages Gemini comme texte simple, et il plante beaucoup."
+"Sagittarius is a browser for the Gemini protocol, intended to fit in well "
+"with the GNOME desktop. It currently displays Gemini pages, PDFs, and plain "
+"text with source code highlighting. Support for other protocols and content "
+"types is easy to develop."
+msgstr "Sagittaire est un navigateur pour la protocole Gemini. Il essaye "
+"s'intégre avec le bureau GNOME. Il montre des pages Gemini, PDF, et texte "
+"simple avec surligner pour du code source. On peut ajouter autre protocoles "
+"et des genres du fichier."
 
-#: data/tk.thatlittlegit.sagittarius.appdata.xml.in:26
+#: data/tk.thatlittlegit.sagittarius.appdata.xml.in:28
 msgid "The Gemini project page displayed in Sagittarius"
 msgstr "Sagittaire vous montre le page pour le projet Gemini"
 
-#: data/tk.thatlittlegit.sagittarius.appdata.xml.in:30
+#: data/tk.thatlittlegit.sagittarius.appdata.xml.in:32
 msgid "Gemini Universal Search as one of multiple tabs"
 msgstr ""
 "Le moteur de Recherche Universel Gemini, qui est un de un tas des onglets"
@@ -73,11 +76,11 @@ msgid ""
 "can't tell the difference between /usr/share/sagittarius/libabout and ~/."
 "local/share/sagittarius/plugins/libabout)."
 msgstr ""
-"Les plugins Sagittariare doit activer sur démarrage. Par défaut, tout "
-"des plugins intégré ('about', 'file', 'Gemini', 'text'). N'oublie pas que "
-"l'utilisateur doit activer tout les plugins il a installé. Aussi n'oublie pas "
-"que cette clé peut changer: il ne peut pas voir le différence de /usr"
-"/share/sagittarius/libabout et ~/.local/share/sagittarius/plugins/libabout."
+"Les plugins Sagittariare doit activer sur démarrage. Par défaut, tout des "
+"plugins intégré ('about', 'file', 'Gemini', 'text'). N'oublie pas que "
+"l'utilisateur doit activer tout les plugins il a installé. Aussi n'oublie "
+"pas que cette clé peut changer: il ne peut pas voir le différence de /usr/"
+"share/sagittarius/libabout et ~/.local/share/sagittarius/plugins/libabout."
 
 #: data/tk.thatlittlegit.sagittarius.gschema.xml:21
 msgid "The content types this plugin can handle."
@@ -109,19 +112,7 @@ msgstr ""
 "par défaut ne y'écrivera pas; aprés une version grande, le développeur peut "
 "changer le nom du plugin."
 
-#: src/application.vala:80
-msgid "history.csv: history file for Sagittarius"
-msgstr "history.csv: fichier historique pour Sagittaire"
-
-#: src/application.vala:82
-msgid "This file stores the history from your Sagittarius browsing."
-msgstr "Cette fichier garder votre historique de navigation Sagittaire."
-
-#: src/application.vala:83
-msgid "DATE                  URI\t\tTITLE"
-msgstr "JOUR                  URI\t\tTITRE"
-
-#: src/application.vala:109
+#: src/application.vala:122
 msgid "A browser for Gemini"
 msgstr "Un navigateur for le protocole Gemini"
 
@@ -300,36 +291,36 @@ msgid "Configuration"
 msgstr "Configuration"
 
 #. TODO we need to support writing to a file first
-#: src/renderer.vala:92
+#: src/renderer.vala:94
 #, c-format
 msgid "You don't have a plugin for handling '%s'."
 msgstr "Vous n'avez pas un plugin pour '%s'."
 
-#: src/tab.vala:121
+#: src/tab.vala:164
 msgid "Text currently unset."
 msgstr "Je suis vide."
 
-#: src/tab.vala:142 src/tab.vala:150 src/window.vala:160
+#: src/tab.vala:188 src/tab.vala:196 src/window.vala:165
 msgid "New Tab"
 msgstr "Nouveau Onglet"
 
-#: src/tab.vala:297
-msgid "We couldn't record this site in your history."
-msgstr "Nous ne pouvons pas ce dans votre historique."
+#: src/window.vala:65
+msgid "History"
+msgstr "Historique"
 
-#: src/window.vala:62
+#: src/window.vala:68
 msgid "_Settings"
 msgstr "_Paramètres"
 
-#: src/window.vala:63
+#: src/window.vala:69
 msgid "_Plugins"
 msgstr "_Modules"
 
-#: src/window.vala:66 src/about/protocol.vala:65
+#: src/window.vala:72 src/about/protocol.vala:65
 msgid "_About"
 msgstr "À _propos"
 
-#: src/window.vala:67
+#: src/window.vala:73
 msgid "Quit"
 msgstr "Sortir"
 

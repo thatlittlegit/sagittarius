@@ -10,8 +10,10 @@
   <summary>A browser for the Gemini protocol</summary>
   <description>
     <p>
-      Sagittarius is a browser for the Gemini protocol. It currently displays
-      Gemini pages as plain-text and crashes a lot.
+      Sagittarius is a browser for the Gemini protocol, intended to fit in well
+      with the GNOME desktop. It currently displays Gemini pages, PDFs, and
+      plain text with source code highlighting. Support for other protocols and
+      content types is easy to develop.
     </p>
   </description>
   <categories>
