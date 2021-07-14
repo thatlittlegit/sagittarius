@@ -17,7 +17,7 @@ src = files(
 sagittarius_deps = [
   dependency('gio-2.0', version: '>= 2.50'),
   dependency('gtk+-3.0', version: '>= 3.22'),
-  dependency('liburiparser-gobject-0'),
+  dependency('liburiparser-gobject-1'),
   dependency('libdazzle-1.0'),
   dependency('libpeas-1.0'),
   dependency('libpeas-gtk-1.0'),

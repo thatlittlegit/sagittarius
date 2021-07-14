@@ -71,8 +71,7 @@ namespace Sagittarius {
 				"entry"));
 			info_grid.sensitive = true;
 			entry_title.label = entry.title;
-			uri.text = entry.uri.to_string_ign(
-				Upg.UriFatalRanking.NONFATAL_NULLABLE);
+			uri.text = entry.uri.to_string ();
 			visited_date.label = entry.date.format("%x %X%:z");
 		}
 	}
@@ -103,10 +102,7 @@ namespace Sagittarius {
 				 i < list.get_n_items (); i++) {
 				var entry = (HistoryEntry) list.get_item(i);
 
-				var widget =
-					new ConfigurationEntry(entry.uri.to_string_ign(Upg.
-						 UriFatalRanking
-						 .NONFATAL_NEVERNULL));
+				var widget = new ConfigurationEntry(entry.uri.to_string ());
 
 				var _entry = entry;
 				widget.set_data<int>("entry", i);

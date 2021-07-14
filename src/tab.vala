@@ -93,8 +93,8 @@ namespace Sagittarius {
 		internal bool is_bookmarked {
 			get {
 				for (var i = 0; i < app.bookmarks.get_n_items (); i++) {
-					if (((HistoryEntry) app.bookmarks.get_item(i)).uri.
-						 to_string_ign(Upg.UriFatalRanking.NONFATAL_NULLABLE) ==
+					if (((HistoryEntry) app.bookmarks.get_item(i)).uri.to_string ()
+						==
 						uri) {
 						return true;
 					}
@@ -115,7 +115,7 @@ namespace Sagittarius {
 				} else {
 					for (var i = 0; i < app.bookmarks.get_n_items (); i++) {
 						if (((HistoryEntry) app.bookmarks.get_item(i)).uri.
-							 to_string_ign(Upg.UriFatalRanking.NONFATAL_NULLABLE)
+							 to_string ()
 							==
 							uri) {
 							app.bookmarks.remove(i);
@@ -254,8 +254,7 @@ namespace Sagittarius {
 
 		public void navigate (Upg.Uri uri) {
 			uri_ = uri;
-			this.uri =
-				uri.to_string_ign(Upg.UriFatalRanking.NONFATAL_NEVERNULL);
+			this.uri = uri.to_string ();
 
 			fetch_and_view(uri);
 		}
@@ -293,9 +292,7 @@ namespace Sagittarius {
 
 				loading_trigger.trigger.connect((title) => {
 					label.spinning = false;
-					label.text = title ??
-								 uri.to_string_ign(
-						Upg.UriFatalRanking.NONFATAL_NULLABLE) ?? "???";
+					label.text = title ?? uri.to_string ();
 					on_navigate(this);
 				});
 
@@ -311,8 +308,7 @@ namespace Sagittarius {
 					cancel, loading_trigger);
 
 				uri_ = document.original_uri;
-				this.uri = uri_.to_string_ign(
-					Upg.UriFatalRanking.NONFATAL_NEVERNULL);
+				this.uri = uri_.to_string ();
 
 				if (scrolled_text_view.get_child () != null) {
 					scrolled_text_view.remove(scrolled_text_view.get_child ());

@@ -183,9 +183,8 @@ namespace Sagittarius {
 				button.show ();
 				button.label = _("Launch");
 				last_handler = button.clicked.connect(() =>
-					AppInfo.launch_default_for_uri_async.begin(
-						uri.to_string_ign(Upg.UriFatalRanking.
-							 NONFATAL_NULLABLE), null));
+					AppInfo.launch_default_for_uri_async.begin(uri.to_string (),
+						null));
 				break;
 			}
 		}

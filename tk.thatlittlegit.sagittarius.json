@@ -70,8 +70,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://github.com/thatlittlegit/liburiparser-gobject/archive/0.2.0.tar.gz",
-                    "sha256": "f95f85fecbe9893552fdd1c5abad142424dc3e273757d99aa27393e9dba9b623"
+                    "url": "https://github.com/thatlittlegit/liburiparser-gobject/archive/1.0.0-beta.1.tar.gz",
+                    "sha256": "c56ef50ace57aa351c3812e8bce4e5fd90b6d3036b6b220a445c50d2ca36492f"
                 }
             ]
         },
