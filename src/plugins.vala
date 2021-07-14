@@ -171,21 +171,21 @@ namespace Sagittarius {
 	[GtkTemplate(ui = "/tk/thatlittlegit/sagittarius/plugins.ui")]
 	internal class PluginsWindow : Gtk.Window {
 		[GtkChild]
-		Gtk.HeaderBar headerbar;
+		private unowned Gtk.HeaderBar headerbar;
 		[GtkChild]
-		Gtk.Stack content_stack;
+		private unowned Gtk.Stack content_stack;
 		[GtkChild]
-		Gtk.Box menu_box;
+		private unowned Gtk.Box menu_box;
 		[GtkChild]
-		Gtk.Button properties_button;
+		private unowned Gtk.Button properties_button;
 		[GtkChild]
-		Gtk.Button about_button;
+		private unowned Gtk.Button about_button;
 		[GtkChild]
-		Gtk.Button mime_button;
+		private unowned Gtk.Button mime_button;
 		[GtkChild]
-		Gtk.Revealer back_button_revealer;
+		private unowned Gtk.Revealer back_button_revealer;
 		[GtkChild]
-		Gtk.Revealer forward_button_revealer;
+		private unowned Gtk.Revealer forward_button_revealer;
 
 		PluginManagerView manager;
 
@@ -340,13 +340,13 @@ namespace Sagittarius {
 		private bool settings_lock = false;
 
 		[GtkChild]
-		private Gtk.ListBox mime_type_listbox;
+		private unowned Gtk.ListBox mime_type_listbox;
 		[GtkChild]
-		private Gtk.ListBox uri_scheme_listbox;
+		private unowned Gtk.ListBox uri_scheme_listbox;
 		[GtkChild]
-		private Gtk.Entry add_entry;
+		private unowned Gtk.Entry add_entry;
 		[GtkChild]
-		private Gtk.Notebook notebook;
+		private unowned Gtk.Notebook notebook;
 
 		public PluginConfiguration (PluginInfo info, Settings settings) {
 			Object(info: info, settings: settings);

@@ -20,15 +20,15 @@ namespace Sagittarius {
 	[GtkTemplate(ui = "/tk/thatlittlegit/sagittarius/window.ui")]
 	public class Window : Gtk.ApplicationWindow {
 		[GtkChild]
-		Gtk.Box url_bar_box;
+		private unowned Gtk.Box url_bar_box;
 		[GtkChild]
-		Gtk.PopoverMenu history_menu;
+		private unowned Gtk.PopoverMenu history_menu;
 		[GtkChild]
-		Gtk.Box history_menu_box;
+		private unowned Gtk.Box history_menu_box;
 		[GtkChild]
-		Gtk.MenuButton menu_button;
+		private unowned Gtk.MenuButton menu_button;
 		[GtkChild]
-		Gtk.ToggleButton reload_button;
+		private unowned Gtk.ToggleButton reload_button;
 
 		private HistorySuggestionModel history_model;
 		private ListStore global_history;

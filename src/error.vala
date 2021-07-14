@@ -31,21 +31,21 @@ namespace Sagittarius {
 		private const string ALARM_ICON = "alarm";
 
 		[GtkChild]
-		private Gtk.Image image;
+		private unowned Gtk.Image image;
 		[GtkChild]
-		private Gtk.Label title;
+		private unowned Gtk.Label title;
 		[GtkChild]
-		private Gtk.Label description;
+		private unowned Gtk.Label description;
 		[GtkChild]
-		private Gtk.Box site_says_box;
+		private unowned Gtk.Box site_says_box;
 		[GtkChild]
-		private Gtk.Label site_says_text;
+		private unowned Gtk.Label site_says_text;
 		[GtkChild]
-		private Gtk.Label site_says;
+		private unowned Gtk.Label site_says;
 		[GtkChild]
-		private Gtk.Button button { get; private set; }
+		private unowned Gtk.Button button { get; private set; }
 		[GtkChild]
-		private Gtk.Box prebutton_box;
+		private unowned Gtk.Box prebutton_box;
 
 		public ErrorMessage () {
 		}

@@ -27,15 +27,15 @@ namespace Sagittarius {
 		public File bookmarks_file { private get; construct; }
 
 		[GtkChild]
-		private Gtk.Stack listbox_stack;
+		private unowned Gtk.Stack listbox_stack;
 		[GtkChild]
-		private Gtk.Grid info_grid;
+		private unowned Gtk.Grid info_grid;
 		[GtkChild]
-		private Gtk.Label entry_title;
+		private unowned Gtk.Label entry_title;
 		[GtkChild]
-		private Gtk.Entry uri;
+		private unowned Gtk.Entry uri;
 		[GtkChild]
-		private Gtk.Label visited_date;
+		private unowned Gtk.Label visited_date;
 
 		private UriListBox history_listbox;
 		private UriListBox bookmarks_listbox;
