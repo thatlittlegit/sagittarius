@@ -67,18 +67,6 @@ namespace Sagittarius {
 		return bytearray;
 	}
 
-	public class FeebleRef<T> {
-		private WeakRef<T> wr;
-
-		public FeebleRef (T obj) {
-			wr = WeakRef((Object) obj);
-		}
-
-		public T ? @get () {
-			return (T ? ) wr.@get ();
-		}
-	}
-
 	public class Wrapped<T>: Object {
 		private T wrapped;
 
@@ -133,7 +121,7 @@ namespace Sagittarius {
 		public signal void deleted (Gtk.Widget widget);
 
 		public ConfigurationEntry (string text) {
-			Object(text : text);
+			Object(text: text);
 		}
 
 		construct {

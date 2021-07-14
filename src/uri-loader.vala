@@ -50,16 +50,15 @@ namespace Sagittarius {
 		UNKNOWN_SCHEME = 100,
 	}
 
-	HashTable<string, FeebleRef<UriLoader> > loaders = null;
+	HashTable<string, weak UriLoader> loaders = null;
 
 	internal void init_loaders () {
 		if (loaders == null)
-			loaders = new HashTable<string, FeebleRef<UriLoader> ? >(str_hash,
-				str_equal);
+			loaders = new HashTable<string, weak UriLoader ? >(str_hash, str_equal);
 	}
 
 	public void add_loader (string scheme, UriLoader impl) {
-		loaders.replace(scheme, new FeebleRef<UriLoader>(impl));
+		loaders.replace(scheme, impl);
 	}
 
 	public void remove_loader (string scheme, UriLoader impl) {
@@ -69,7 +68,7 @@ namespace Sagittarius {
 
 	public void remove_all_loaders_of_type (Type type) {
 		loaders.foreach_remove((entry) => {
-			var obj = loaders.lookup(entry).@get ();
+			var obj = loaders.lookup(entry);
 			return obj == null || obj.get_type () == type;
 		});
 	}
@@ -77,8 +76,8 @@ namespace Sagittarius {
 	public async Content fetch_uri (HashTable<string, Object ? > state,
 		Upg.Uri uri, Cancellable ? cancellable = null) throws Error {
 		var loader = loaders.lookup(uri.scheme);
-		if (loader != null && loader.@get () != null) {
-			return yield loader.@get ().fetch(state, uri, cancellable);
+		if (loader != null) {
+			return yield loader.fetch (state, uri, cancellable);
 		}
 
 		return { UriLoadOutcome.UNKNOWN_SCHEME, uri, null,

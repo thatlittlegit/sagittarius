@@ -35,17 +35,16 @@ namespace Sagittarius {
 		Error;
 	}
 
-	HashTable<string, FeebleRef<Renderer> > renderers = null;
+	HashTable<string, weak Renderer> renderers = null;
 
 	internal void init_renderers () {
 		if (renderers == null) {
-			renderers = new HashTable<string, FeebleRef<Renderer> >(str_hash,
-				str_equal);
+			renderers = new HashTable<string, weak Renderer>(str_hash, str_equal);
 		}
 	}
 
 	public void add_renderer (string mime, Renderer renderer) {
-		renderers.insert(mime, new FeebleRef<Renderer>(renderer));
+		renderers.insert(mime, renderer);
 	}
 
 	public void remove_renderer (string mime, Renderer renderer) {
@@ -55,7 +54,7 @@ namespace Sagittarius {
 
 	public void remove_all_renderers_of_type (Type type) {
 		renderers.foreach_remove((entry) => {
-			var obj = renderers.lookup(entry).@get ();
+			var obj = renderers.lookup(entry);
 			return obj == null || obj.get_type () == type;
 		});
 	}
@@ -67,17 +66,16 @@ namespace Sagittarius {
 		LoadingTrigger ? trigger =
 		null) throws Error {
 
-		var iter = HashTableIter<string, FeebleRef<Renderer> >(renderers);
+		var iter = HashTableIter<string, weak Renderer>(renderers);
 		string type;
-		FeebleRef<Renderer> renderer;
+		weak Renderer renderer;
 		while (iter.next(out type, out renderer)) {
-			if (renderer.@get () == null) {
+			if (renderer == null) {
 				continue;
 			}
 
 			if (new ContentType.parse(type).matches(content.content_type)) {
-				return yield renderer.@get ().render(state, nav, content,
-					cancel, trigger);
+				return yield renderer.render (state, nav, content, cancel, trigger);
 			}
 		}
 
