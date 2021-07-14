@@ -76,8 +76,8 @@ namespace Sagittarius.Gemini {
 	}
 
 	private async void display_markup (Content markup, Gtk.TextView view,
-		NavigateFunc nav, Cancellable cancel,
-		LoadingTrigger trigger) throws IOError {
+		NavigateFunc nav, Cancellable? cancel,
+		LoadingTrigger? trigger) throws IOError {
 		var buffer = view.buffer;
 		var preformatted = buffer.tag_table.lookup("pre");
 		var h1 = buffer.tag_table.lookup("h1");
