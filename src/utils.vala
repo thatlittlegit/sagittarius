@@ -30,8 +30,7 @@ namespace Sagittarius {
 		return builder.str;
 	}
 
-	public string ensure_utf8 (string charset,
-		string text) throws ConvertError {
+	public string ensure_utf8 (string charset, string text) throws ConvertError {
 		if (text.length == 0) {
 			return text;
 		}
@@ -41,8 +40,7 @@ namespace Sagittarius {
 				return text;
 			}
 
-			throw new ConvertError.ILLEGAL_SEQUENCE(
-				"text claims to be UTF-8, but isnt?");
+			throw new ConvertError.ILLEGAL_SEQUENCE("text claims to be UTF-8, but isnt?");
 		}
 
 		return convert(text, text.length, "utf-8", charset);
@@ -99,8 +97,7 @@ namespace Sagittarius {
 	}
 
 	public string[] array_plus (string[] arr, string val) {
-		var output = new Array<string>.sized (true, true, sizeof (string),
-			arr.length + 1);
+		var output = new Array<string>.sized (true, true, sizeof (string), arr.length + 1);
 
 		foreach (var i in arr) {
 			output.append_val(i);
@@ -111,8 +108,7 @@ namespace Sagittarius {
 	}
 
 	public string[] array_sans (string[] arr, string val) {
-		var output = new Array<string>.sized (true, true, sizeof (string),
-			arr.length - 1);
+		var output = new Array<string>.sized (true, true, sizeof (string), arr.length - 1);
 
 		foreach (var i in arr) {
 			if (i != val) {

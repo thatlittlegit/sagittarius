@@ -65,7 +65,7 @@ namespace Sagittarius {
 		NavigateFunc nav,
 		Content content, Cancellable ? cancel = null,
 		LoadingTrigger ? trigger =
-			null) throws Error {
+		null) throws Error {
 
 		var iter = HashTableIter<string, FeebleRef<Renderer> >(renderers);
 		string type;

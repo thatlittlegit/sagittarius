@@ -193,13 +193,9 @@ namespace Sagittarius {
 
 				var parts = line.split("\t", 3);
 				try {
-					ret.append(new HistoryEntry(new DateTime.from_iso8601(
-						parts[0], null),
-						new Upg.Uri(parts[1]),
-						parts[2]));
+					ret.append(new HistoryEntry(new DateTime.from_iso8601(parts[0], null), new Upg.Uri(parts[1]), parts[2]));
 				} catch (Error err) {
-					warning("failed to make HistoryEntry for %s: %s", parts[1],
-						err.message);
+					warning("failed to make HistoryEntry for %s: %s", parts[1], err.message);
 				}
 			}
 

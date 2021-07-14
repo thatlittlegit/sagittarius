@@ -50,8 +50,7 @@ namespace Sagittarius {
 			revealer = new Gtk.Revealer ();
 			spinner = new Gtk.Spinner ();
 			revealer.add(spinner);
-			close_button =
-				new Gtk.Button.from_icon_name("window-close-symbolic");
+			close_button = new Gtk.Button.from_icon_name("window-close-symbolic");
 
 			label.ellipsize = Pango.EllipsizeMode.END;
 			label.set_width_chars(10);
@@ -148,8 +147,7 @@ namespace Sagittarius {
 
 		private bool going_through_time = false;
 
-		internal HashTable<string, Object ? > state { internal get; private set;
-		}
+		internal HashTable<string, Object ? > state { internal get; private set; }
 
 		internal Tab (Window _window, ListStore global_history,
 					  File history_file) {

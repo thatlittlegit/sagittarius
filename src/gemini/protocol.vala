@@ -75,8 +75,7 @@ namespace Sagittarius.Gemini {
 			var conn = yield client.connect_to_uri_async (struri, 1965, cancel);
 
 			size_t size;
-			yield conn.output_stream.write_all_async (
-				"%s\r\n".printf(struri).data, 0, cancel, out size);
+			yield conn.output_stream.write_all_async ("%s\r\n".printf(struri).data, 0, cancel, out size);
 
 			info("sent request [%ld bytes]".printf((ssize_t) size));
 

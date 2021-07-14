@@ -28,7 +28,8 @@ namespace Sagittarius {
 
 		internal ListStore history;
 		internal File history_file;
-		internal ListStore bookmarks;       internal File bookmarks_file;
+		internal ListStore bookmarks;
+		internal File bookmarks_file;
 
 		internal Peas.ExtensionSet extensions;
 		internal Settings settings;
@@ -75,12 +76,10 @@ namespace Sagittarius {
 
 		private void initialize_history () {
 			try {
-				history_file = File.new_build_filename(
-					Environment.get_user_data_dir (), "sagittarius",
-					"history.csv");
-				bookmarks_file = File.new_build_filename(
-					Environment.get_user_data_dir (), "sagittarius",
-					"bookmarks.csv");
+				var userdir = Path.build_filename(Environment.get_user_data_dir (), "sagittarius");
+
+				history_file = File.new_build_filename(userdir, "history.csv");
+				bookmarks_file = File.new_build_filename(userdir, "bookmarks.csv");
 
 				try {
 					history_file.create(FileCreateFlags.NONE).write("".data);

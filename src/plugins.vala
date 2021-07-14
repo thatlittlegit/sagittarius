@@ -44,26 +44,19 @@ namespace Sagittarius {
 			);
 
 		bool starting_up = true;
-		application.extensions.extension_added.connect((info,
-														activatable) => {
-
-			var settings =
-				new Settings.with_path("tk.thatlittlegit.sagittarius.plugin",
-					"/tk/thatlittlegit/sagittarius/%s/".printf(info.
-						 get_module_name ()));
+		application.extensions.extension_added.connect((info, activatable) => {
+			var settingsPath = "/tk/thatlittlegit/sagittarius/%s/".printf(info.get_module_name ());
+			var settings = new Settings.with_path("tk.thatlittlegit.sagittarius.plugin", settingsPath);
 
 			if (activatable is Renderer) {
-				foreach (var item in (info.get_external_data(
-					"InternalContentTypes") ?? "").split(",")) {
+				foreach (var item in (info.get_external_data("InternalContentTypes") ?? "").split(",")) {
 					add_renderer(item.strip (), (Renderer) activatable);
 				}
 
-				if (settings.get_value(
-					"content-types").get_strv ().length == 0) {
+				if (settings.get_value("content-types").get_strv ().length == 0) {
 					var newval = new Array<string>();
 
-					foreach (var item in ((info.get_external_data("ContentTypes")
-										   ?? "").split(","))) {
+					foreach (var item in ((info.get_external_data("ContentTypes") ?? "").split(","))) {
 						newval.append_val(item.strip ());
 					}
 
@@ -79,8 +72,7 @@ namespace Sagittarius {
 			}
 
 			if (activatable is UriLoader) {
-				foreach (var item in (info.get_external_data(
-					"InternalUriSchemes") ?? "").split(",")) {
+				foreach (var item in (info.get_external_data("InternalUriSchemes") ?? "").split(",")) {
 					add_loader(item.strip (), (UriLoader) activatable);
 				}
 
@@ -88,8 +80,7 @@ namespace Sagittarius {
 					"uri-schemes").get_strv ().length == 0) {
 					var newval = new Array<string>();
 
-					foreach (var item in ((info.get_external_data("UriSchemes")
-										   ?? "").split(","))) {
+					foreach (var item in ((info.get_external_data("UriSchemes") ?? "").split(","))) {
 						newval.append_val(item.strip ());
 					}
 
@@ -105,8 +96,7 @@ namespace Sagittarius {
 			}
 
 			((Plugin) activatable).activate ();
-			active_plugins.insert(
-				info.get_module_name (), (Plugin) activatable);
+			active_plugins.insert(info.get_module_name (), (Plugin) activatable);
 
 			if (!starting_up) {
 				application.settings.set_strv(
@@ -116,46 +106,36 @@ namespace Sagittarius {
 					);
 			}
 		});
-		application.extensions.extension_removed.connect((info,
-														  activatable) => {
+		application.extensions.extension_removed.connect((info, activatable) => {
 			remove_all_renderers_of_type(activatable.get_type ());
 			((Plugin) activatable).deactivate ();
 			active_plugins.remove(info.get_module_name ());
 
 			// this is more for consistency, we don't disable plugins at startup
 			if (!starting_up) {
-				application.settings.set_strv(
-					"enabled-plugins",
+				application.settings.set_strv("enabled-plugins",
 					array_sans(application.settings.get_value("enabled-plugins")
-						 .dup_strv (), info.get_module_name ())
-					);
+						 .dup_strv (), info.get_module_name ()));
 			}
 		});
 
 		if (DEBUG == "true") {
 			message("DEBUG is enabled (%s)", BUILT_PLUGINDIR);
-			Engine.get_default ().add_search_path(Path.build_path("/",
-				BUILT_PLUGINDIR, "about"), null);
-			Engine.get_default ().add_search_path(Path.build_path("/",
-				BUILT_PLUGINDIR, "file"), null);
-			Engine.get_default ().add_search_path(Path.build_path("/",
-				BUILT_PLUGINDIR, "gemini"), null);
-			Engine.get_default ().add_search_path(Path.build_path("/",
-				BUILT_PLUGINDIR, "invincible"), null);
-			Engine.get_default ().add_search_path(Path.build_path("/",
-				BUILT_PLUGINDIR, "text"), null);
+			Engine.get_default ().add_search_path(Path.build_path("/", BUILT_PLUGINDIR, "about"), null);
+			Engine.get_default ().add_search_path(Path.build_path("/", BUILT_PLUGINDIR, "file"), null);
+			Engine.get_default ().add_search_path(Path.build_path("/", BUILT_PLUGINDIR, "gemini"), null);
+			Engine.get_default ().add_search_path(Path.build_path("/", BUILT_PLUGINDIR, "invincible"), null);
+			Engine.get_default ().add_search_path(Path.build_path("/", BUILT_PLUGINDIR, "text"), null);
 		}
 
 		Engine.get_default ().add_search_path(PLUGINDIR, null);
-		Engine.get_default ().add_search_path(
-			Path.build_path("/", Environment.get_user_data_dir (),
-				"sagittarius", "plugins"),
-			null);
+
+		var user_plugin_dir = Path.build_path("/", Environment.get_user_data_dir (), "sagittarius", "plugins");
+		Engine.get_default ().add_search_path(user_plugin_dir, null);
 
 		Engine.get_default ().rescan_plugins ();
 
-		var enabled =
-			application.settings.get_value("enabled-plugins").dup_strv ();
+		var enabled = application.settings.get_value("enabled-plugins").dup_strv ();
 		foreach (var plugin in Engine.get_default ().get_plugin_list ()) {
 			foreach (var enable in enabled) {
 				if (enable == plugin.get_module_name ()) {
@@ -194,8 +174,7 @@ namespace Sagittarius {
 
 		construct {
 			manager = new PluginManagerView(Engine.get_default ());
-			manager.get_selection ().changed.connect(
-				() => { update_buttons (); });
+			manager.get_selection ().changed.connect(() => { update_buttons (); });
 			manager.get_selection ().mode = Gtk.SelectionMode.SINGLE;
 			manager.button_press_event.connect(() => manager.unselect_all ());
 			menu_box.pack_start(manager, true, true);
@@ -203,15 +182,12 @@ namespace Sagittarius {
 			content_stack.transition_type = Gtk.StackTransitionType.SLIDE_LEFT;
 		}
 
-		private void update_title (string ? title = null,
-			string ? subtitle = null) {
+		private void update_title (string ? title = null, string ? subtitle = null) {
 			if (title == null) {
 				headerbar.title = _("Plugins");
-				var installed =
-					Engine.get_default ().get_plugin_list ().length ();
-				headerbar.subtitle = ngettext("One plugin installed",
-					"%u plugins installed",
-					installed).printf(installed);
+				var installed = Engine.get_default ().get_plugin_list ().length ();
+				headerbar.subtitle = ngettext("One plugin installed", "%u plugins installed", installed).printf(installed);
+
 				return;
 			}
 
@@ -236,8 +212,7 @@ namespace Sagittarius {
 				return;
 			}
 
-			if (Engine.get_default ().provides_extension(selected,
-				typeof (PeasGtk.Configurable))) {
+			if (Engine.get_default ().provides_extension(selected, typeof (PeasGtk.Configurable))) {
 				properties_button.sensitive = false;
 			} else {
 				properties_button.sensitive = true;
@@ -277,12 +252,8 @@ namespace Sagittarius {
 		[GtkCallback]
 		private void open_properties_cb () {
 			var selected = manager.get_selected_plugin ();
-
-			content_stack.add_named(((PeasGtk.Configurable)Engine.get_default ()
-									  .create_extension(manager.
-										  get_selected_plugin (),
-										 typeof (PeasGtk.Configurable)))
-				 .create_configure_widget (), "properties");
+			var extension = (PeasGtk.Configurable)Engine.get_default ().create_extension(selected, typeof (PeasGtk.Configurable));
+			content_stack.add_named(extension.create_configure_widget (), "properties");
 
 			update_title(selected.get_name (), _("Configuration"));
 			content_stack.visible_child_name = "properties";
@@ -302,11 +273,9 @@ namespace Sagittarius {
 			dialog.copyright = plugin.get_copyright ();
 			dialog.version = plugin.get_version ();
 
-			dialog.license_type =
-				decode_license(plugin.get_external_data("License"));
+			dialog.license_type = decode_license(plugin.get_external_data("License"));
 			if (dialog.license_type == Gtk.License.CUSTOM) {
-				dialog.license = plugin.get_external_data("License-Data") ??
-								 "This plugin is proprietary.";
+				dialog.license = plugin.get_external_data("License-Data") ?? "This plugin is proprietary.";
 			}
 
 			dialog.run ();
@@ -316,12 +285,10 @@ namespace Sagittarius {
 		[GtkCallback]
 		private void open_mime_cb () {
 			var plugin = manager.get_selected_plugin ();
-			var settings =
-				new Settings.with_path("tk.thatlittlegit.sagittarius.plugin",
-					"/tk/thatlittlegit/sagittarius/%s/".printf(plugin.
-						 get_module_name ()));
-			content_stack.add_named(new PluginConfiguration(plugin,
-				settings), "mime");
+			var pluginSettingsPath = "/tk/thatlittlegit/sagittarius/%s/".printf(plugin.get_module_name ());
+			var settings = new Settings.with_path("tk.thatlittlegit.sagittarius.plugin", pluginSettingsPath);
+
+			content_stack.add_named(new PluginConfiguration(plugin, settings), "mime");
 
 			content_stack.transition_type = Gtk.StackTransitionType.SLIDE_RIGHT;
 			content_stack.visible_child_name = "mime";
@@ -330,8 +297,7 @@ namespace Sagittarius {
 		}
 	}
 
-	[GtkTemplate(ui =
-			"/tk/thatlittlegit/sagittarius/plugin-configuration.ui")]
+	[GtkTemplate(ui = "/tk/thatlittlegit/sagittarius/plugin-configuration.ui")]
 	private class PluginConfiguration : Gtk.Bin {
 		private Array<string> schemes;
 		private Array<string> types;
@@ -391,10 +357,8 @@ namespace Sagittarius {
 
 			var strv = settings.get_value("uri-schemes").dup_strv ();
 
-			uri_scheme_listbox.foreach ((widget) => { uri_scheme_listbox.remove(
-				widget); });
-			schemes = new Array<string>.sized (true, true, sizeof (string),
-				strv.length);
+			uri_scheme_listbox.foreach ((widget) => { uri_scheme_listbox.remove(widget); });
+			schemes = new Array<string>.sized (true, true, sizeof (string), strv.length);
 
 			foreach (var item in strv) {
 				schemes.append_val(item);
@@ -408,10 +372,8 @@ namespace Sagittarius {
 
 			var strv = settings.get_value("content-types").dup_strv ();
 
-			mime_type_listbox.foreach ((widget) => { mime_type_listbox.remove(
-				widget); });
-			types = new Array<string>.sized (true, true, sizeof (string),
-				strv.length);
+			mime_type_listbox.foreach ((widget) => { mime_type_listbox.remove(widget); });
+			types = new Array<string>.sized (true, true, sizeof (string), strv.length);
 
 			foreach (var item in strv) {
 				types.append_val(item);
