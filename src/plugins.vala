@@ -227,13 +227,6 @@ namespace Sagittarius {
 			back_button_revealer.reveal_child = false;
 			content_stack.transition_type = Gtk.StackTransitionType.SLIDE_LEFT;
 			update_title(null);
-
-			// Removing it immediately looks glitchy
-			Timeout.add(300, () => {
-				content_stack.remove(content_stack.get_child_by_name(
-					"properties"));
-				return false;
-			});
 		}
 
 		[GtkCallback]
@@ -242,21 +235,17 @@ namespace Sagittarius {
 			content_stack.visible_child_name = "manager";
 			forward_button_revealer.reveal_child = false;
 			update_title(null);
-
-			Timeout.add(300, () => {
-				content_stack.remove(content_stack.get_child_by_name("mime"));
-				return false;
-			});
 		}
 
 		[GtkCallback]
 		private void open_properties_cb () {
 			var selected = manager.get_selected_plugin ();
+			var page_name = "%s-config".printf(selected.get_module_name ());
 			var extension = (PeasGtk.Configurable)Engine.get_default ().create_extension(selected, typeof (PeasGtk.Configurable));
-			content_stack.add_named(extension.create_configure_widget (), "properties");
+			content_stack.add_named(extension.create_configure_widget (), page_name);
 
 			update_title(selected.get_name (), _("Configuration"));
-			content_stack.visible_child_name = "properties";
+			content_stack.visible_child_name = page_name;
 			back_button_revealer.reveal_child = true;
 			content_stack.transition_type = Gtk.StackTransitionType.SLIDE_RIGHT;
 		}
@@ -285,13 +274,15 @@ namespace Sagittarius {
 		[GtkCallback]
 		private void open_mime_cb () {
 			var plugin = manager.get_selected_plugin ();
-			var pluginSettingsPath = "/tk/thatlittlegit/sagittarius/%s/".printf(plugin.get_module_name ());
+			var module = plugin.get_module_name ();
+			var pluginSettingsPath = "/tk/thatlittlegit/sagittarius/%s/".printf(module);
 			var settings = new Settings.with_path("tk.thatlittlegit.sagittarius.plugin", pluginSettingsPath);
 
-			content_stack.add_named(new PluginConfiguration(plugin, settings), "mime");
+			var page_name = "%s-mime".printf(module);
+			content_stack.add_named(new PluginConfiguration(plugin, settings), page_name);
 
 			content_stack.transition_type = Gtk.StackTransitionType.SLIDE_RIGHT;
-			content_stack.visible_child_name = "mime";
+			content_stack.visible_child_name = page_name;
 			forward_button_revealer.reveal_child = true;
 			update_title(plugin.get_name (), _("Configuration"));
 		}
