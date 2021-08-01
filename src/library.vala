@@ -1,6 +1,6 @@
 /* library.vala
  *
- * Copyright 2020 thatlittlegit <personal@thatlittlegit.tk>
+ * Copyright 2020-2021 thatlittlegit <personal@thatlittlegit.tk>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,12 +50,14 @@ namespace Sagittarius {
 			history_listbox = new UriListBox(history, history_file);
 			listbox_stack.add_titled(history_listbox, "history", _("History"));
 			history_listbox.selection_changed.connect(selection_changed_handler);
+			history_listbox.show ();
 
 			bookmarks_listbox = new UriListBox(bookmarks, bookmarks_file);
 			listbox_stack.add_titled(bookmarks_listbox, "bookmarks", _(
 				"Bookmarks"));
 			bookmarks_listbox.selection_changed.connect(
 				selection_changed_handler);
+			bookmarks_listbox.show ();
 		}
 
 		private void selection_changed_handler (Gtk.ListBoxRow ? selected_row) {
@@ -67,8 +69,7 @@ namespace Sagittarius {
 				return;
 			}
 
-			var entry = (HistoryEntry) history.get_item(selected_row.get_data<int>(
-				"entry"));
+			var entry = (HistoryEntry) history.get_item(selected_row.get_index ());
 			info_grid.sensitive = true;
 			entry_title.label = entry.title;
 			uri.text = entry.uri.to_string ();
@@ -85,40 +86,26 @@ namespace Sagittarius {
 		}
 
 		construct {
+			bind_model(list, (obj) => create_widget((HistoryEntry) obj));
+
 			row_selected.connect(() => {
 				selection_changed(get_selected_row ());
 			});
-			update ();
-
-			list.items_changed.connect(() => update ());
 		}
 
-		public void update () {
-			foreach (var child in get_children ()) {
-				remove(child);
-			}
+		public Gtk.Widget create_widget (HistoryEntry entry) {
+			var widget = new ConfigurationEntry(entry.uri.to_string ());
+			var container = new Gtk.ListBoxRow ();
+			container.add(widget);
 
-			for (var i = int.max((int) list.get_n_items () - 100, 0);
-				 i < list.get_n_items (); i++) {
-				var entry = (HistoryEntry) list.get_item(i);
+			widget.deleted.connect((widget) => {
+				list.remove(container.get_index ());
+				History.write_out_all(list, file);
+			});
 
-				var widget = new ConfigurationEntry(entry.uri.to_string ());
-
-				var _entry = entry;
-				widget.set_data<int>("entry", i);
-
-				widget.deleted.connect((widget) => {
-					list.remove(widget.get_data<int>("entry"));
-					History.write_out_all(list, file);
-					update ();
-				});
-
-				add(widget);
-				((MainContext) null).iteration(false);
-			}
-
-			show_all ();
-			selection_changed(get_selected_row ());
+			container.show_all ();
+			container.hide ();
+			return container;
 		}
 
 		public signal void selection_changed (Gtk.ListBoxRow ? selected_row);
