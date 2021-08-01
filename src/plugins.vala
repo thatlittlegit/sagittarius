@@ -212,11 +212,8 @@ namespace Sagittarius {
 				return;
 			}
 
-			if (Engine.get_default ().provides_extension(selected, typeof (PeasGtk.Configurable))) {
-				properties_button.sensitive = false;
-			} else {
-				properties_button.sensitive = true;
-			}
+			bool is_configurable = Engine.get_default ().provides_extension(selected, typeof (PeasGtk.Configurable));
+			properties_button.sensitive = is_configurable;
 
 			mime_button.sensitive = true;
 		}
