@@ -147,16 +147,12 @@ namespace Sagittarius {
 
 		private bool going_through_time = false;
 
-		internal HashTable<string, Object ? > state { internal get; private set; }
-
 		internal Tab (Window _window, ListStore global_history,
 					  File history_file) {
 			Object(orientation: Gtk.Orientation.VERTICAL);
 			window = _window;
 			app = (Application) window.application;
 			history = new History(global_history, history_file);
-
-			state = new HashTable<string, Object ? >(str_hash, str_equal);
 
 			warning_bar = new Gtk.InfoBar ();
 			warning_bar_label = new Gtk.Label(_("Text currently unset."));
@@ -272,7 +268,7 @@ namespace Sagittarius {
 				cancel = new Cancellable ();
 				label.spinning = true;
 				on_navigate(this);
-				var document = yield fetch_uri (state, uri, cancel);
+				var document = yield fetch_uri (uri, cancel);
 
 				yield view (uri, document);
 			} catch (Error err) {
@@ -302,8 +298,7 @@ namespace Sagittarius {
 					loading_trigger.trigger(null);
 				});
 
-				var rendered = yield render_content (state, navigate, document,
-					cancel, loading_trigger);
+				var rendered = yield render_content (navigate, document, cancel, loading_trigger);
 
 				uri_ = document.original_uri;
 				this.uri = uri_.to_string ();

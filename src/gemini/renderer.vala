@@ -21,11 +21,8 @@ using Sagittarius;
 
 namespace Sagittarius.Gemini {
 	public class Renderer : Object, Sagittarius.Renderer {
-		public async Gtk.Widget render (HashTable<string,
-												  Object ? > state,
-			NavigateFunc ? nav,
-			Content content, Cancellable ? cancel,
-			LoadingTrigger ? trigger) throws Error {
+		public async Gtk.Widget render (NavigateFunc ? nav, Content content, Cancellable ? cancel, LoadingTrigger ? trigger)
+		throws Error {
 			content.data = new ConverterInputStream(content.data,
 				new CharsetConverter(content.content_type.charset ?? "utf-8",
 					"utf-8"));

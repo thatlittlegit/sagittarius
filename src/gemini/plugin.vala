@@ -32,22 +32,17 @@ namespace Sagittarius.Gemini {
 			cmv = new CryptographyMessageViewer ();
 		}
 
-		public async Content fetch (HashTable<string, Object ? > state,
-			Upg.Uri uri,
-			Cancellable ? cancel) throws Error {
-			return yield protocol.fetch (state, uri, cancel);
+		public async Content fetch (Upg.Uri uri, Cancellable ? cancel) throws Error {
+			return yield protocol.fetch (uri, cancel);
 		}
 
-		public async Gtk.Widget render (HashTable<string, Object ? > state,
-			NavigateFunc ? nav, Content content,
-			Cancellable ? cancel,
-			LoadingTrigger ? trigger) throws Error {
+		public async Gtk.Widget render (NavigateFunc ? nav, Content content, Cancellable ? cancel, LoadingTrigger ? trigger) throws Error {
 			if (content.content_type.subtype ==
 				"x-gemini-certificate-response") {
-				return yield cmv.render (state, nav, content, cancel, trigger);
+				return yield cmv.render (nav, content, cancel, trigger);
 			}
 
-			return yield renderer.render (state, nav, content, cancel, trigger);
+			return yield renderer.render (nav, content, cancel, trigger);
 		}
 
 		[CCode(cname = "peas_register_types")]

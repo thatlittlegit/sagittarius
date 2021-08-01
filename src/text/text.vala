@@ -34,11 +34,7 @@ namespace Sagittarius.Text {
 			Gtk.Sourceinit ();
 		}
 
-		public async Gtk.Widget render (HashTable<string,
-												  Object ? > state,
-			NavigateFunc ? nav,
-			Content content,
-			Cancellable ? cancel, LoadingTrigger ? trigger) {
+		public async Gtk.Widget render (NavigateFunc ? nav, Content content, Cancellable ? cancel, LoadingTrigger ? trigger) {
 			var buffer = new Gtk.SourceBuffer(null);
 			buffer.highlight_syntax = true;
 			buffer.language =

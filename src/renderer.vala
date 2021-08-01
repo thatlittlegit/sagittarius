@@ -26,13 +26,8 @@ namespace Sagittarius {
 	}
 
 	public interface Renderer : Object {
-		public abstract async Gtk.Widget render (HashTable<string,
-														   Object ? > state,
-			NavigateFunc ? nav,
-			Content content,
-			Cancellable ? cancel = null,
-			LoadingTrigger ? loading_trigger = null) throws
-		Error;
+		public abstract async Gtk.Widget render (NavigateFunc ? nav, Content content, Cancellable ? cancel = null,
+			LoadingTrigger ? loading_trigger = null) throws Error;
 	}
 
 	HashTable<string, weak Renderer> renderers = null;
@@ -59,12 +54,8 @@ namespace Sagittarius {
 		});
 	}
 
-	public async Gtk.Widget render_content (HashTable<string,
-													  Object ? > state,
-		NavigateFunc nav,
-		Content content, Cancellable ? cancel = null,
-		LoadingTrigger ? trigger =
-		null) throws Error {
+	public async Gtk.Widget render_content (NavigateFunc nav, Content content, Cancellable ? cancel = null,
+		LoadingTrigger ? trigger = null) throws Error {
 
 		var iter = HashTableIter<string, weak Renderer>(renderers);
 		string type;
@@ -75,7 +66,7 @@ namespace Sagittarius {
 			}
 
 			if (new ContentType.parse(type).matches(content.content_type)) {
-				return yield renderer.render (state, nav, content, cancel, trigger);
+				return yield renderer.render (nav, content, cancel, trigger);
 			}
 		}
 

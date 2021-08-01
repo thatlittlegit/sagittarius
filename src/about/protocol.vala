@@ -29,8 +29,7 @@ namespace Sagittarius.AboutProtocol {
 				typeof (AboutProtocol));
 		}
 
-		public async Content fetch (HashTable<string, Object ? > state,
-			Upg.Uri _uri, Cancellable ? cancel) throws Error {
+		public async Content fetch (Upg.Uri _uri, Cancellable ? cancel) throws Error {
 			var uri = shift_uri(_uri);
 			Content ret = { UriLoadOutcome.SUCCESS, _uri, new ContentType(
 				"text", "gemini") };
@@ -98,11 +97,8 @@ namespace Sagittarius.AboutProtocol {
 			return uri;
 		}
 
-		public async Gtk.Widget render (HashTable<string,
-												  Object ? > state,
-			NavigateFunc ? nav,
-			Content content,
-			Cancellable ? cancel, LoadingTrigger ? trigger) throws Error {
+		public async Gtk.Widget render (NavigateFunc ? nav, Content content, Cancellable ? cancel,
+			LoadingTrigger ? trigger) throws Error {
 			var widget = new Dazzle.EmptyState ();
 			widget.title = _("Welcome to Sagittarius!");
 			widget.subtitle = _("Start by typing a URL in the address bar.");

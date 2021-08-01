@@ -27,11 +27,20 @@ namespace Sagittarius.Gemini {
 		INVALID_RESPONSE,
 	}
 
+	internal class Certificate {
+		public Upg.Uri uri;
+		public File file;
+
+		public Certificate (Upg.Uri uri, File file) {
+			this.uri = uri;
+			this.file = file;
+		}
+	}
+
 	public class Protocol : Object, UriLoader {
-		async IOStream send_request (Upg.Uri uri, Wrapped<HashTable<string,
-																	string> > ? cert,
-			Cancellable ? cancel)
-		throws Error {
+		internal static unowned List<Certificate> current_certificates { get; internal set; }
+
+		private async IOStream send_request (Upg.Uri uri, File ? cert, Cancellable ? cancel) throws Error {
 			var client = new SocketClient ();
 			client.set_tls(true);
 			client.set_tls_validation_flags(0);
@@ -44,30 +53,15 @@ namespace Sagittarius.Gemini {
 				var conn = rconn as TlsConnection;
 				conn.require_close_notify = false;
 
-				if (cert == null) {
+				string ? path = null;
+				if (cert == null || (path = cert.get_path ()) == null) {
 					return;
 				}
 
-				var iter = HashTableIter<string, string>(
-					cert.unwrap ());
-				string path;
-				string file = null;
-				while (iter.next(out path, out file)) {
-					// TODO there should be a better function for this
-					if (uri.to_string ().has_prefix(path)) {
-						break;
-					}
-				}
-
-				if (file != null) {
-					try {
-						conn.certificate =
-							new TlsCertificate.from_file(Filename.from_uri(
-								file));
-					} catch (Error err) {
-						warning("failed to read certificate %s: %s", file,
-							err.message);
-					}
+				try {
+					conn.certificate = new TlsCertificate.from_file(path);
+				} catch (Error err) {
+					warning("failed to read certificate %s: %s", path, err.message);
 				}
 			});
 
@@ -82,13 +76,20 @@ namespace Sagittarius.Gemini {
 			return conn;
 		}
 
-		public async Content fetch (HashTable<string, Object ? > state,
-			Upg.Uri uri, Cancellable ? cancel) throws Error {
+		public async Content fetch (Upg.Uri uri, Cancellable ? cancel) throws Error {
 			Content ret = {};
 			ret.original_uri = uri;
 
-			var ios = yield send_request (uri, (Wrapped<HashTable<string, string> >) state.lookup(
-				"$gemini$"), cancel);
+			File ? certificate_file = null;
+			foreach (var cert in current_certificates) {
+				message("%s vs. %s", cert.uri.to_string (), uri.to_string ());
+				if (cert.uri.is_parent_of(uri, 1965, Upg.HierarchyFlags.LAX)) {
+					certificate_file = cert.file;
+					break;
+				}
+			}
+
+			var ios = yield send_request (uri, certificate_file, cancel);
 
 			var dis = new DataInputStream(ios.input_stream);
 			dis.newline_type = DataStreamNewlineType.ANY;

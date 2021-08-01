@@ -67,23 +67,6 @@ namespace Sagittarius {
 		return bytearray;
 	}
 
-	public class Wrapped<T>: Object {
-		private T wrapped;
-
-		public Wrapped (T subject) {
-			wrapped = subject;
-		}
-
-		// *rust flashbacks*
-		public T unwrap () {
-			return wrapped;
-		}
-
-		public void replace (T subject) {
-			wrapped = subject;
-		}
-	}
-
 	public string[] array_plus (string[] arr, string val) {
 		var output = new Array<string>.sized (true, true, sizeof (string), arr.length + 1);
 

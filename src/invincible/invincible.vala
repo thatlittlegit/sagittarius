@@ -38,11 +38,8 @@ namespace Sagittarius.Invincible {
 			Evince.shutdown ();
 		}
 
-		public async Gtk.Widget render (HashTable<string,
-												  Object ? > state,
-			NavigateFunc ? nav,
-			Content content,
-			Cancellable ? cancel, LoadingTrigger ? trigger) throws Error {
+		public async Gtk.Widget render (NavigateFunc ? nav, Content content, Cancellable ? cancel,
+			LoadingTrigger ? trigger) throws Error {
 			// FIXME this should have been the easiest to do, but the stream
 			//       has to be seekable
 			var stream =

@@ -28,8 +28,7 @@ namespace Sagittarius.FilePlugin {
 			module.register_extension_type(typeof (Plugin), typeof (Protocol));
 		}
 
-		public async Content fetch (HashTable<string, Object ? > state,
-			Upg.Uri uri, Cancellable ? cancellable) throws Error {
+		public async Content fetch (Upg.Uri uri, Cancellable ? cancellable) throws Error {
 			var file = File.new_for_path(uri.path_str);
 
 			return {

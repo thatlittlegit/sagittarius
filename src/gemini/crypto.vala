@@ -32,22 +32,12 @@ namespace Sagittarius.Gemini {
 	}
 
 	public class CryptographyMessageViewer : Object, Sagittarius.Renderer {
-		public async Gtk.Widget render (HashTable<string,
-												  Object ? > state,
-			NavigateFunc ? nav,
-			Content content, Cancellable ? cancel,
+		public async Gtk.Widget render (NavigateFunc ? nav, Content content, Cancellable ? cancel,
 			LoadingTrigger ? trigger) throws Error {
 			ErrorMessage message = new ErrorMessage ();
 
 			int code = 0;
-			content.content_type.properties.lookup("code").scanf("%d",
-				ref code);
-
-			if (state.lookup("$gemini$") == null) {
-				state.insert("$gemini$", new Wrapped<HashTable<string, string> >(
-					new HashTable<string, string>(str_hash,
-						str_equal)));
-			}
+			content.content_type.properties.lookup("code").scanf("%d", ref code);
 
 			switch ((CryptoCodes) code) {
 			case CERTIFICATE_WANTED:
@@ -66,10 +56,8 @@ namespace Sagittarius.Gemini {
 				message.set_prebutton_widget(box);
 
 				filechooser.file_set.connect(() => {
-					((Wrapped<HashTable<string, string> >)
-					 state.lookup("$gemini$")).unwrap ().insert(content.
-						 original_uri.to_string (),
-						filechooser.get_uri ());
+					var cert = new Certificate(content.original_uri, filechooser.get_file ());
+					Protocol.current_certificates.append(cert);
 					nav(content.original_uri);
 				});
 				break;
