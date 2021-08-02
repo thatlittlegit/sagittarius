@@ -67,7 +67,6 @@ namespace Sagittarius {
 				return count;
 			}
 			set {
-				message("%d", value);
 				current = history.nth_data(value);
 			}
 		}
