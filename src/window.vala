@@ -158,11 +158,10 @@ namespace Sagittarius {
 				toggle_ign = false;
 
 				ignore_changes = true;
-				if (tab.uri ==
-					"about://home?%s".printf(Uri.escape_string(_("New Tab")))) {
+				if (tab.is_on_homepage ()) {
 					url_bar.set_text("");
 				} else {
-					url_bar.set_text(tab.uri ?? "");
+					url_bar.set_text(tab.current_uri ?? "");
 				}
 				ignore_changes = false;
 

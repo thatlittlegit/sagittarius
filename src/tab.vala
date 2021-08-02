@@ -92,7 +92,7 @@ namespace Sagittarius {
 		internal bool is_bookmarked {
 			get {
 				for (var i = 0; i < app.bookmarks.get_n_items (); i++) {
-					if (((LibraryEntry) app.bookmarks.get_item(i)).uri.to_string () == uri) {
+					if (((LibraryEntry) app.bookmarks.get_item(i)).uri == history.current.uri) {
 						return true;
 					}
 				}
@@ -101,12 +101,12 @@ namespace Sagittarius {
 			}
 			set {
 				if (!is_bookmarked) {
-					var entry = new LibraryEntry(null, uri_, label.text);
+					var entry = new LibraryEntry(null, history.current.uri, label.text);
 					app.bookmarks.add_entry(entry);
 				} else {
 					for (var i = 0; i < app.bookmarks.get_n_items (); i++) {
 						var entry = app.bookmarks.get_entry(i);
-						if (entry.uri.to_string () == uri) {
+						if (entry.uri == history.current.uri) {
 							app.bookmarks.remove_entry(entry);
 							break;
 						}
@@ -115,11 +115,21 @@ namespace Sagittarius {
 			}
 		}
 
-		public string uri { get; private set; }
-		private Upg.Uri uri_;
+		public string ? current_uri {
+			owned get {
+				if (history.current.uri != null) {
+					return history.current.uri.to_string ();
+				}
+
+				return null;
+			}
+		}
+
 		internal TabLabel label;
 
 		private History history;
+
+		private static string HOMEPAGE = "about://home?%s".printf(Uri.escape_string(_("New Tab")));
 
 		private ErrorMessage errorview;
 		private Gtk.ScrolledWindow scrolled_text_view;
@@ -173,8 +183,7 @@ namespace Sagittarius {
 			show_all ();
 
 			try {
-				navigate(new Upg.Uri("about:home?%s".printf(Uri.escape_string(_(
-					"New Tab")))));
+				navigate(new Upg.Uri(HOMEPAGE));
 			} catch (Error err) {
 				error(
 					"this is impossible! failed to parse fixed homepage uri, file a bug please (%s)",
@@ -205,6 +214,10 @@ namespace Sagittarius {
 			return actions;
 		}
 
+		public bool is_on_homepage () {
+			return history.current.uri.to_string () == HOMEPAGE;
+		}
+
 		public void go_to_history_pos (int pos) {
 			history.position = pos;
 			fetch_and_view(history.current.uri);
@@ -231,9 +244,6 @@ namespace Sagittarius {
 
 		public void navigate (Upg.Uri uri) {
 			history.navigate(uri);
-			uri_ = uri;
-			this.uri = uri.to_string ();
-
 			fetch_and_view(uri);
 		}
 
@@ -283,9 +293,6 @@ namespace Sagittarius {
 				});
 
 				var rendered = yield render_content (navigate, document, cancel, loading_trigger);
-
-				uri_ = document.original_uri;
-				this.uri = uri_.to_string ();
 
 				if (scrolled_text_view.get_child () != null) {
 					scrolled_text_view.remove(scrolled_text_view.get_child ());
