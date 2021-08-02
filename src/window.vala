@@ -1,6 +1,6 @@
 /* window.vala
  *
- * Copyright 2020 thatlittlegit
+ * Copyright 2020-2021 thatlittlegit
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,8 +31,7 @@ namespace Sagittarius {
 		private unowned Gtk.ToggleButton reload_button;
 
 		private HistorySuggestionModel history_model;
-		private ListStore global_history;
-		private File history_file;
+		private Library history;
 
 		private bool ignore_changes = false;
 
@@ -47,13 +46,11 @@ namespace Sagittarius {
 
 		uint entry_updater;
 
-		internal Window (Sagittarius.Application app, ListStore history,
-						 File history_file) {
+		internal Window (Sagittarius.Application app, Library history) {
 			Object(application: app);
 			icon_name = "tk.thatlittlegit.sagittarius.gnome";
 
-			this.global_history = history;
-			this.history_file = history_file;
+			this.history = history;
 
 			add_action(create_action("enter-uri",
 				() => this.select_address_bar ()));
@@ -125,7 +122,7 @@ namespace Sagittarius {
 		}
 
 		public Tab create_tab (string ? uri = null) {
-			var tab = new Tab(this, global_history, history_file);
+			var tab = new Tab(this, history);
 			notebook.set_current_page(notebook.append_page(tab, tab.label));
 			tab.on_navigate.connect((tab) => on_navigate_cb(tab));
 			tab.close.connect((page) => notebook.remove_page(notebook.page_num(

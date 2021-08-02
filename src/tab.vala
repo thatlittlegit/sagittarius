@@ -1,6 +1,6 @@
 /* tab.vala
  *
- * Copyright 2020 thatlittlegit <personal@thatlittlegit.tk>
+ * Copyright 2020-2021 thatlittlegit <personal@thatlittlegit.tk>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,9 +92,7 @@ namespace Sagittarius {
 		internal bool is_bookmarked {
 			get {
 				for (var i = 0; i < app.bookmarks.get_n_items (); i++) {
-					if (((HistoryEntry) app.bookmarks.get_item(i)).uri.to_string ()
-						==
-						uri) {
+					if (((LibraryEntry) app.bookmarks.get_item(i)).uri.to_string () == uri) {
 						return true;
 					}
 				}
@@ -103,21 +101,13 @@ namespace Sagittarius {
 			}
 			set {
 				if (!is_bookmarked) {
-					var entry = new HistoryEntry(
-						new DateTime.now_local (), uri_, label.text);
-					app.bookmarks.append(entry);
-					try {
-						History.record_entry(entry, app.bookmarks_file);
-					} catch (Error err) {
-						warning("%s", err.message); // TODO
-					}
+					var entry = new LibraryEntry(null, uri_, label.text);
+					app.bookmarks.add_entry(entry);
 				} else {
 					for (var i = 0; i < app.bookmarks.get_n_items (); i++) {
-						if (((HistoryEntry) app.bookmarks.get_item(i)).uri.
-							 to_string ()
-							==
-							uri) {
-							app.bookmarks.remove(i);
+						var entry = app.bookmarks.get_entry(i);
+						if (entry.uri.to_string () == uri) {
+							app.bookmarks.remove_entry(entry);
 							break;
 						}
 					}
@@ -147,12 +137,11 @@ namespace Sagittarius {
 
 		private bool going_through_time = false;
 
-		internal Tab (Window _window, ListStore global_history,
-					  File history_file) {
+		internal Tab (Window _window, Library library) {
 			Object(orientation: Gtk.Orientation.VERTICAL);
 			window = _window;
 			app = (Application) window.application;
-			history = new History(global_history, history_file);
+			history = new History(library);
 
 			warning_bar = new Gtk.InfoBar ();
 			warning_bar_label = new Gtk.Label(_("Text currently unset."));

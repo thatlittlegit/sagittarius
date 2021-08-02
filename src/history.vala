@@ -1,6 +1,6 @@
 /* history.vala
  *
- * Copyright 2020 thatlittlegit <personal@thatlittlegit.tk>
+ * Copyright 2020-2021 thatlittlegit <personal@thatlittlegit.tk>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,13 +31,12 @@ namespace Sagittarius {
 	}
 
 	internal class History : Object {
+		public Library library { private get; construct; }
 		private List<HistoryEntry> queue;
 		private int current = -1;
 
-		internal History (ListStore global, File backed) {
-			this._global = global;
-			this._file = backed;
-			read_from_file(backed);
+		internal History (Library library) {
+			Object(library: library);
 		}
 
 		construct {
@@ -46,20 +45,6 @@ namespace Sagittarius {
 					changed ();
 				}
 			});
-		}
-
-		private ListStore _global;
-		internal ListStore global {
-			get {
-				return _global;
-			}
-		}
-
-		private File _file;
-		internal File file {
-			get {
-				return _file;
-			}
 		}
 
 		public List<HistoryEntry> history {
@@ -110,39 +95,7 @@ namespace Sagittarius {
 			current++;
 
 			var entry = new HistoryEntry(new DateTime.now (), full_uri, null);
-			queue.append(entry);
-			global.append(entry);
-
-			record_entry(queue.last ().data, file);
-		}
-
-		public static void record_entry_to_stream (HistoryEntry entry,
-			OutputStream output) throws
-		Error {
-			var line = "%s\t%s\t%s\n".printf(
-				entry.date.format("%FT%TZ"),
-				entry.uri.to_string (),
-				entry.title
-				);
-
-			if (!line.validate(-1)) {
-				warning("data is not valid UTF-8!");
-			}
-
-			output.write(line.data);
-		}
-
-		public static void record_entry (HistoryEntry entry,
-			File file) throws Error {
-			record_entry_to_stream(entry, file.append_to(0));
-		}
-
-		internal static void write_out_all (ListModel list,
-			File file) throws Error {
-			var append = file.replace(null, false, 0);
-			for (var i = 0; i < list.get_n_items (); i++) {
-				record_entry_to_stream((HistoryEntry) list.get_item(i), append);
-			}
+			library.add_entry(new LibraryEntry(entry.date, entry.uri, entry.title));
 		}
 
 		public void set_top (HistoryEntry entry) {
@@ -160,46 +113,6 @@ namespace Sagittarius {
 			while (current + 1 < queue.length ()) {
 				queue.remove_link(queue.last ());
 			}
-		}
-
-		public static ListStore read_from_file (File _stream) {
-			ListStore ret = new ListStore(typeof (HistoryEntry));
-
-			InputStream readstream;
-			try {
-				readstream = _stream.read ();
-			} catch (Error err) {
-				warning("%s", err.message); // TODO
-				return new ListStore(typeof (HistoryEntry));
-			}
-			var stream = new DataInputStream(readstream);
-
-			while (true) {
-				string line;
-				try {
-					line = stream.read_line_utf8 ();
-				} catch (IOError error) {
-					warning("IOError when reading: %s", error.message);
-					continue;
-				}
-
-				if (line == null) {
-					break;
-				}
-
-				if (line.strip () == "" || line.has_prefix("#")) {
-					continue;
-				}
-
-				var parts = line.split("\t", 3);
-				try {
-					ret.append(new HistoryEntry(new DateTime.from_iso8601(parts[0], null), new Upg.Uri(parts[1]), parts[2]));
-				} catch (Error err) {
-					warning("failed to make HistoryEntry for %s: %s", parts[1], err.message);
-				}
-			}
-
-			return ret;
 		}
 
 		public bool contains (string uri) {
@@ -250,7 +163,7 @@ namespace Sagittarius {
 			var filtering = new List<Dazzle.Suggestion>();
 
 			for (var i = 0; i < associated.get_n_items (); i++) {
-				var entry = (HistoryEntry) associated.get_item(i);
+				var entry = (LibraryEntry) associated.get_item(i);
 
 				var levenshtein = Dazzle.levenshtein(query, entry.title);
 				var suggestion = new Dazzle.Suggestion ();

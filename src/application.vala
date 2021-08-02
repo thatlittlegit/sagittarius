@@ -1,6 +1,6 @@
 /* application.vala
  *
- * Copyright 2020 thatlittlegit <personal@thatlittlegit.tk>
+ * Copyright 2020-2021 thatlittlegit <personal@thatlittlegit.tk>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,10 +26,8 @@ namespace Sagittarius {
 			{ "quit", quit },
 		};
 
-		internal ListStore history;
-		internal File history_file;
-		internal ListStore bookmarks;
-		internal File bookmarks_file;
+		internal Library history;
+		internal Library bookmarks;
 
 		internal Peas.ExtensionSet extensions;
 		internal Settings settings;
@@ -53,7 +51,7 @@ namespace Sagittarius {
 			startup.connect(configure_plugin_engine);
 
 			activate.connect(() => {
-				new Window(this, history, history_file).present ();
+				new Window(this, history).present ();
 				((Window) active_window).create_tab ();
 			});
 			open.connect(open_file);
@@ -78,8 +76,8 @@ namespace Sagittarius {
 			try {
 				var userdir = Path.build_filename(Environment.get_user_data_dir (), "sagittarius");
 
-				history_file = File.new_build_filename(userdir, "history.csv");
-				bookmarks_file = File.new_build_filename(userdir, "bookmarks.csv");
+				var history_file = File.new_build_filename(userdir, "history.csv");
+				var bookmarks_file = File.new_build_filename(userdir, "bookmarks.csv");
 
 				try {
 					history_file.create(FileCreateFlags.NONE).write("".data);
@@ -97,8 +95,23 @@ namespace Sagittarius {
 					}
 				}
 
-				history = History.read_from_file(history_file);
-				bookmarks = History.read_from_file(bookmarks_file);
+				history = new Library(history_file);
+				history.init.begin(Priority.DEFAULT, null, (obj, data) => {
+					try {
+						history.init.end(data);
+					} catch (Error err) {
+						warning("error reading in history: %s", err.message);
+					}
+				});
+
+				bookmarks = new Library(bookmarks_file);
+				bookmarks.init.begin(Priority.DEFAULT, null, (obj, data) => {
+					try {
+						bookmarks.init.end(data);
+					} catch (Error err) {
+						warning("error reading in bookmarks: %s", err.message);
+					}
+				});
 			} catch (Error err) {
 				error(err.message);
 			}
@@ -106,7 +119,7 @@ namespace Sagittarius {
 
 		private void open_file (File[] files, string hint) {
 			if (active_window == null) {
-				new Window(this, history, history_file).present ();
+				new Window(this, history).present ();
 			}
 
 			foreach (var file in files) {
@@ -119,7 +132,7 @@ namespace Sagittarius {
 			dialog.modal = true;
 			dialog.authors = { "thatlittlegit" };
 			dialog.comments = _("A browser for Gemini");
-			dialog.copyright = "© 2020 thatlittlegit.";
+			dialog.copyright = "© 2020-2021 thatlittlegit.";
 			dialog.license_type = Gtk.License.GPL_3_0_ONLY;
 			dialog.logo_icon_name = "tk.thatlittlegit.sagittarius.gnome";
 			dialog.program_name = _("Sagittarius");
@@ -129,8 +142,7 @@ namespace Sagittarius {
 		}
 
 		public void show_history_window () {
-			new LibraryWindow(history, history_file, bookmarks,
-				bookmarks_file).present ();
+			new LibraryWindow(history, bookmarks).present ();
 		}
 
 		private void manage_plugins () {
