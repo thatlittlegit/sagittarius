@@ -59,7 +59,12 @@ namespace Sagittarius {
 
 				var parts = line.split("\t", 3);
 				try {
-					entries.prepend(new LibraryEntry(new DateTime.from_iso8601(parts[0], null), new Upg.Uri(parts[1]), parts[2]));
+					var date = new DateTime.from_iso8601(parts[0], null).to_local ();
+					var uri = new Upg.Uri(parts[1]);
+					var title = parts[2];
+
+					var entry = new LibraryEntry(date, uri, title);
+					entries.prepend(entry);
 				} catch (Error err) {
 					warning("failed to make LibraryEntry for %s: %s", parts[1], err.message);
 				}
