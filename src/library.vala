@@ -182,7 +182,7 @@ namespace Sagittarius {
 			info_grid.sensitive = true;
 			entry_title.label = entry.title;
 			uri.text = entry.uri.to_string ();
-			visited_date.label = entry.date.format("%x %X%:z");
+			visited_date.label = entry.date.format("%x %X");
 		}
 	}
 
