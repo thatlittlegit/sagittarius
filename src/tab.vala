@@ -135,8 +135,6 @@ namespace Sagittarius {
 
 		private Cancellable cancel;
 
-		private bool going_through_time = false;
-
 		internal Tab (Window _window, Library library) {
 			Object(orientation: Gtk.Orientation.VERTICAL);
 			window = _window;
@@ -209,24 +207,20 @@ namespace Sagittarius {
 
 		public void go_to_history_pos (int pos) {
 			history.position = pos;
-			going_through_time = true;
 			fetch_and_view(history.current.uri);
 		}
 
 		public void back () {
 			history.back ();
-			going_through_time = true;
 			fetch_and_view(history.current.uri);
 		}
 
 		public void forward () {
 			history.forward ();
-			going_through_time = true;
 			fetch_and_view(history.current.uri);
 		}
 
 		public void reload () {
-			going_through_time = true;
 			fetch_and_view(history.current.uri);
 		}
 
@@ -236,6 +230,7 @@ namespace Sagittarius {
 		}
 
 		public void navigate (Upg.Uri uri) {
+			history.navigate(uri);
 			uri_ = uri;
 			this.uri = uri.to_string ();
 
@@ -299,11 +294,6 @@ namespace Sagittarius {
 				rendered.show_all ();
 
 				stack.visible_child = grid;
-
-				if (!going_through_time) {
-					history.navigate(uri);
-				}
-				going_through_time = false;
 			} else {
 				var meta = bytes_to_string(document.data.read_bytes(1024));
 				if (document.outcome == UriLoadOutcome.PERMANENT_REDIRECT ||
@@ -329,11 +319,6 @@ namespace Sagittarius {
 				stack.visible_child = errorview;
 				label.text = uri.to_string ();
 				label.spinning = false;
-
-				if (!going_through_time) {
-					history.navigate(uri);
-				}
-				going_through_time = false;
 			}
 		}
 
