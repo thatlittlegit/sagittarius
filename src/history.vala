@@ -23,118 +23,101 @@ namespace Sagittarius {
 		public Upg.Uri uri;
 		public string title;
 
-		public HistoryEntry (DateTime ? a, Upg.Uri b, string ? c) {
-			date = a ?? new DateTime.from_unix_utc(0);
-			uri = b;
-			title = c ?? b.to_string ();
+		public HistoryEntry ? parent;
+
+		public HistoryEntry (HistoryEntry ? a, DateTime ? b, Upg.Uri c, string ? d) {
+			parent = a;
+			date = b ?? new DateTime.from_unix_utc(0);
+			uri = c;
+			title = d ?? c.to_string ();
 		}
 	}
 
 	internal class History : Object {
 		public Library library { private get; construct; }
-		private List<HistoryEntry> queue;
-		private int current = -1;
 
 		internal History (Library library) {
 			Object(library: library);
 		}
 
-		construct {
-			this.notify.connect((pspec) => {
-				if (pspec.name == "queue") {
-					changed ();
-				}
-			});
-		}
+		public HistoryEntry current { get; private set; }
+		private HistoryEntry top;
 
 		public List<HistoryEntry> history {
-			get {
-				return queue;
+			owned get {
+				var list = new List<HistoryEntry>();
+				this.@foreach((entry) => list.prepend(entry));
+				list.reverse ();
+				return (owned) list;
 			}
 		}
 
-		public int pos {
+		public int position {
 			get {
-				return current;
+				var count = 0;
+
+				foreach (var entry in history) {
+					if (entry == current) {
+						break;
+					}
+
+					count++;
+				}
+
+				return count;
 			}
 			set {
-				if (value < queue.length ()) {
-					current = value;
-				}
+				message("%d", value);
+				current = history.nth_data(value);
 			}
 		}
 
 		public bool can_go_back {
 			get {
-				return current > 0;
+				return current != null && current.parent != null;
 			}
 		}
 
 		public bool can_go_forward {
 			get {
-				return current + 1 < queue.length ();
+				return top != current;
 			}
+		}
+
+		private void @foreach (Func<HistoryEntry> func) {
+			if (top == null) {
+				return;
+			}
+
+			HistoryEntry processing = top;
+			do {
+				func(processing);
+			} while ((processing = processing.parent) != null);
 		}
 
 		public void back () {
-			current--;
+			if (current != null) {
+				current = current.parent;
+			}
 		}
 
 		public void forward () {
-			if (current + 1 < queue.length ()) {
-				current++;
-			}
-		}
-
-		public HistoryEntry top () {
-			return queue.nth_data(current);
-		}
-
-		public void navigate (Upg.Uri full_uri) throws Error {
-			remove_all_after(current);
-			current++;
-
-			var entry = new HistoryEntry(new DateTime.now (), full_uri, null);
-			library.add_entry(new LibraryEntry(entry.date, entry.uri, entry.title));
-		}
-
-		public void set_top (HistoryEntry entry) {
-			if (current > queue.length ()) {
-				current = (int) queue.length ();
-			}
-
-			var top = queue.nth_data(current <= 0 ? 0 : current - 1);
-			top.date = entry.date;
-			top.uri = entry.uri;
-			top.title = entry.title;
-		}
-
-		private void remove_all_after (int current) {
-			while (current + 1 < queue.length ()) {
-				queue.remove_link(queue.last ());
-			}
-		}
-
-		public bool contains (string uri) {
-			foreach (var entry in queue) {
-				if (uri == entry.uri.to_string ()) {
-					return true;
+			foreach (var entry in history) {
+				if (entry.parent == current) {
+					current = entry;
+					break;
 				}
 			}
-
-			return false;
 		}
 
-		public void remove_all (string uri) {
-			foreach (var entry in queue) {
-				if (uri == entry.uri.to_string ()) {
-					queue.remove(entry);
-				}
-			}
-			changed ();
-		}
+		public void navigate (Upg.Uri uri) {
+			var date = new DateTime.now ();
 
-		public signal void changed ();
+			var entry = new HistoryEntry(current, date, uri, null);
+			top = current = entry;
+
+			library.add_entry(new LibraryEntry(date, uri, null));
+		}
 	}
 
 	internal class HistorySuggestionModel : Object, ListModel {

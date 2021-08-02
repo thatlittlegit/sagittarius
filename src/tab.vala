@@ -73,12 +73,12 @@ namespace Sagittarius {
 	public class Tab : Gtk.Box {
 		public int current_history_pos {
 			get {
-				return history.pos;
+				return history.position;
 			}
 		}
 
 		public List<HistoryEntry> history_uris {
-			get {
+			owned get {
 				return history.history;
 			}
 		}
@@ -208,26 +208,26 @@ namespace Sagittarius {
 		}
 
 		public void go_to_history_pos (int pos) {
-			history.pos = pos;
+			history.position = pos;
 			going_through_time = true;
-			fetch_and_view(history.top ().uri);
+			fetch_and_view(history.current.uri);
 		}
 
 		public void back () {
 			history.back ();
 			going_through_time = true;
-			fetch_and_view(history.top ().uri);
+			fetch_and_view(history.current.uri);
 		}
 
 		public void forward () {
 			history.forward ();
 			going_through_time = true;
-			fetch_and_view(history.top ().uri);
+			fetch_and_view(history.current.uri);
 		}
 
 		public void reload () {
 			going_through_time = true;
-			fetch_and_view(history.top ().uri);
+			fetch_and_view(history.current.uri);
 		}
 
 		public void stop () {

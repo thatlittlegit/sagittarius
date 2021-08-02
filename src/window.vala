@@ -208,30 +208,31 @@ namespace Sagittarius {
 		}
 
 		[GtkCallback]
-		private bool show_history_menu (Gtk.Widget relative_to,
-			Gdk.EventButton button) {
+		private bool show_history_menu (Gtk.Widget relative_to, Gdk.EventButton button) {
 			if (button.button != 3) return false;
 
 			history_menu_box.forall(item => history_menu_box.remove(item));
 
-			if (current.history_uris.length () == 0) {
-				return false;
-			}
+			var uris = current.history_uris;
+			var length = (int) uris.length ();
+			var i = length - 1;
+			uris.reverse ();
 
-			for (int i = 0; i < current.history_uris.length (); i++) {
+			foreach (var entry in uris) {
 				var item = new Gtk.ModelButton ();
-				var entry = current.history_uris.nth_data(i);
 				item.text = entry.title ?? entry.uri.to_string ();
 				item.sensitive = i != current.current_history_pos;
-				item.set_data<int>("history_pos", i);
+				// FIXME closures seem to capture late
+				item.set_data<int>("i", i);
 
 				item.clicked.connect(() => {
-					current.go_to_history_pos(item.get_data<int>(
-						"history_pos"));
+					current.go_to_history_pos(item.get_data<int>("i"));
 				});
 
 				item.show ();
 				history_menu_box.pack_end(item);
+
+				i -= 1;
 			}
 
 			history_menu.relative_to = relative_to;
